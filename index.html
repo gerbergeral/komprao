@@ -604,8 +604,11 @@ function trocarMes(){
   carregarHistorico();
 }
 function getMesSelecionado(){
+  var ABREV=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  var padrao = ABREV[now.getMonth()]+'/'+now.getFullYear();
   var sel = document.getElementById('mesSeletor');
-  return sel ? sel.value : (['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'][now.getMonth()]+'/'+now.getFullYear());
+  if(!sel || !sel.value) return padrao;
+  return sel.value;
 }
 
 var FRASES=["Cada não te deixa mais perto do próximo sim.","Resultados são construídos dia a dia.","Renovar é mais barato que captar — cuide do que já é seu.","A meta de hoje é o mínimo de amanhã.","Consistência supera intensidade — apareça todos os dias.","Um cliente bem atendido traz cinco. Um mal atendido afasta dez.","Cada renovação é uma venda que não precisa ser feita do zero.","Não espere a motivação para agir. Aja para encontrar a motivação.","A equipe que treina junta, vence junta.","Foco, disciplina e resultado — nessa ordem."];
