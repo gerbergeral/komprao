@@ -29,8 +29,8 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
 .sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--txt3)}
 .sdot.ok{background:#22c55e}.sdot.err{background:#ef4444}.sdot.spin{background:#f59e0b;animation:pl 1s infinite}
 @keyframes pl{0%,100%{opacity:1}50%{opacity:.3}}
-.tabs{display:flex;gap:4px;background:rgba(255,255,255,.06);border-radius:14px;padding:5px;margin-bottom:1.1rem;border:1px solid var(--borda);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.tab{flex:1;min-width:fit-content;padding:8px 8px;border-radius:10px;font-size:10px;font-weight:700;cursor:pointer;color:var(--txt2);border:none;background:transparent;font-family:'Sora',sans-serif;transition:all .2s;text-align:center;white-space:nowrap}
+.tabs{display:flex;gap:3px;background:rgba(255,255,255,.06);border-radius:14px;padding:4px;margin-bottom:1.1rem;border:1px solid var(--borda);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.tab{flex:1;min-width:0;padding:7px 2px;border-radius:9px;font-size:10px;font-weight:700;cursor:pointer;color:var(--txt2);border:none;background:transparent;font-family:'Sora',sans-serif;transition:all .2s;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .tab.active{background:#fff;color:#0f1e35;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .tab.hid{display:none}
 .page{display:none}.page.active{display:block}
@@ -298,10 +298,9 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
 <div class="sync"><div class="sdot spin" id="sdot"></div><span id="stxt">Conectando...</span></div>
 
 <div class="tabs" id="tabsEl">
-  <button class="tab active" onclick="goTab('meta',this)">🎯 Meta Financeira</button>
+  <button class="tab active" onclick="goTab('meta',this)">🎯 Financeira</button>
   <button class="tab" onclick="goTab('retencao',this)">📊 Retenção</button>
-  <button class="tab" onclick="goTab('folha',this)">💰 Resultado Folha</button>
-  <button class="tab" onclick="goTab('produtos',this)">📦 Produtos</button>
+  <button class="tab" onclick="goTab('folha',this)">💰 Folha</button>
   <button class="tab" onclick="goTab('historico',this)">📋 Histórico</button>
   <button class="tab hid" id="tabColeta" onclick="goTab('preencher',this)">✏️ Preencher</button>
   <button class="tab hid" id="tabLider" onclick="goTab('lider',this)">👑 Líder</button>
@@ -391,6 +390,19 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
 
 <!-- ABA RETENÇÃO -->
 <div class="page" id="page-retencao">
+  <div class="card">
+    <div class="ctitle">Meta de renovações</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:4px">
+      <div><div style="font-size:12px;color:var(--txt2-b);margin-bottom:2px;font-weight:500">Taxa atual</div><div class="renov-pct" id="d_rpct">0%</div></div>
+      <div style="text-align:right"><div id="d_rst" style="font-weight:700;font-size:14px;color:var(--txt2-b)">—</div><div id="d_rflt" style="font-size:12px;color:var(--txt2-b);font-weight:500;margin-top:2px"></div></div>
+    </div>
+    <div class="renov-bar-bg"><div class="renov-bar-f" id="renovBar" style="width:0%"></div></div>
+    <div class="renov-badges">
+      <div class="rb" id="rb70"><div class="rb-tag">70% — básica</div><div class="rb-val">R$ 50</div><div class="rb-sub">por consultora</div></div>
+      <div class="rb" id="rb85"><div class="rb-tag">85% — cheia</div><div class="rb-val">R$ 100</div><div class="rb-sub">por consultora</div></div>
+    </div>
+  </div>
+  
   <div class="reta reta-vazio" id="retAlerta">
     <div class="reta-icon" id="retIcon">📊</div>
     <div class="reta-msg" id="retMsg">Aguardando dados</div>
@@ -431,18 +443,6 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
 
 <!-- ABA RESULTADO FOLHA -->
 <div class="page" id="page-folha">
-  <div class="card">
-    <div class="ctitle">Meta de renovações</div>
-    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:4px">
-      <div><div style="font-size:12px;color:var(--txt2-b);margin-bottom:2px;font-weight:500">Taxa atual</div><div class="renov-pct" id="d_rpct">0%</div></div>
-      <div style="text-align:right"><div id="d_rst" style="font-weight:700;font-size:14px;color:var(--txt2-b)">—</div><div id="d_rflt" style="font-size:12px;color:var(--txt2-b);font-weight:500;margin-top:2px"></div></div>
-    </div>
-    <div class="renov-bar-bg"><div class="renov-bar-f" id="renovBar" style="width:0%"></div></div>
-    <div class="renov-badges">
-      <div class="rb" id="rb70"><div class="rb-tag">70% — básica</div><div class="rb-val">R$ 50</div><div class="rb-sub">por consultora</div></div>
-      <div class="rb" id="rb85"><div class="rb-tag">85% — cheia</div><div class="rb-val">R$ 100</div><div class="rb-sub">por consultora</div></div>
-    </div>
-  </div>
   <div class="card">
     <div class="ctitle">Ganhos individuais</div>
     <div class="remg">
@@ -492,25 +492,6 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
 </div>
 
 <!-- ABA PRODUTOS -->
-<div class="page" id="page-produtos">
-  <div class="pb">
-    <div style="font-size:11px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">Produtos vendidos — total geral</div>
-    <div class="pb-top">
-      <div><div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:2px;font-weight:600">Total vendido</div><div class="pb-tot" id="p_total">R$ 0</div></div>
-      <div style="text-align:right"><div class="pb-cl">Crédito gerado (1%)</div><div class="pb-cv" id="p_cred">R$ 0,00</div></div>
-    </div>
-    <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:4px" id="p_break">CM R$ 0 · KA R$ 0 · KV R$ 0 · Outros R$ 0</div>
-  </div>
-  <div class="pg2">
-    <div class="pc"><div class="pcn"><div class="av al" style="width:30px;height:30px;font-size:10px;margin-bottom:0">KH</div><div style="font-size:14px;font-weight:700">Kézia Heloisa</div></div><div class="pcd"></div><div class="pcr"><span class="pcr-lbl">Total</span><span class="pcr-val" id="p_al">R$ 0</span></div><div class="pcct"><span class="pcct-lbl">Crédito (1%)</span><span class="pcct-val" id="pc_al">R$ 0,00</span></div></div>
-    <div class="pc"><div class="pcn"><div class="av da" style="width:30px;height:30px;font-size:10px;margin-bottom:0">LI</div><div style="font-size:14px;font-weight:700">Liriane</div></div><div class="pcd"></div><div class="pcr"><span class="pcr-lbl">Total</span><span class="pcr-val" id="p_da">R$ 0</span></div><div class="pcct"><span class="pcct-lbl">Crédito (1%)</span><span class="pcct-val" id="pc_da">R$ 0,00</span></div></div>
-    <div class="pcd"></div><div class="pcr"><span class="pcr-lbl">Total</span><span class="pcr-val" id="p_kv">R$ 0</span></div><div class="pcct"><span class="pcct-lbl">Crédito (1%)</span><span class="pcct-val" id="pc_kv">R$ 0,00</span></div></div>
-    <div class="pc out"><div class="pcn"><div class="av out2" style="width:30px;height:30px;font-size:10px;margin-bottom:0">+</div><div style="font-size:14px;font-weight:700">Outros</div></div><div class="nb" style="margin-bottom:8px">Sem crédito</div><div class="pcd"></div><div class="pcr"><span class="pcr-lbl">Total</span><span class="pcr-val" id="p_out">R$ 0</span></div></div>
-  </div>
-  <div style="font-size:11px;color:var(--txt3);text-align:center;margin-bottom:.875rem">* Créditos não entram na folha — lançar no sistema para uso.</div>
-</div>
-
-<!-- ABA HISTÓRICO -->
 <div class="page" id="page-historico">
   <div class="hbox">
     <div class="htop">
