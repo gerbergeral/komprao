@@ -29,8 +29,8 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
 .sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--txt3)}
 .sdot.ok{background:#22c55e}.sdot.err{background:#ef4444}.sdot.spin{background:#f59e0b;animation:pl 1s infinite}
 @keyframes pl{0%,100%{opacity:1}50%{opacity:.3}}
-.tabs{display:flex;gap:4px;background:rgba(255,255,255,.06);border-radius:14px;padding:5px;margin-bottom:1.1rem;border:1px solid var(--borda);overflow-x:auto}
-.tab{flex:1;min-width:0;padding:9px 4px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;color:var(--txt2);border:none;background:transparent;font-family:'Sora',sans-serif;transition:all .2s;text-align:center;white-space:nowrap}
+.tabs{display:flex;gap:4px;background:rgba(255,255,255,.06);border-radius:14px;padding:5px;margin-bottom:1.1rem;border:1px solid var(--borda);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tab{flex:1;min-width:fit-content;padding:8px 8px;border-radius:10px;font-size:10px;font-weight:700;cursor:pointer;color:var(--txt2);border:none;background:transparent;font-family:'Sora',sans-serif;transition:all .2s;text-align:center;white-space:nowrap}
 .tab.active{background:#fff;color:#0f1e35;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .tab.hid{display:none}
 .page{display:none}.page.active{display:block}
@@ -243,11 +243,11 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
 .cs2{font-size:14px;color:rgba(255,255,255,.85);margin-top:5px;font-family:'Sora',sans-serif;font-weight:600}
 .lider-card{background:linear-gradient(135deg,#1a0533,#2d0a5e);border-radius:18px;padding:1.3rem;margin-bottom:.875rem;border:1px solid rgba(167,139,250,.25)}
 .lider-titulo{font-size:11px;font-weight:700;color:rgba(167,139,250,.7);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
-.lider-total{background:linear-gradient(135deg,#2d0a5e,#5b21b6);border-radius:14px;padding:1.2rem;text-align:center;margin-bottom:.875rem;border:1px solid rgba(167,139,250,.4)}
+.lider-total{background:linear-gradient(135deg,#2d0a5e,#5b21b6);border-radius:14px;padding:1.2rem;text-align:center;margin-bottom:.875rem;border:1px solid rgba(167,139,250,.4);word-break:break-word}
 .lider-total-lbl{font-size:12px;color:rgba(255,255,255,.5);font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
 .lider-total-val{font-size:42px;font-weight:800;color:#c4b5fd}
 .lider-total-sub{font-size:12px;color:rgba(196,181,253,.6);margin-top:4px}
-.lg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:.875rem}
+.lg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:.875rem;width:100%}
 .li-item{background:rgba(255,255,255,.06);border-radius:14px;padding:1rem;border:1px solid rgba(167,139,250,.15);transition:all .3s}
 .li-item.on{background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)}
 .li-tag{font-size:10px;font-weight:700;color:rgba(167,139,250,.6);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
@@ -1180,9 +1180,9 @@ function calcLider() {
   var total = gi('sv') + gi('rv') + gi('kv_vend') + gi('ov'); // total financeiro
 
   // Novas + rematrículas de todas as consultoras + outros (para bônus planos)
+  // Planos: KH(s) + LI(r) + Outros(o) — AM/recepção não conta para bônus líder
   var totalPlanos = ii('s_novas') + ii('s_remat') +
                     ii('r_novas') + ii('r_remat') +
-                    ii('kv_novas') + ii('kv_remat') +
                     ii('o_novas') + ii('o_remat');
 
   var pctRenov = rt > 0 ? (rf / rt) * 100 : -1;
