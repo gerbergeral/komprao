@@ -544,13 +544,6 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
       <div class="campo"><label>Avaliações (qtd)</label><input type="number" id="kv_aval" value="0" min="0" oninput="recalc()"></div>
       <div class="campo"><label>Produtos (R$)</label><input type="number" id="kv_prod" value="0" min="0" oninput="recalc()"></div>
     </div>
-      <div class="cpd"></div>
-      <div class="campo"><label>Valor vendido (R$)</label><input type="number" id="kv_vend" value="0" min="0" oninput="recalc()"></div>
-      <div class="campo"><label>Novas vendas (qtd)</label><input type="number" id="kv_novas" value="0" min="0" oninput="recalc()"></div>
-      <div class="campo"><label>Rematrículas (qtd)</label><input type="number" id="kv_remat" value="0" min="0" oninput="recalc()"></div>
-      <div class="campo"><label>Avaliações (qtd)</label><input type="number" id="kv_aval" value="0" min="0" oninput="recalc()"></div>
-      <div class="campo"><label>Produtos (R$)</label><input type="number" id="kv_prod" value="0" min="0" oninput="recalc()"></div>
-    </div>
     <div class="cp out">
       <div class="cph"><div class="av out2" style="margin-bottom:0">+</div><div><div class="cn">Outros</div><div class="cs" style="margin-bottom:0">Líder / outros</div></div></div>
       <div class="nb">Sem bônus</div>
@@ -574,16 +567,20 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
     </div>
   </div>
 
-  <div class="sec">🔄 Renovações</div>
-  <div class="cp" style="max-width:380px">
-    <div class="campo"><label>Contratos vencendo no mês</label><input type="number" id="renovTotal" value="0" min="0" oninput="recalc()"></div>
-    <div class="campo"><label>Renovados até hoje</label><input type="number" id="renovFeitos" value="0" min="0" oninput="recalc()"></div>
-  </div>
-
-  <div class="sec">📊 Retenção</div>
-  <div class="cp" style="max-width:380px">
-    <div class="campo"><label>Ativos dia 01 do mês</label><input type="number" id="ativos_inicio" value="0" min="0" oninput="recalc()"></div>
-    <div class="campo"><label>Cancelamentos no mês</label><input type="number" id="cancelamentos" value="0" min="0" oninput="recalc()"></div>
+  <div class="sec">🔄 Renovações e Retenção</div>
+  <div class="cp">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--txt2-b);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">🔄 Renovações</div>
+        <div class="campo"><label>Contratos vencendo no mês</label><input type="number" id="renovTotal" value="0" min="0" oninput="recalc()"></div>
+        <div class="campo"><label>Renovados até hoje</label><input type="number" id="renovFeitos" value="0" min="0" oninput="recalc()"></div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--txt2-b);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">📊 Retenção</div>
+        <div class="campo"><label>Ativos dia 01 do mês</label><input type="number" id="ativos_inicio" value="0" min="0" oninput="recalc()"></div>
+        <div class="campo"><label>Cancelamentos no mês</label><input type="number" id="cancelamentos" value="0" min="0" oninput="recalc()"></div>
+      </div>
+    </div>
   </div>
 
   <div class="salvar-box">
@@ -649,7 +646,6 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
       <div id="insight_sug_lista"><div class="insight-item" style="color:rgba(255,255,255,.4);font-style:italic">Aguardando dados...</div></div>
     </div>
   </div>
-</div>
 
 <div class="rodape">Gerber Academia · Komprão · Sistema interno</div>
 </div>
