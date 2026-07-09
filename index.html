@@ -1006,7 +1006,7 @@ function recalcRem(){
 
 function recalcProd(){
   var sa=gi('sa_prod'),da=gi('ra_prod'),kv=gi('kv_prod'),out=gi('ou_prod');
-  _prodAL=sa;_prodDA=da;_prodKV=kv;
+  _prodAL=sa;_prodDA=da;
   var total=sa+da+kv+out;
   s('p_total',fmt(total));s('p_cred',fmtd((sa+da+kv)*0.01));
   s('p_al',fmt(sa));s('pc_al',fmtd(sa*0.01));
