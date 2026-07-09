@@ -1178,9 +1178,17 @@ async function carregarHistorico(){
     if(!regs||!regs.length){list.innerHTML='<div class="hvazio">Nenhum registro ainda</div>';ss('ok','Conectado');return;}
     var htm='';
     regs.forEach(function(r){
+      // Formatar hora: remover formato ISO do Sheets
       var hora=r.hora||'';
       if(hora.includes('T')||hora.includes('1899'))hora='';
-      htm+='<div class="hi"><div><div class="hin">'+r.nome+'</div><div class="hid">'+(r.data||'')+(hora?' às '+hora:'')+'</div></div><div><div class="hit">'+fmt(r.total||0)+'</div><div class="hiv">KH: '+fmt(parseFloat(r.sv)||0)+' · LI: '+fmt(parseFloat(r.rv)||0)+'</div></div></div>';
+      // Formatar data: converter ISO para dd/mm/aaaa se necessário
+      var data=r.data||'';
+      if(data.includes('T')){
+        var d=new Date(data);
+        data=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();
+        if(!hora){hora=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
+      }
+      htm+='<div class="hi"><div><div class="hin">'+r.nome+'</div><div class="hid">'+data+(hora?' às '+hora:'')+'</div></div><div><div class="hit">'+fmt(r.total||0)+'</div><div class="hiv">KH: '+fmt(parseFloat(r.sv)||0)+' · LI: '+fmt(parseFloat(r.rv)||0)+'</div></div></div>';
     });
     list.innerHTML=htm;ss('ok','Conectado ao Google Sheets');
   }catch(e){list.innerHTML='<div class="hvazio">Erro ao carregar</div>';ss('err','Erro de conexão');}
@@ -1196,6 +1204,8 @@ async function carregarUltimoSalvo(){
     if(regs&&regs.length>0){
       var r=regs[0];applySnap(r);
       var hora=r.hora||'';if(hora.includes('T')||hora.includes('1899'))hora='';
+      var dataUlt=r.data||'';
+      if(dataUlt.includes('T')){var dU=new Date(dataUlt);dataUlt=String(dU.getDate()).padStart(2,'0')+'/'+String(dU.getMonth()+1).padStart(2,'0')+'/'+dU.getFullYear();if(!hora)hora=String(dU.getHours()).padStart(2,'0')+':'+String(dU.getMinutes()).padStart(2,'0');}
       ss('ok','Sincronizado · '+(r.nome||'?')+(hora?' às '+hora:''));
       var ui=document.getElementById('ultimoSalvo');if(ui)ui.innerHTML='Último: <strong>'+(r.nome||'?')+'</strong>'+(hora?' às <strong>'+hora+'</strong>':'');
       var cu=document.getElementById('ch_ult');if(cu)cu.textContent='Último: '+(r.nome||'?')+(hora?' às '+hora:'');
