@@ -829,6 +829,7 @@ function goTab(n,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+n).classList.add('active');
   el.classList.add('active');
+  if(n==='historico') carregarHistorico();
 }
 
 // calcBV: blocos de 15 completos = R$100 cada; excedente >= 10 → R$5/venda
