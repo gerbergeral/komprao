@@ -29,8 +29,8 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
 .sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:var(--txt3)}
 .sdot.ok{background:#22c55e}.sdot.err{background:#ef4444}.sdot.spin{background:#f59e0b;animation:pl 1s infinite}
 @keyframes pl{0%,100%{opacity:1}50%{opacity:.3}}
-.tabs{display:flex;gap:3px;background:rgba(255,255,255,.06);border-radius:14px;padding:4px;margin-bottom:1.1rem;border:1px solid var(--borda);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-.tab{flex:1;min-width:0;padding:7px 2px;border-radius:9px;font-size:10px;font-weight:700;cursor:pointer;color:var(--txt2);border:none;background:transparent;font-family:'Sora',sans-serif;transition:all .2s;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tabs{display:flex;gap:4px;background:rgba(255,255,255,.06);border-radius:14px;padding:5px;margin-bottom:1.1rem;border:1px solid var(--borda);overflow-x:auto}
+.tab{flex:1;min-width:0;padding:9px 4px;border-radius:10px;font-size:11px;font-weight:700;cursor:pointer;color:var(--txt2);border:none;background:transparent;font-family:'Sora',sans-serif;transition:all .2s;text-align:center;white-space:nowrap}
 .tab.active{background:#fff;color:#0f1e35;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .tab.hid{display:none}
 .page{display:none}.page.active{display:block}
@@ -241,32 +241,6 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
 @keyframes cb{0%{transform:translateY(0) rotate(-5deg)}100%{transform:translateY(-15px) rotate(5deg)}}
 .cm{font-size:22px;font-weight:800;color:#fff;text-shadow:0 2px 20px rgba(0,0,0,.5);margin-top:10px;font-family:'Sora',sans-serif}
 .cs2{font-size:14px;color:rgba(255,255,255,.85);margin-top:5px;font-family:'Sora',sans-serif;font-weight:600}
-.lider-card{background:linear-gradient(135deg,#1a0533,#2d0a5e);border-radius:18px;padding:1.3rem;margin-bottom:.875rem;border:1px solid rgba(167,139,250,.25)}
-.lider-titulo{font-size:11px;font-weight:700;color:rgba(167,139,250,.7);letter-spacing:.1em;text-transform:uppercase;margin-bottom:12px}
-.lider-total{background:linear-gradient(135deg,#2d0a5e,#5b21b6);border-radius:14px;padding:1.2rem;text-align:center;margin-bottom:.875rem;border:1px solid rgba(167,139,250,.4);word-break:break-word}
-.lider-total-lbl{font-size:12px;color:rgba(255,255,255,.5);font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
-.lider-total-val{font-size:42px;font-weight:800;color:#c4b5fd}
-.lider-total-sub{font-size:12px;color:rgba(196,181,253,.6);margin-top:4px}
-.lg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:.875rem;width:100%}
-.li-item{background:rgba(255,255,255,.06);border-radius:14px;padding:1rem;border:1px solid rgba(167,139,250,.15);transition:all .3s}
-.li-item.on{background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.4)}
-.li-tag{font-size:10px;font-weight:700;color:rgba(167,139,250,.6);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
-.li-item.on .li-tag{color:#c4b5fd}
-.li-val{font-size:22px;font-weight:800;color:rgba(255,255,255,.2)}
-.li-item.on .li-val{color:#c4b5fd}
-.li-sub{font-size:11px;color:rgba(255,255,255,.3);margin-top:3px}
-.li-item.on .li-sub{color:rgba(196,181,253,.6)}
-.li-prox{font-size:11px;color:rgba(245,158,11,.7);margin-top:4px;font-weight:600}
-.insight-card{border-radius:14px;padding:1.1rem;margin-bottom:.875rem;border:1px solid}
-.insight-bem{background:rgba(22,163,74,.1);border-color:rgba(22,163,74,.3)}
-.insight-atenc{background:rgba(220,38,38,.1);border-color:rgba(220,38,38,.3)}
-.insight-sug{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3)}
-.insight-titulo{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px}
-.insight-bem .insight-titulo{color:#4ade80}
-.insight-atenc .insight-titulo{color:#f87171}
-.insight-sug .insight-titulo{color:#fbbf24}
-.insight-item{font-size:12px;line-height:1.6;color:rgba(255,255,255,.8);padding:4px 0;border-bottom:1px solid rgba(255,255,255,.06)}
-.insight-item:last-child{border:none}
 </style>
 </head>
 <body>
@@ -298,12 +272,12 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
 <div class="sync"><div class="sdot spin" id="sdot"></div><span id="stxt">Conectando...</span></div>
 
 <div class="tabs" id="tabsEl">
-  <button class="tab active" onclick="goTab('meta',this)">🎯 Financeira</button>
+  <button class="tab active" onclick="goTab('meta',this)">🎯 Meta Financeira</button>
   <button class="tab" onclick="goTab('retencao',this)">📊 Retenção</button>
-  <button class="tab" onclick="goTab('folha',this)">💰 Folha</button>
+  <button class="tab" onclick="goTab('folha',this)">💰 Resultado Folha</button>
+  <button class="tab" onclick="goTab('produtos',this)">📦 Produtos</button>
   <button class="tab" onclick="goTab('historico',this)">📋 Histórico</button>
   <button class="tab hid" id="tabColeta" onclick="goTab('preencher',this)">✏️ Preencher</button>
-  <button class="tab hid" id="tabLider" onclick="goTab('lider',this)">👑 Líder</button>
 </div>
 
 <!-- ABA META -->
@@ -390,19 +364,6 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
 
 <!-- ABA RETENÇÃO -->
 <div class="page" id="page-retencao">
-  <div class="card">
-    <div class="ctitle">Meta de renovações</div>
-    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:4px">
-      <div><div style="font-size:12px;color:var(--txt2-b);margin-bottom:2px;font-weight:500">Taxa atual</div><div class="renov-pct" id="d_rpct">0%</div></div>
-      <div style="text-align:right"><div id="d_rst" style="font-weight:700;font-size:14px;color:var(--txt2-b)">—</div><div id="d_rflt" style="font-size:12px;color:var(--txt2-b);font-weight:500;margin-top:2px"></div></div>
-    </div>
-    <div class="renov-bar-bg"><div class="renov-bar-f" id="renovBar" style="width:0%"></div></div>
-    <div class="renov-badges">
-      <div class="rb" id="rb70"><div class="rb-tag">70% — básica</div><div class="rb-val">R$ 50</div><div class="rb-sub">por consultora</div></div>
-      <div class="rb" id="rb85"><div class="rb-tag">85% — cheia</div><div class="rb-val">R$ 100</div><div class="rb-sub">por consultora</div></div>
-    </div>
-  </div>
-  
   <div class="reta reta-vazio" id="retAlerta">
     <div class="reta-icon" id="retIcon">📊</div>
     <div class="reta-msg" id="retMsg">Aguardando dados</div>
@@ -443,6 +404,18 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
 
 <!-- ABA RESULTADO FOLHA -->
 <div class="page" id="page-folha">
+  <div class="card">
+    <div class="ctitle">Meta de renovações</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:4px">
+      <div><div style="font-size:12px;color:var(--txt2-b);margin-bottom:2px;font-weight:500">Taxa atual</div><div class="renov-pct" id="d_rpct">0%</div></div>
+      <div style="text-align:right"><div id="d_rst" style="font-weight:700;font-size:14px;color:var(--txt2-b)">—</div><div id="d_rflt" style="font-size:12px;color:var(--txt2-b);font-weight:500;margin-top:2px"></div></div>
+    </div>
+    <div class="renov-bar-bg"><div class="renov-bar-f" id="renovBar" style="width:0%"></div></div>
+    <div class="renov-badges">
+      <div class="rb" id="rb70"><div class="rb-tag">70% — básica</div><div class="rb-val">R$ 50</div><div class="rb-sub">por consultora</div></div>
+      <div class="rb" id="rb85"><div class="rb-tag">85% — cheia</div><div class="rb-val">R$ 100</div><div class="rb-sub">por consultora</div></div>
+    </div>
+  </div>
   <div class="card">
     <div class="ctitle">Ganhos individuais</div>
     <div class="remg">
@@ -492,6 +465,25 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
 </div>
 
 <!-- ABA PRODUTOS -->
+<div class="page" id="page-produtos">
+  <div class="pb">
+    <div style="font-size:11px;color:rgba(255,255,255,.5);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">Produtos vendidos — total geral</div>
+    <div class="pb-top">
+      <div><div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:2px;font-weight:600">Total vendido</div><div class="pb-tot" id="p_total">R$ 0</div></div>
+      <div style="text-align:right"><div class="pb-cl">Crédito gerado (1%)</div><div class="pb-cv" id="p_cred">R$ 0,00</div></div>
+    </div>
+    <div style="font-size:11px;color:rgba(255,255,255,.4);margin-top:4px" id="p_break">CM R$ 0 · KA R$ 0 · KV R$ 0 · Outros R$ 0</div>
+  </div>
+  <div class="pg2">
+    <div class="pc"><div class="pcn"><div class="av al" style="width:30px;height:30px;font-size:10px;margin-bottom:0">KH</div><div style="font-size:14px;font-weight:700">Kézia Heloisa</div></div><div class="pcd"></div><div class="pcr"><span class="pcr-lbl">Total</span><span class="pcr-val" id="p_al">R$ 0</span></div><div class="pcct"><span class="pcct-lbl">Crédito (1%)</span><span class="pcct-val" id="pc_al">R$ 0,00</span></div></div>
+    <div class="pc"><div class="pcn"><div class="av da" style="width:30px;height:30px;font-size:10px;margin-bottom:0">LI</div><div style="font-size:14px;font-weight:700">Liriane</div></div><div class="pcd"></div><div class="pcr"><span class="pcr-lbl">Total</span><span class="pcr-val" id="p_da">R$ 0</span></div><div class="pcct"><span class="pcct-lbl">Crédito (1%)</span><span class="pcct-val" id="pc_da">R$ 0,00</span></div></div>
+    <div class="pc"><div class="pcn"><div class="av ky" style="width:30px;height:30px;font-size:10px;margin-bottom:0">AM</div><div style="font-size:14px;font-weight:700">Amabile</div></div><div class="pcd"></div><div class="pcr"><span class="pcr-lbl">Total</span><span class="pcr-val" id="p_kv">R$ 0</span></div><div class="pcct"><span class="pcct-lbl">Crédito (1%)</span><span class="pcct-val" id="pc_kv">R$ 0,00</span></div></div>
+    <div class="pc out"><div class="pcn"><div class="av out2" style="width:30px;height:30px;font-size:10px;margin-bottom:0">+</div><div style="font-size:14px;font-weight:700">Outros</div></div><div class="nb" style="margin-bottom:8px">Sem crédito</div><div class="pcd"></div><div class="pcr"><span class="pcr-lbl">Total</span><span class="pcr-val" id="p_out">R$ 0</span></div></div>
+  </div>
+  <div style="font-size:11px;color:var(--txt3);text-align:center;margin-bottom:.875rem">* Créditos não entram na folha — lançar no sistema para uso.</div>
+</div>
+
+<!-- ABA HISTÓRICO -->
 <div class="page" id="page-historico">
   <div class="hbox">
     <div class="htop">
@@ -515,7 +507,7 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
   </div>
 
   <div class="sec">🎯 Vendas por consultora</div>
-  <div class="cg3" style="grid-template-columns:repeat(2,1fr)">
+  <div class="cg3" style="grid-template-columns:repeat(4,1fr)">
     <div class="cp">
       <div class="cph"><div class="av al" style="margin-bottom:0">KH</div><div><div class="cn">Kézia Heloisa</div></div></div>
       <div class="cpd"></div>
@@ -537,6 +529,13 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
     <div class="cp out">
       <div class="cph"><div class="av out2" style="margin-bottom:0">AM</div><div><div class="cn">Amabile</div><div class="cs" style="margin-bottom:0">Recepção</div></div></div>
       <div class="nb">Sem bônus</div>
+      <div class="cpd"></div>
+      <div class="campo"><label>Valor vendido (R$)</label><input type="number" id="kv_vend" value="0" min="0" oninput="recalc()"></div>
+      <div class="campo"><label>Novas vendas (qtd)</label><input type="number" id="kv_novas" value="0" min="0" oninput="recalc()"></div>
+      <div class="campo"><label>Rematrículas (qtd)</label><input type="number" id="kv_remat" value="0" min="0" oninput="recalc()"></div>
+      <div class="campo"><label>Avaliações (qtd)</label><input type="number" id="kv_aval" value="0" min="0" oninput="recalc()"></div>
+      <div class="campo"><label>Produtos (R$)</label><input type="number" id="kv_prod" value="0" min="0" oninput="recalc()"></div>
+    </div>
       <div class="cpd"></div>
       <div class="campo"><label>Valor vendido (R$)</label><input type="number" id="kv_vend" value="0" min="0" oninput="recalc()"></div>
       <div class="campo"><label>Novas vendas (qtd)</label><input type="number" id="kv_novas" value="0" min="0" oninput="recalc()"></div>
@@ -567,20 +566,16 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
     </div>
   </div>
 
-  <div class="sec">🔄 Renovações e Retenção</div>
-  <div class="cp">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
-      <div>
-        <div style="font-size:11px;font-weight:700;color:var(--txt2-b);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">🔄 Renovações</div>
-        <div class="campo"><label>Contratos vencendo no mês</label><input type="number" id="renovTotal" value="0" min="0" oninput="recalc()"></div>
-        <div class="campo"><label>Renovados até hoje</label><input type="number" id="renovFeitos" value="0" min="0" oninput="recalc()"></div>
-      </div>
-      <div>
-        <div style="font-size:11px;font-weight:700;color:var(--txt2-b);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">📊 Retenção</div>
-        <div class="campo"><label>Ativos dia 01 do mês</label><input type="number" id="ativos_inicio" value="0" min="0" oninput="recalc()"></div>
-        <div class="campo"><label>Cancelamentos no mês</label><input type="number" id="cancelamentos" value="0" min="0" oninput="recalc()"></div>
-      </div>
-    </div>
+  <div class="sec">🔄 Renovações</div>
+  <div class="cp" style="max-width:380px">
+    <div class="campo"><label>Contratos vencendo no mês</label><input type="number" id="renovTotal" value="0" min="0" oninput="recalc()"></div>
+    <div class="campo"><label>Renovados até hoje</label><input type="number" id="renovFeitos" value="0" min="0" oninput="recalc()"></div>
+  </div>
+
+  <div class="sec">📊 Retenção</div>
+  <div class="cp" style="max-width:380px">
+    <div class="campo"><label>Ativos dia 01 do mês</label><input type="number" id="ativos_inicio" value="0" min="0" oninput="recalc()"></div>
+    <div class="campo"><label>Cancelamentos no mês</label><input type="number" id="cancelamentos" value="0" min="0" oninput="recalc()"></div>
   </div>
 
   <div class="salvar-box">
@@ -592,60 +587,6 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
     <div class="salvar-ult" id="ultimoSalvo">—</div>
   </div>
 </div>
-
-<!-- ABA LÍDER (só com senha) -->
-<div class="page" id="page-lider">
-  <div class="lider-total" id="liderTotalCard">
-    <div class="lider-total-lbl">💰 Seus ganhos variáveis estimados</div>
-    <div class="lider-total-val" id="lider_total">R$ 0</div>
-    <div class="lider-total-sub" id="lider_total_sub">Preencha os dados para calcular</div>
-  </div>
-
-  <div class="lider-card">
-    <div class="lider-titulo">📋 Detalhamento dos ganhos</div>
-    <div class="lg">
-      <div class="li-item" id="li_renov">
-        <div class="li-tag">🔄 Renovações</div>
-        <div class="li-val" id="li_renov_val">R$ 0</div>
-        <div class="li-sub" id="li_renov_sub">Aguardando dados</div>
-        <div class="li-prox" id="li_renov_prox"></div>
-      </div>
-      <div class="li-item" id="li_cancel">
-        <div class="li-tag">❌ Cancelamentos</div>
-        <div class="li-val" id="li_cancel_val">R$ 0</div>
-        <div class="li-sub" id="li_cancel_sub">Aguardando dados</div>
-        <div class="li-prox" id="li_cancel_prox"></div>
-      </div>
-      <div class="li-item" id="li_planos">
-        <div class="li-tag">📅 Planos vendidos</div>
-        <div class="li-val" id="li_planos_val">R$ 0</div>
-        <div class="li-sub" id="li_planos_sub">Aguardando dados</div>
-        <div class="li-prox" id="li_planos_prox"></div>
-      </div>
-      <div class="li-item" id="li_meta">
-        <div class="li-tag">🎯 Meta financeira</div>
-        <div class="li-val" id="li_meta_val">R$ 0</div>
-        <div class="li-sub" id="li_meta_sub">Aguardando dados</div>
-        <div class="li-prox" id="li_meta_prox"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="lider-card">
-    <div class="lider-titulo">📊 Análise de desempenho</div>
-    <div class="insight-card insight-bem" id="insight_bem">
-      <div class="insight-titulo">✅ O que está indo bem</div>
-      <div id="insight_bem_lista"><div class="insight-item" style="color:rgba(255,255,255,.4);font-style:italic">Preencha os dados para ver os insights</div></div>
-    </div>
-    <div class="insight-card insight-atenc" id="insight_atenc">
-      <div class="insight-titulo">⚠️ Pontos de atenção</div>
-      <div id="insight_atenc_lista"><div class="insight-item" style="color:rgba(255,255,255,.4);font-style:italic">Aguardando dados...</div></div>
-    </div>
-    <div class="insight-card insight-sug" id="insight_sug">
-      <div class="insight-titulo">💡 Sugestão para os próximos dias</div>
-      <div id="insight_sug_lista"><div class="insight-item" style="color:rgba(255,255,255,.4);font-style:italic">Aguardando dados...</div></div>
-    </div>
-  </div>
 
 <div class="rodape">Gerber Academia · Komprão · Sistema interno</div>
 </div>
@@ -829,7 +770,6 @@ function goTab(n,el){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById('page-'+n).classList.add('active');
   el.classList.add('active');
-  if(n==='historico') carregarHistorico();
 }
 
 // calcBV: blocos de 15 completos = R$100 cada; excedente >= 10 → R$5/venda
@@ -843,7 +783,7 @@ function calcMetaDiaria() {
   // Proteção: não executar se elementos ainda não existem no DOM
   if(!document.getElementById('md_meta1')) return;
 
-  var totalVendido = (gi('sv')||0) + (gi('rv')||0) + (gi('kv_vend')||0) + (gi('ov')||0);
+  var totalVendido = (gi('sv')||0) + (gi('rv')||0) + (gi('kv_vend')||0) + (gi('ov')||0);  // AM incluso na meta
 
   // Usar mês selecionado se disponível
   var mesSel = null;
@@ -915,7 +855,7 @@ function calcMetaDiaria() {
   }
 }
 
-function recalc(){recalcMeta();recalcRem();recalcProd();recalcRet();calcMetaDiaria();calcLider();}
+function recalc(){recalcMeta();recalcRem();recalcProd();recalcRet();calcMetaDiaria();}
 
 function recalcMeta(){
   var sv=gi('sv'),rv=gi('rv'),kvv=gi('kv_vend'),ov=gi('ov');
@@ -991,7 +931,7 @@ function recalcRem(){
     s('d_rflt',pct<85?'Faltam '+(Math.ceil(rt*0.85)-rf)+' renovações para 85%':'');
   }
   var rb=rt>0?(pct>=85?100:pct>=70?50:0):0;
-  // KH - Kézia Heloisa
+  // Kézia Heloisa
   var sn=ii('s_novas'),sr=ii('s_remat'),sa=ii('s_aval'),sbv=calcBV(sn+sr),sba=sa*10;
   _remAL=sbv+rb+sba;
   s('r_al_qtd',(sn+sr)+' vendas');
@@ -1073,7 +1013,7 @@ function recalcRet(){
 function atualizarFolha(){
   var bonusTotal = _bonusMeta; // valor total desbloqueado (400/700/1000)
   var svAL = gi('sv'), svDA = gi('rv');
-  var totalConsultoras = svAL + svDA; // AM(recepção) e Outros não entram no rateio
+  var totalConsultoras = svAL + svDA; // AM recepção não entra no bônus // Outros não entra no rateio
 
   // Bônus proporcional: cada uma recebe (sua venda / total consultoras) * bonusTotal
   var mbAL = totalConsultoras > 0 ? Math.round((svAL / totalConsultoras) * bonusTotal) : 0;
@@ -1084,7 +1024,7 @@ function atualizarFolha(){
   var fd=function(v){return v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});};
   s('f_al_c',fd(_prodAL*0.01));s('f_da_c',fd(_prodDA*0.01));
 
-  // Atualizar ranking (só KH e LI — AM é recepção)
+  // Atualizar ranking (só KH e LI)
   atualizarRanking(svAL, svDA, totalConsultoras, bonusTotal, mbAL, mbDA);
 }
 
@@ -1145,141 +1085,6 @@ function atualizarRanking(svAL, svDA, total, bonusTotal, mbAL, mbDA) {
   });
 }
 
-// ============================================================
-// GANHOS DA LÍDER — visível só com senha
-// ============================================================
-function calcLider() {
-  // Só calcular se a aba líder existir e o usuário estiver autenticado
-  if(!document.getElementById('lider_total')) return;
-
-  // === DADOS BASE ===
-  var rt = ii('renovTotal'), rf = ii('renovFeitos');
-  var ini = ii('ativos_inicio'), cancel = ii('cancelamentos');
-  var total = gi('sv') + gi('rv') + gi('kv_vend') + gi('ov'); // total financeiro
-
-  // Novas + rematrículas de todas as consultoras + outros (para bônus planos)
-  // Planos: KH(s) + LI(r) + Outros(o) — AM/recepção não conta para bônus líder
-  var totalPlanos = ii('s_novas') + ii('s_remat') +
-                    ii('r_novas') + ii('r_remat') +
-                    ii('o_novas') + ii('o_remat');
-
-  var pctRenov = rt > 0 ? (rf / rt) * 100 : -1;
-  var pctCancel = ini > 0 ? (cancel / ini) * 100 : -1;
-
-  // === BÔNUS RENOVAÇÕES ===
-  var bonRenov = 0;
-  var lblRenov = '', proxRenov = '';
-  if(pctRenov < 0) { lblRenov = 'Preencha contratos vencendo'; }
-  else if(pctRenov >= 85) { bonRenov = 200; lblRenov = pctRenov.toFixed(1)+'% renovados — meta cheia ✅'; }
-  else if(pctRenov >= 70) { bonRenov = 100; lblRenov = pctRenov.toFixed(1)+'% renovados — meta básica'; proxRenov = 'Faltam '+(Math.ceil(rt*0.85)-rf)+' renovações para R$ 200'; }
-  else { bonRenov = 0; lblRenov = pctRenov.toFixed(1)+'% renovados — abaixo da meta'; proxRenov = 'Faltam '+(Math.ceil(rt*0.70)-rf)+' renovações para R$ 100'; }
-
-  // === BÔNUS CANCELAMENTOS ===
-  var bonCancel = 0;
-  var lblCancel = '', proxCancel = '';
-  if(pctCancel < 0) { lblCancel = 'Preencha ativos dia 01'; }
-  else if(pctCancel <= 3) { bonCancel = 200; lblCancel = pctCancel.toFixed(1)+'% de cancelamentos — excelente ✅'; }
-  else if(pctCancel <= 4) { bonCancel = 100; lblCancel = pctCancel.toFixed(1)+'% de cancelamentos — meta básica'; proxCancel = 'Reduza '+(cancel-Math.floor(ini*0.03))+' cancelamento(s) para R$ 200'; }
-  else { bonCancel = 0; lblCancel = pctCancel.toFixed(1)+'% de cancelamentos — acima da meta'; proxCancel = 'Limite: '+Math.floor(ini*0.04)+' cancelamentos para R$ 100'; }
-
-  // === BÔNUS PLANOS VENDIDOS ===
-  var escalaPlanos = [
-    [220,1000],[200,900],[180,800],[160,700],[140,600],
-    [120,500],[100,400],[80,300],[60,200],[0,0]
-  ];
-  var bonPlanos = 0, proxPlanos = '';
-  for(var i=0; i<escalaPlanos.length; i++) {
-    if(totalPlanos >= escalaPlanos[i][0]) { bonPlanos = escalaPlanos[i][1]; break; }
-  }
-  // Próximo nível
-  for(var i=escalaPlanos.length-1; i>=0; i--) {
-    if(escalaPlanos[i][0] > totalPlanos) {
-      proxPlanos = 'Faltam '+(escalaPlanos[i][0]-totalPlanos)+' planos para R$ '+escalaPlanos[i][1];
-      break;
-    }
-  }
-  var lblPlanos = totalPlanos > 0 ? totalPlanos+' planos vendidos' : 'Preencha os dados';
-
-  // === BÔNUS META FINANCEIRA ===
-  var bonMeta = total>=SU ? 1000 : total>=M2 ? 700 : total>=M1 ? 400 : 0;
-  var lblMeta = bonMeta > 0 ? fmt(total)+' — bônus integral ✅' : 'Meta ainda não batida';
-  var proxMeta = bonMeta===0 ? 'Faltam '+fmt(M1-total)+' para R$ 400' :
-                 bonMeta===400 ? 'Faltam '+fmt(M2-total)+' para R$ 700' :
-                 bonMeta===700 ? 'Faltam '+fmt(SU-total)+' para R$ 1.000' : '';
-
-  // === TOTAL ===
-  var totalLider = bonRenov + bonCancel + bonPlanos + bonMeta;
-
-  // === ATUALIZAR UI ===
-  function sl(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
-  function sc2(id,cls){var e=document.getElementById(id);if(e){e.className=e.className.replace(/on/,'').trim();if(cls)e.classList.add('on');}}
-
-  sl('lider_total', fmt(totalLider));
-  sl('lider_total_sub', totalLider > 0 ? 'soma de todos os bônus do mês' : 'Preencha os dados para calcular');
-
-  // Renovações
-  sl('li_renov_val', bonRenov > 0 ? fmt(bonRenov) : 'R$ 0');
-  sl('li_renov_sub', lblRenov);
-  sl('li_renov_prox', proxRenov);
-  sc2('li_renov', bonRenov > 0);
-
-  // Cancelamentos
-  sl('li_cancel_val', bonCancel > 0 ? fmt(bonCancel) : 'R$ 0');
-  sl('li_cancel_sub', lblCancel);
-  sl('li_cancel_prox', proxCancel);
-  sc2('li_cancel', bonCancel > 0);
-
-  // Planos
-  sl('li_planos_val', bonPlanos > 0 ? fmt(bonPlanos) : 'R$ 0');
-  sl('li_planos_sub', lblPlanos);
-  sl('li_planos_prox', proxPlanos);
-  sc2('li_planos', bonPlanos > 0);
-
-  // Meta financeira
-  sl('li_meta_val', bonMeta > 0 ? fmt(bonMeta) : 'R$ 0');
-  sl('li_meta_sub', lblMeta);
-  sl('li_meta_prox', proxMeta);
-  sc2('li_meta', bonMeta > 0);
-
-  // === INSIGHTS ===
-  var bem = [], atenc = [], sug = [];
-
-  // Análise renovações
-  if(pctRenov >= 85) bem.push('Taxa de renovação excelente: '+pctRenov.toFixed(1)+'% — equipe retendo bem os alunos.');
-  else if(pctRenov >= 70) { atenc.push('Renovação em '+pctRenov.toFixed(1)+'% — faltam '+(Math.ceil(rt*0.85)-rf)+' renovações para o bônus cheio.'); sug.push('Acione os contratos vencendo: ligue pessoalmente para quem ainda não renovou.'); }
-  else if(pctRenov >= 0) { atenc.push('Renovação abaixo de 70% ('+pctRenov.toFixed(1)+'%) — sem bônus no momento.'); sug.push('Prioridade máxima: identifique os contratos vencidos e faça contato hoje.'); }
-
-  // Análise cancelamentos
-  if(pctCancel >= 0 && pctCancel <= 3) bem.push('Cancelamentos sob controle: '+pctCancel.toFixed(1)+'% — excelente retenção da base.');
-  else if(pctCancel > 3 && pctCancel <= 4) { atenc.push('Cancelamentos em '+pctCancel.toFixed(1)+'% — reduza '+(cancel-Math.floor(ini*0.03))+' para atingir o bônus cheio.'); sug.push('Investigue os motivos dos cancelamentos recentes — um contato de retorno pode reverter.'); }
-  else if(pctCancel > 4) { atenc.push('Cancelamentos acima de 4% ('+pctCancel.toFixed(1)+'%) — sem bônus no momento.'); sug.push('Implemente protocolo de alerta precoce: clientes com baixa frequência merecem atenção antes de cancelar.'); }
-
-  // Análise planos
-  if(totalPlanos >= 120) bem.push(totalPlanos+' planos vendidos no mês — equipe com ótimo volume.');
-  else if(totalPlanos >= 60) { sug.push('Com '+totalPlanos+' planos, faltam '+(escalaPlanos.find(function(e){return e[0]>totalPlanos;})||[220])[0]-totalPlanos+' planos para subir um nível de bônus.'); }
-  else if(totalPlanos > 0) { atenc.push('Volume de planos ainda baixo ('+totalPlanos+'). Meta mínima de bônus: 60 planos.'); sug.push('Foque em conversão: cada nova matrícula e rematrícula conta para o bônus de planos.'); }
-
-  // Análise meta financeira
-  if(total >= SU) bem.push('Super meta financeira atingida! Bônus integral de R$ 1.000 garantido.');
-  else if(total >= M2) bem.push('Meta 2 atingida! Faltam apenas '+fmt(SU-total)+' para a super meta e R$ 1.000.');
-  else if(total >= M1) { atenc.push('Meta inicial batida, mas faltam '+fmt(M2-total)+' para o bônus de R$ 700.'); sug.push('Com a meta 1 batida, o foco agora é empurrar a equipe para a meta 2 — R$ 300 a mais no bônus dela.'); }
-  else { atenc.push('Meta financeira ainda não atingida — faltam '+fmt(M1-total)+' para o bônus de R$ 400.'); sug.push('Identifique quem da equipe tem pipeline quente e ajude a fechar nos próximos dias úteis.'); }
-
-  // Defaults se vazio
-  if(bem.length===0) bem.push('Continue coletando dados — os pontos positivos aparecerão aqui.');
-  if(atenc.length===0) atenc.push('Nenhum ponto crítico identificado no momento.');
-  if(sug.length===0) sug.push('Mantenha o ritmo — os dados indicam bom desempenho geral.');
-
-  function renderLista(id, itens) {
-    var el = document.getElementById(id);
-    if(!el) return;
-    el.innerHTML = itens.map(function(i){ return '<div class="insight-item">'+i+'</div>'; }).join('');
-  }
-  renderLista('insight_bem_lista', bem);
-  renderLista('insight_atenc_lista', atenc);
-  renderLista('insight_sug_lista', sug);
-}
-
 function getSnap(){
   // Mapeamento para colunas existentes no Sheets:
   // ab_prod → valor vendido Amabile (coluna disponível no cabeçalho padrão)
@@ -1312,16 +1117,12 @@ function applySnap(v){
   // Remapear colunas do Sheets → campos visuais Amabile
   // ab_prod salvo = valor vendido Amabile; op = planos anuais Amabile
   // o_novas/o_remat/o_aval = qtd vendas Amabile
+  // AM: ab_prod do Sheets → kv_vend no HTML
   if(v.ab_prod!==undefined) v.kv_vend = v.ab_prod;
-  if(v.op!==undefined) v.kv_plan = v.op;
-  if(v.o_novas!==undefined) v.kv_novas = v.o_novas;
-  if(v.o_remat!==undefined) v.kv_remat = v.o_remat;
-  if(v.o_aval!==undefined)  v.kv_aval  = v.o_aval;
-  // Campos numéricos normais
-  var campos=['sv','rv','ov','sp','rp','renovTotal','renovFeitos',
+  var campos=['sv','rv','ov','sp','rp','op','renovTotal','renovFeitos',
     's_novas','s_remat','s_aval','r_novas','r_remat','r_aval',
-    'sa_prod','ra_prod','ou_prod','ativos_inicio','cancelamentos',
-    'kv_vend','kv_novas','kv_remat','kv_aval','kv_plan','kv_prod'];
+    'o_novas','o_remat','o_aval','sa_prod','ra_prod','ou_prod','ativos_inicio','cancelamentos',
+    'kv_vend','kv_novas','kv_remat','kv_aval','kv_prod'];
   campos.forEach(function(id){
     var el=document.getElementById(id);
     if(el&&v[id]!==undefined&&v[id]!==null&&v[id]!=='') el.value=parseFloat(v[id])||0;
@@ -1373,17 +1174,9 @@ async function carregarHistorico(){
     if(!regs||!regs.length){list.innerHTML='<div class="hvazio">Nenhum registro ainda</div>';ss('ok','Conectado');return;}
     var htm='';
     regs.forEach(function(r){
-      // Formatar hora: se vier ISO do Sheets, descartar (hora real está em r.hora como HH:MM)
       var hora=r.hora||'';
-      if(hora.includes('T')||hora.includes('1899')||hora.includes('00:00'))hora='';
-      // Formatar data: se vier ISO do Sheets, converter para dd/mm/aaaa sem hora
-      var data=r.data||'';
-      if(data.includes('T')){
-        // Usar UTC para evitar problema de fuso: T03:00Z = meia-noite BR
-        var partsISO=data.split('T')[0].split('-');
-        data=partsISO[2]+'/'+partsISO[1]+'/'+partsISO[0];
-      }
-      htm+='<div class="hi"><div><div class="hin">'+r.nome+'</div><div class="hid">'+data+(hora?' às '+hora:'')+'</div></div><div><div class="hit">'+fmt(r.total||0)+'</div><div class="hiv">KH: '+fmt(parseFloat(r.sv)||0)+' · LI: '+fmt(parseFloat(r.rv)||0)+'</div></div></div>';
+      if(hora.includes('T')||hora.includes('1899'))hora='';
+      htm+='<div class="hi"><div><div class="hin">'+r.nome+'</div><div class="hid">'+(r.data||'')+(hora?' às '+hora:'')+'</div></div><div><div class="hit">'+fmt(r.total||0)+'</div><div class="hiv">KH: '+fmt(parseFloat(r.sv)||0)+' · LI: '+fmt(parseFloat(r.rv)||0)+'</div></div></div>';
     });
     list.innerHTML=htm;ss('ok','Conectado ao Google Sheets');
   }catch(e){list.innerHTML='<div class="hvazio">Erro ao carregar</div>';ss('err','Erro de conexão');}
@@ -1399,9 +1192,6 @@ async function carregarUltimoSalvo(){
     if(regs&&regs.length>0){
       var r=regs[0];applySnap(r);
       var hora=r.hora||'';if(hora.includes('T')||hora.includes('1899'))hora='';
-      var dataUlt=r.data||'';
-      if(dataUlt.includes('T')){var pISO=dataUlt.split('T')[0].split('-');dataUlt=pISO[2]+'/'+pISO[1]+'/'+pISO[0];}
-      if(hora.includes('00:00'))hora='';
       ss('ok','Sincronizado · '+(r.nome||'?')+(hora?' às '+hora:''));
       var ui=document.getElementById('ultimoSalvo');if(ui)ui.innerHTML='Último: <strong>'+(r.nome||'?')+'</strong>'+(hora?' às <strong>'+hora+'</strong>':'');
       var cu=document.getElementById('ch_ult');if(cu)cu.textContent='Último: '+(r.nome||'?')+(hora?' às '+hora:'');
@@ -1422,7 +1212,6 @@ function entrar(){
     document.getElementById('overlay').style.display='none';
     document.getElementById('modobar').style.display='none';
     var tc=document.getElementById('tabColeta');if(tc)tc.classList.remove('hid');
-    var tl=document.getElementById('tabLider');if(tl)tl.classList.remove('hid');
     sessionStorage.setItem('gk_auth','1');
     carregarUltimoSalvo();carregarHistorico();
     setTimeout(function(){var tc=document.getElementById('tabColeta');if(tc)tc.click();},200);
@@ -1449,7 +1238,6 @@ function pedirSenha(){
     document.getElementById('overlay').style.display='none';
     document.getElementById('modobar').style.display='none';
     var tc=document.getElementById('tabColeta');if(tc)tc.classList.remove('hid');
-    var tl=document.getElementById('tabLider');if(tl)tl.classList.remove('hid');
     carregarUltimoSalvo();carregarHistorico();
   }
 })();
