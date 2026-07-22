@@ -326,7 +326,7 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
   <div class="cg3" style="grid-template-columns:repeat(4,1fr)">
     <div class="cc"><div class="av al">KH</div><div style="display:flex;align-items:center;gap:4px"><div class="cn">Kézia Heloisa</div><span id="rank_kh" style="font-size:14px"></span></div><div class="cs">Consultora</div><div class="dv"></div><div class="sl">Total vendido</div><div class="sv" id="d_sv">R$ 0</div><div class="ss" id="d_sp">0 planos anuais</div></div>
     <div class="cc"><div class="av da">LI</div><div style="display:flex;align-items:center;gap:4px"><div class="cn">Liriane</div><span id="rank_li" style="font-size:14px"></span></div><div class="cs">Consultora</div><div class="dv"></div><div class="sl">Total vendido</div><div class="sv" id="d_rv">R$ 0</div><div class="ss" id="d_rp">0 planos anuais</div></div>
-    <div class="cc out"><div class="av out2">AM</div><div class="cn">Amabile</div><div class="cs">Recepção</div><div class="nb">Só produtos</div></div>
+    
     <div class="cc out"><div class="av out2">+</div><div class="cn">Outros</div><div class="cs">Líder / outros</div><div class="nb">Só registro</div><div class="dv"></div><div class="sl">Total vendido</div><div class="sv" id="d_ov">R$ 0</div><div class="ss" id="d_op">0 planos anuais</div></div>
   </div>
   <div class="anuais-card">
@@ -334,7 +334,7 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
     <div class="anuais-grid" style="grid-template-columns:repeat(4,1fr)">
       <div class="anuais-item"><div class="anuais-num" id="an_al">0</div><div class="anuais-lbl">Kézia Heloisa</div></div>
       <div class="anuais-item"><div class="anuais-num" id="an_da">0</div><div class="anuais-lbl">Liriane</div></div>
-      <div class="anuais-item"><div class="anuais-num" id="an_kv">0</div><div class="anuais-lbl">Amabile</div></div>
+      
       <div class="anuais-item"><div class="anuais-num" id="an_out">0</div><div class="anuais-lbl">Outros</div></div>
     </div>
     <div class="anuais-nota">💡 Planos anuais têm ticket maior e são o foco — quanto mais anuais, mais perto da meta!</div>
@@ -418,7 +418,7 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
   </div>
   <div class="card">
     <div class="ctitle">Ganhos individuais</div>
-    <div class="remg">
+    <div class="remg" style="grid-template-columns:repeat(2,1fr)">
       <div class="rc">
         <div class="rn"><div class="rav al">KH</div><span class="rnm">Kézia Heloisa</span></div>
         <div class="rl"><span class="rlbl">Vendas contabilizadas</span><span class="rv" id="r_al_qtd" style="color:var(--txt2-b)">0 vendas</span></div>
@@ -435,44 +435,13 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
         <div class="rl"><span class="rlbl">Bônus avaliações</span><span class="rv" id="r_da_a">R$ 0</span></div>
         <div class="rtlbl">Total variável</div><div class="rtotal" id="r_da_t">R$ 0</div>
       </div>
-      <div class="rc">
-        <div class="rn"><div class="rav ky">AM</div><span class="rnm">Amabile</span></div>
-        <div class="rl"><span class="rlbl">Vendas contabilizadas</span><span class="rv" id="r_kv_qtd" style="color:var(--txt2-b)">0 vendas</span></div>
-        <div class="rl"><span class="rlbl">Bônus vendas</span><span class="rv" id="r_kv_v">R$ 0</span></div>
-        <div class="rl"><span class="rlbl">Bônus renovações</span><span class="rv" id="r_kv_r">R$ 0</span></div>
-        <div class="rl"><span class="rlbl">Bônus avaliações</span><span class="rv" id="r_kv_a">R$ 0</span></div>
-        <div class="rtlbl">Total variável</div><div class="rtotal" id="r_kv_t">R$ 0</div>
-      </div>
-    </div>
-    <div class="eqrow"><span class="eqlbl">Total equipe (KH + LI + AM)</span><span class="eqval" id="r_eq">R$ 0</span></div>
+      
+    <div class="eqrow"><span class="eqlbl">Total equipe (KH + LI)</span><span class="eqval" id="r_eq">R$ 0</span></div>
   </div>
   <div class="card">
     <div class="ctitle">📋 Resumo de folha</div>
     <div class="fg" style="grid-template-columns:repeat(3,1fr)">
-      <div class="fc fc-al">
-        <div class="fc-nome"><div class="fc-av">KH</div>Kézia Heloisa</div>
-        <div class="fcl"><span class="fclbl">Variável</span><span class="fcv" id="f_al_v">R$ 0</span></div>
-        <div class="fcl"><span class="fclbl">Bônus meta financ.</span><span class="fcv" id="f_al_m">R$ 0</span></div>
-        <div class="fctlbl">Total folha</div>
-        <div class="fctotal" id="f_al_t">R$ 0</div>
-        <div class="fccred">Crédito produtos: R$ <span id="f_al_c">0,00</span></div>
-      </div>
-      <div class="fc fc-da">
-        <div class="fc-nome"><div class="fc-av">LI</div>Liriane</div>
-        <div class="fcl"><span class="fclbl">Variável</span><span class="fcv" id="f_da_v">R$ 0</span></div>
-        <div class="fcl"><span class="fclbl">Bônus meta financ.</span><span class="fcv" id="f_da_m">R$ 0</span></div>
-        <div class="fctlbl">Total folha</div>
-        <div class="fctotal" id="f_da_t">R$ 0</div>
-        <div class="fccred">Crédito produtos: R$ <span id="f_da_c">0,00</span></div>
-      </div>
-      <div class="fc" style="background:linear-gradient(135deg,#3b1f6e,#6d28d9);box-shadow:0 4px 16px rgba(109,40,217,.3)">
-        <div class="fc-nome"><div class="fc-av">AM</div>Amabile</div>
-        <div class="fcl"><span class="fclbl">Variável</span><span class="fcv" id="f_kv_v">R$ 0</span></div>
-        <div class="fcl"><span class="fclbl">Bônus meta financ.</span><span class="fcv" id="f_kv_m">R$ 0</span></div>
-        <div class="fctlbl">Total folha</div>
-        <div class="fctotal" id="f_kv_t">R$ 0</div>
-        <div class="fccred">Crédito produtos: R$ <span id="f_kv_c">0,00</span></div>
-      </div>
+      
     </div>
     <div class="fgeral"><span class="fgeral-lbl">Total geral folha</span><span class="fgeral-val" id="f_geral">R$ 0</span></div>
     <div style="font-size:11px;color:var(--txt2-b);margin-top:8px">* Créditos produtos não entram na folha — lançar no sistema para uso.</div>
