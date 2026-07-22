@@ -245,23 +245,6 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
 </head>
 <body>
 
-<div class="overlay" id="overlay">
-  <div class="sbox">
-    <div class="sbox-icon">🏋️</div>
-    <div class="sbox-title">Gerber Komprão</div>
-    <div class="sbox-sub">Acesse para editar ou visualize os dados em tempo real</div>
-    <div class="sbox-err" id="serr">Senha incorreta. Tente novamente.</div>
-    <input class="sbox-inp" type="password" id="sinp" placeholder="••••••••" onkeydown="if(event.key==='Enter')entrar()">
-    <button class="sbox-btn" onclick="entrar()">🔐 Entrar para editar</button>
-    <button class="sbox-ver" onclick="visualizar()">👁️ Só visualizar</button>
-  </div>
-</div>
-
-<div class="modobar" id="modobar">
-  👁️ Modo visualização — dados sincronizados em tempo real
-  <button class="btsm" onclick="pedirSenha()">🔐 Editar</button>
-</div>
-
 <div class="header">
   <div class="hcity">Gerber Komprão</div>
   <div class="hinfo" id="hMes"></div>
@@ -277,7 +260,7 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
   <button class="tab" onclick="goTab('folha',this)">💰 Resultado Folha</button>
   <button class="tab" onclick="goTab('produtos',this)">📦 Produtos</button>
   <button class="tab" onclick="goTab('historico',this)">📋 Histórico</button>
-  <button class="tab hid" id="tabColeta" onclick="goTab('preencher',this)">✏️ Preencher</button>
+  <button class="tab" id="tabColeta" onclick="goTab('preencher',this)">✏️ Preencher</button>
 </div>
 
 <!-- ABA META -->
@@ -1172,7 +1155,11 @@ async function carregarHistorico(){
       htm+='<div class="hi"><div><div class="hin">'+r.nome+'</div><div class="hid">'+(r.data||'')+(hora?' às '+hora:'')+'</div></div><div><div class="hit">'+fmt(r.total||0)+'</div><div class="hiv">KH: '+fmt(parseFloat(r.sv)||0)+' · LI: '+fmt(parseFloat(r.rv)||0)+'</div></div></div>';
     });
     list.innerHTML=htm;ss('ok','Conectado ao Google Sheets');
-  }catch(e){list.innerHTML='<div class="hvazio">Erro ao carregar</div>';ss('err','Erro de conexão');}
+  }catch(err){
+    list.innerHTML='<div class="hvazio">Erro: '+err.message+'</div>';
+    ss('err','Erro de conexão');
+    console.error('carregarHistorico erro:', err);
+  }
 }
 
 async function carregarUltimoSalvo(){
@@ -1194,46 +1181,26 @@ async function carregarUltimoSalvo(){
       var ui=document.getElementById('ultimoSalvo');if(ui)ui.innerHTML='Nenhum registro neste mês';
       var cu=document.getElementById('ch_ult');if(cu)cu.textContent='Nenhum registro ainda';
     }
-  }catch(e){ss('err','Erro ao sincronizar');recalc();}
+  }catch(err){
+    ss('err','Erro ao sincronizar');
+    console.error('carregarUltimoSalvo erro:', err);
+    recalc();
+  }
 }
 
-var _modoEdicao=false;
-function entrar(){
-  var inp=document.getElementById('sinp').value;
-  if(inp===SENHA){
-    _modoEdicao=true;
-    document.getElementById('overlay').style.display='none';
-    document.getElementById('modobar').style.display='none';
-    var tc=document.getElementById('tabColeta');if(tc)tc.classList.remove('hid');
-    sessionStorage.setItem('gk_auth','1');
-    carregarUltimoSalvo();carregarHistorico();
-    setTimeout(function(){var tc=document.getElementById('tabColeta');if(tc)tc.click();},200);
-  }else{
-    var er=document.getElementById('serr');er.style.display='block';
-    document.getElementById('sinp').value='';document.getElementById('sinp').focus();
-    setTimeout(()=>er.style.display='none',3000);
-  }
-}
-function visualizar(){
-  _modoEdicao=false;
-  document.getElementById('overlay').style.display='none';
-  document.getElementById('modobar').style.display='flex';
-  carregarUltimoSalvo();carregarHistorico();
-}
-function pedirSenha(){
-  document.getElementById('overlay').style.display='flex';
-  document.getElementById('sinp').value='';document.getElementById('serr').style.display='none';
-  setTimeout(()=>document.getElementById('sinp').focus(),100);
-}
+var _modoEdicao=true;
+function entrar(){}
+function visualizar(){}
+function pedirSenha(){}
 (function(){
-  if(sessionStorage.getItem('gk_auth')==='1'){
-    _modoEdicao=true;
-    document.getElementById('overlay').style.display='none';
-    document.getElementById('modobar').style.display='none';
-    var tc=document.getElementById('tabColeta');if(tc)tc.classList.remove('hid');
-    carregarUltimoSalvo();carregarHistorico();
-  }
+  carregarUltimoSalvo();
+  carregarHistorico();
+  setTimeout(function(){
+    var tc=document.getElementById('tabColeta');
+    if(tc)tc.click();
+  },400);
 })();
+
 
 (function(){
   var canvas=null,ctx=null,particles=[],animId=null;
