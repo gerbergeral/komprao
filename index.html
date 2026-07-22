@@ -424,15 +424,6 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
 
 <!-- ABA RESULTADO FOLHA -->
 <div class="page" id="page-folha">
-  
-      <div style="text-align:right"><div id="d_rst" style="font-weight:700;font-size:14px;color:var(--txt2-b)">—</div><div id="d_rflt" style="font-size:12px;color:var(--txt2-b);font-weight:500;margin-top:2px"></div></div>
-    </div>
-    <div class="renov-bar-bg"><div class="renov-bar-f" id="renovBar" style="width:0%"></div></div>
-    <div class="renov-badges">
-      <div class="rb" id="rb70"><div class="rb-tag">70% — básica</div><div class="rb-val">R$ 50</div><div class="rb-sub">por consultora</div></div>
-      <div class="rb" id="rb85"><div class="rb-tag">85% — cheia</div><div class="rb-val">R$ 100</div><div class="rb-sub">por consultora</div></div>
-    </div>
-  </div>
   <div class="card">
     <div class="ctitle">Ganhos individuais</div>
     <div class="remg" style="grid-template-columns:repeat(2,1fr)">
@@ -576,7 +567,6 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
     </div>
     <div class="salvar-ult" id="ultimoSalvo">—</div>
   </div>
-</div>
 
 <div class="rodape">Gerber Academia · Komprão · Sistema interno</div>
 </div>
@@ -908,14 +898,21 @@ function recalcMeta(){
 
 function recalcRem(){
   var rt=ii('renovTotal'),rf=ii('renovFeitos');
-  if(rt===0){s('d_rpct','—');var bar=document.getElementById('renovBar');if(bar){bar.style.width='0%';bar.className='renov-bar-f';}document.getElementById('rb70').className='rb';document.getElementById('rb85').className='rb';s('d_rst','Preencha os contratos vencendo');s('d_rflt','');}
-  else{
-    var pct=Math.round((rf/rt)*100);
-    s('d_rpct',pct+'%');
-    var bar=document.getElementById('renovBar');
+  var pct=rt>0?Math.round((rf/rt)*100):0;
+  // elementos opcionais (podem não existir se card foi removido)
+  var bar=document.getElementById('renovBar');
+  var el70=document.getElementById('rb70');
+  var el85=document.getElementById('rb85');
+  if(rt===0){
+    if(bar){bar.style.width='0%';bar.className='renov-bar-f';}
+    if(el70) el70.className='rb';
+    if(el85) el85.className='rb';
+    s('d_rpct','—');s('d_rst','Preencha os contratos vencendo');s('d_rflt','');
+  } else {
     if(bar){bar.style.width=Math.min(pct,100)+'%';bar.className='renov-bar-f'+(pct>=85?' ok85':pct>=70?' ok70':'');}
-    document.getElementById('rb70').className='rb'+(pct>=70?' on70':'');
-    document.getElementById('rb85').className='rb'+(pct>=85?' on85':'');
+    if(el70) el70.className='rb'+(pct>=70?' on70':'');
+    if(el85) el85.className='rb'+(pct>=85?' on85':'');
+    s('d_rpct',pct+'%');
     s('d_rst',pct>=85?'✅ Meta cheia atingida':pct>=70?'🟡 Meta básica atingida':'⚠️ Abaixo da meta');
     s('d_rflt',pct<85?'Faltam '+(Math.ceil(rt*0.85)-rf)+' renovações para 85%':'');
   }
