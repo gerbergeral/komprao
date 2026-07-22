@@ -384,17 +384,17 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
     <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px">
       <div>
         <div style="font-size:12px;color:var(--txt2-b);margin-bottom:2px;font-weight:500">Taxa atual de renovação</div>
-        <div style="font-size:34px;font-weight:800;color:#0f172a" id="renov_pct_lider">—</div>
+        <div style="font-size:34px;font-weight:800;color:#0f172a" id="renov_pct_eq">—</div>
       </div>
       <div style="text-align:right">
-        <div id="renov_status_lider" style="font-weight:700;font-size:14px;color:var(--txt2-b)">—</div>
-        <div id="renov_hint_lider" style="font-size:12px;color:var(--txt2-b);font-weight:500;margin-top:2px"></div>
+        <div id="renov_status_eq" style="font-weight:700;font-size:14px;color:var(--txt2-b)">—</div>
+        <div id="renov_hint_eq" style="font-size:12px;color:var(--txt2-b);font-weight:500;margin-top:2px"></div>
       </div>
     </div>
-    <div class="renov-bar-bg"><div class="renov-bar-f" id="renovBarLider" style="width:0%"></div></div>
+    <div class="renov-bar-bg"><div class="renov-bar-f" id="renovBarEq" style="width:0%"></div></div>
     <div class="renov-badges">
-      <div class="rb" id="rb_meta_lider"><div class="rb-tag">70% — básica</div><div class="rb-val" id="rb_meta_lider_val">—</div><div class="rb-sub">R$ 50 por consultora</div></div>
-      <div class="rb" id="rb_super_lider"><div class="rb-tag">85% — cheia</div><div class="rb-val" id="rb_super_lider_val">—</div><div class="rb-sub">R$ 100 por consultora</div></div>
+      <div class="rb" id="rb_eq70"><div class="rb-tag">70% — básica</div><div class="rb-val" id="rb_eq70_val">—</div><div class="rb-sub">R$ 50 por consultora</div></div>
+      <div class="rb" id="rb_eq85"><div class="rb-tag">85% — cheia</div><div class="rb-val" id="rb_eq85_val">—</div><div class="rb-sub">R$ 100 por consultora</div></div>
     </div>
     <div style="font-size:11px;color:var(--txt2-b);margin-top:10px;font-style:italic">* Baseado nos contratos vencendo e renovados preenchidos na aba ✏️ Preencher.</div>
   </div>
@@ -454,7 +454,7 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
         <div class="rtlbl">Total variável</div><div class="rtotal" id="r_da_t">R$ 0</div>
       </div>
       
-    <div class="eqrow"><span class="eqlbl">Total equipe (KH + LI)</span><span class="eqval" id="r_eq">R$ 0</span></div>
+    <div class="eqrow"><span class="eqlbl">Total equipe (KH + LI + AM)</span><span class="eqval" id="r_eq">R$ 0</span></div>
   </div>
   <div class="card">
     <div class="ctitle">📋 Resumo de folha</div>
@@ -593,6 +593,7 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
     </div>
     <div class="salvar-ult" id="ultimoSalvo">—</div>
   </div>
+</div>
 
 <div class="rodape">Gerber Academia · Komprão · Sistema interno</div>
 </div>
@@ -607,30 +608,18 @@ const SENHA='liderkomprao';
 let M1=70000,M2=77000,SU=84000;
 
 var METAS_POR_MES = {
-  'Jan/2025': [110000, 120000, 130000],
-  'Fev/2025': [110000, 120000, 130000],
-  'Mar/2025': [110000, 120000, 130000],
-  'Abr/2025': [110000, 120000, 130000],
-  'Mai/2025': [110000, 120000, 130000],
-  'Jun/2025': [110000, 120000, 130000],
-  'Jul/2025': [110000, 120000, 130000],
-  'Ago/2025': [110000, 120000, 130000],
-  'Set/2025': [110000, 120000, 130000],
-  'Out/2025': [110000, 120000, 130000],
-  'Nov/2025': [110000, 120000, 130000],
-  'Dez/2025': [110000, 120000, 130000],
-  'Jan/2026': [110000, 120000, 130000],
-  'Fev/2026': [110000, 120000, 130000],
-  'Mar/2026': [110000, 120000, 130000],
-  'Abr/2026': [110000, 120000, 130000],
-  'Mai/2026': [110000, 120000, 130000],
-  'Jun/2026': [110000, 120000, 130000],
-  'Jul/2026': [70000, 77000, 84000],
-  'Ago/2026': [70000, 77000, 84000],
-  'Set/2026': [70000, 77000, 84000],
-  'Out/2026': [70000, 77000, 84000],
-  'Nov/2026': [70000, 77000, 84000],
-  'Dez/2026': [70000, 77000, 84000],
+  'Jan/2025': [110000, 120000, 130000],'Fev/2025': [110000, 120000, 130000],
+  'Mar/2025': [110000, 120000, 130000],'Abr/2025': [110000, 120000, 130000],
+  'Mai/2025': [110000, 120000, 130000],'Jun/2025': [110000, 120000, 130000],
+  'Jul/2025': [110000, 120000, 130000],'Ago/2025': [110000, 120000, 130000],
+  'Set/2025': [110000, 120000, 130000],'Out/2025': [110000, 120000, 130000],
+  'Nov/2025': [110000, 120000, 130000],'Dez/2025': [110000, 120000, 130000],
+  'Jan/2026': [110000, 120000, 130000],'Fev/2026': [110000, 120000, 130000],
+  'Mar/2026': [110000, 120000, 130000],'Abr/2026': [110000, 120000, 130000],
+  'Mai/2026': [110000, 120000, 130000],'Jun/2026': [110000, 120000, 130000],
+  'Jul/2026': [70000, 77000, 84000],'Ago/2026': [70000, 77000, 84000],
+  'Set/2026': [70000, 77000, 84000],'Out/2026': [70000, 77000, 84000],
+  'Nov/2026': [70000, 77000, 84000],'Dez/2026': [70000, 77000, 84000],
 };
 var METAS_PADRAO = [70000, 77000, 84000];
 
@@ -864,8 +853,8 @@ function calcMetaDiaria() {
 function recalc(){recalcMeta();recalcRem();recalcProd();recalcRet();calcMetaDiaria();}
 
 function recalcMeta(){
-  var sv=gi('sv'),rv=gi('rv'),ov=gi('ov'); var kvv=0;
-  var sp=ii('sp'),rp=ii('rp'),op=ii('op'); var kvp=0;
+  var sv=gi('sv'),rv=gi('rv'),ov=gi('ov'),kvv=0;
+  var sp=ii('sp'),rp=ii('rp'),op=ii('op'),kvp=0;
   var total=sv+rv+kvv+ov,pct=Math.min((total/SU)*100,100);
   s('d_total',fmt(total));
   s('d_pct',pct.toFixed(1)+'% da super meta');
@@ -925,13 +914,13 @@ function recalcMeta(){
 function recalcRem(){
   var rt=ii('renovTotal'),rf=ii('renovFeitos');
   var pct=rt>0?Math.round((rf/rt)*100):0;
+  // Elementos opcionais (podem não existir em todas as abas)
   var bar=document.getElementById('renovBar');
   var el70=document.getElementById('rb70');
   var el85=document.getElementById('rb85');
   if(rt===0){
     if(bar){bar.style.width='0%';bar.className='renov-bar-f';}
-    if(el70)el70.className='rb';
-    if(el85)el85.className='rb';
+    if(el70)el70.className='rb'; if(el85)el85.className='rb';
     s('d_rpct','—');s('d_rst','Preencha os contratos vencendo');s('d_rflt','');
   }else{
     if(bar){bar.style.width=Math.min(pct,100)+'%';bar.className='renov-bar-f'+(pct>=85?' ok85':pct>=70?' ok70':'');}
@@ -953,38 +942,36 @@ function recalcRem(){
   s('r_da_qtd',(rn+rr)+' vendas');
   s('r_da_v',fmt(rbv));s('r_da_r',fmt(rb));s('r_da_a',fmt(rba));s('r_da_t',fmt(_remDA));
   s('r_eq',fmt(_remAL+_remDA));
-  // Card renovações na aba Retenção
-  var rl_pct=document.getElementById('renov_pct_lider');
-  var rl_st=document.getElementById('renov_status_lider');
-  var rl_ht=document.getElementById('renov_hint_lider');
-  var rl_bar=document.getElementById('renovBarLider');
-  var rl_m=document.getElementById('rb_meta_lider');
-  var rl_s=document.getElementById('rb_super_lider');
-  var rl_mv=document.getElementById('rb_meta_lider_val');
-  var rl_sv=document.getElementById('rb_super_lider_val');
+  // Card renovações equipe na aba Retenção
+  var eq_pct=document.getElementById('renov_pct_eq');
+  var eq_st=document.getElementById('renov_status_eq');
+  var eq_ht=document.getElementById('renov_hint_eq');
+  var eq_bar=document.getElementById('renovBarEq');
+  var eq70=document.getElementById('rb_eq70');
+  var eq85=document.getElementById('rb_eq85');
+  var eq70v=document.getElementById('rb_eq70_val');
+  var eq85v=document.getElementById('rb_eq85_val');
   if(rt===0){
-    if(rl_pct)rl_pct.textContent='—';
-    if(rl_st)rl_st.textContent='Preencha contratos vencendo';
-    if(rl_ht)rl_ht.textContent='';
-    if(rl_bar)rl_bar.style.width='0%';
-    if(rl_m)rl_m.className='rb';
-    if(rl_s)rl_s.className='rb';
-    if(rl_mv)rl_mv.textContent='—';
-    if(rl_sv)rl_sv.textContent='—';
+    if(eq_pct)eq_pct.textContent='—';
+    if(eq_st)eq_st.textContent='Preencha contratos vencendo';
+    if(eq_ht)eq_ht.textContent='';
+    if(eq_bar)eq_bar.style.width='0%';
+    if(eq70)eq70.className='rb'; if(eq85)eq85.className='rb';
+    if(eq70v)eq70v.textContent='—'; if(eq85v)eq85v.textContent='—';
   }else{
-    var rpct=Math.round((rf/rt)*100);
-    if(rl_pct)rl_pct.textContent=rpct+'%';
-    if(rl_bar){rl_bar.style.width=Math.min(rpct,100)+'%';rl_bar.className='renov-bar-f'+(rpct>=85?' ok85':rpct>=70?' ok70':'');}
-    if(rl_m)rl_m.className='rb'+(rpct>=70?' on70':'');
-    if(rl_s)rl_s.className='rb'+(rpct>=85?' on85':'');
-    if(rl_mv)rl_mv.textContent=rpct>=70?'✅ Atingida':'❌ Não atingida';
-    if(rl_sv)rl_sv.textContent=rpct>=85?'✅ Atingida':'❌ Não atingida';
-    if(rl_st){
-      if(rpct>=85)rl_st.textContent='🏆 Meta cheia atingida!';
-      else if(rpct>=70)rl_st.textContent='✅ Meta básica atingida';
-      else rl_st.textContent='⚠️ Abaixo da meta';
+    if(eq_pct)eq_pct.textContent=pct+'%';
+    if(eq_bar){eq_bar.style.width=Math.min(pct,100)+'%';eq_bar.className='renov-bar-f'+(pct>=85?' ok85':pct>=70?' ok70':'');}
+    if(eq70)eq70.className='rb'+(pct>=70?' on70':'');
+    if(eq85)eq85.className='rb'+(pct>=85?' on85':'');
+    if(eq70v)eq70v.textContent=pct>=70?'✅ Atingida':'❌ Não atingida';
+    if(eq85v)eq85v.textContent=pct>=85?'✅ Atingida':'❌ Não atingida';
+    if(eq_st){
+      if(pct>=85)eq_st.textContent='🏆 Meta cheia atingida!';
+      else if(pct>=70)eq_st.textContent='✅ Meta básica atingida';
+      else eq_st.textContent='⚠️ Abaixo da meta';
     }
-    if(rl_ht)rl_ht.textContent=rpct<70?'Faltam '+(Math.ceil(rt*0.70)-rf)+' renovações para 70%':rpct<85?'Faltam '+(Math.ceil(rt*0.85)-rf)+' para 85%':'';
+    if(eq_ht)eq_ht.textContent=pct<70?'Faltam '+(Math.ceil(rt*0.70)-rf)+' renovações para 70%':
+                                 pct<85?'Faltam '+(Math.ceil(rt*0.85)-rf)+' para 85%':'';
   }
   atualizarFolha();
 }
@@ -1154,6 +1141,12 @@ function limparCampos(){
 
 function applySnap(v){
   if(!v)return;
+  if(v.sa_supl!==undefined&&v.sa_prod===undefined){
+    v.sa_prod=(parseFloat(v.sa_supl)||0)+(parseFloat(v.sa_cami)||0)+(parseFloat(v.sa_outr)||0);
+    v.ra_prod=(parseFloat(v.ra_supl)||0)+(parseFloat(v.ra_cami)||0)+(parseFloat(v.ra_outr)||0);
+    v.ab_prod=(parseFloat(v.ab_supl)||0)+(parseFloat(v.ab_cami)||0)+(parseFloat(v.ab_outr)||0);
+    v.ou_prod=(parseFloat(v.ou_supl)||0)+(parseFloat(v.ou_cami)||0)+(parseFloat(v.ou_outr)||0);
+  }
   if(v.ab_prod!==undefined)v.kv_prod=v.ab_prod;
   var campos=['sv','rv','ov','sp','rp','op','renovTotal','renovFeitos',
     's_novas','s_remat','s_aval','r_novas','r_remat','r_aval',
