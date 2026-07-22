@@ -382,6 +382,26 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
     <div class="rpc rpc-tot"><div class="rpc-num" id="d_perdas">0</div><div class="rpc-lbl">Total perdas</div></div>
   </div>
   <div class="card" style="margin-top:.5rem">
+    <div class="ctitle">🔄 Meta de renovações — Equipe</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px">
+      <div>
+        <div style="font-size:12px;color:var(--txt2-b);margin-bottom:2px;font-weight:500">Taxa atual de renovação</div>
+        <div style="font-size:34px;font-weight:800;color:#0f172a" id="renov_pct_lider">—</div>
+      </div>
+      <div style="text-align:right">
+        <div id="renov_status_lider" style="font-weight:700;font-size:14px;color:var(--txt2-b)">—</div>
+        <div id="renov_hint_lider" style="font-size:12px;color:var(--txt2-b);font-weight:500;margin-top:2px"></div>
+      </div>
+    </div>
+    <div class="renov-bar-bg"><div class="renov-bar-f" id="renovBarLider" style="width:0%"></div></div>
+    <div class="renov-badges">
+      <div class="rb" id="rb_meta_lider"><div class="rb-tag">70% — básica</div><div class="rb-val" id="rb_meta_lider_val">—</div><div class="rb-sub">R$ 50 por consultora</div></div>
+      <div class="rb" id="rb_super_lider"><div class="rb-tag">85% — cheia</div><div class="rb-val" id="rb_super_lider_val">—</div><div class="rb-sub">R$ 100 por consultora</div></div>
+    </div>
+    <div style="font-size:11px;color:var(--txt2-b);margin-top:10px;font-style:italic">* Baseado nos contratos vencendo e renovados preenchidos na aba ✏️ Preencher.</div>
+  </div>
+
+  <div class="card" style="margin-top:.5rem">
     <div class="ctitle">🎯 Meta de cancelamento — Líder</div>
     <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:8px">
       <div>
@@ -404,10 +424,7 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
 
 <!-- ABA RESULTADO FOLHA -->
 <div class="page" id="page-folha">
-  <div class="card">
-    <div class="ctitle">Meta de renovações</div>
-    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:4px">
-      <div><div style="font-size:12px;color:var(--txt2-b);margin-bottom:2px;font-weight:500">Taxa atual</div><div class="renov-pct" id="d_rpct">0%</div></div>
+  
       <div style="text-align:right"><div id="d_rst" style="font-weight:700;font-size:14px;color:var(--txt2-b)">—</div><div id="d_rflt" style="font-size:12px;color:var(--txt2-b);font-weight:500;margin-top:2px"></div></div>
     </div>
     <div class="renov-bar-bg"><div class="renov-bar-f" id="renovBar" style="width:0%"></div></div>
@@ -915,6 +932,43 @@ function recalcRem(){
   s('r_da_v',fmt(rbv));s('r_da_r',fmt(rb));s('r_da_a',fmt(rba));s('r_da_t',fmt(_remDA));
   var _remKV=0;
   s('r_eq',fmt(_remAL+_remDA));
+
+  // Meta de renovações — card líder na aba Retenção
+  var rl_pct = document.getElementById('renov_pct_lider');
+  var rl_st  = document.getElementById('renov_status_lider');
+  var rl_ht  = document.getElementById('renov_hint_lider');
+  var rl_bar = document.getElementById('renovBarLider');
+  var rl_m   = document.getElementById('rb_meta_lider');
+  var rl_s   = document.getElementById('rb_super_lider');
+  var rl_mv  = document.getElementById('rb_meta_lider_val');
+  var rl_sv  = document.getElementById('rb_super_lider_val');
+  if(rt===0){
+    if(rl_pct) rl_pct.textContent='—';
+    if(rl_st)  rl_st.textContent='Preencha contratos vencendo';
+    if(rl_ht)  rl_ht.textContent='';
+    if(rl_bar) rl_bar.style.width='0%';
+    if(rl_m)   rl_m.className='rb';
+    if(rl_s)   rl_s.className='rb';
+    if(rl_mv)  rl_mv.textContent='—';
+    if(rl_sv)  rl_sv.textContent='—';
+  } else {
+    var rpct = Math.round((rf/rt)*100);
+    if(rl_pct) rl_pct.textContent=rpct+'%';
+    var barW  = Math.min(rpct, 100);
+    if(rl_bar){rl_bar.style.width=barW+'%';rl_bar.className='renov-bar-f'+(rpct>=85?' ok85':rpct>=70?' ok70':'');}
+    if(rl_m)  rl_m.className='rb'+(rpct>=70?' on70':'');
+    if(rl_s)  rl_s.className='rb'+(rpct>=85?' on85':'');
+    if(rl_mv) rl_mv.textContent=rpct>=70?'✅ Atingida':'❌ Não atingida';
+    if(rl_sv) rl_sv.textContent=rpct>=85?'✅ Atingida':'❌ Não atingida';
+    if(rl_st){
+      if(rpct>=85)      rl_st.textContent='🏆 Meta cheia atingida!';
+      else if(rpct>=70) rl_st.textContent='✅ Meta básica atingida';
+      else              rl_st.textContent='⚠️ Abaixo da meta';
+    }
+    if(rl_ht) rl_ht.textContent=rpct<70?'Faltam '+(Math.ceil(rt*0.70)-rf)+' renovações para 70%':
+                                  rpct<85?'Faltam '+(Math.ceil(rt*0.85)-rf)+' para a meta cheia':'';
+  }
+
   atualizarFolha();
 }
 
