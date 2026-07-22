@@ -245,6 +245,23 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
 </head>
 <body>
 
+<div class="overlay" id="overlay">
+  <div class="sbox">
+    <div class="sbox-icon">🏋️</div>
+    <div class="sbox-title">Gerber Komprão</div>
+    <div class="sbox-sub">Acesse para editar ou visualize os dados em tempo real</div>
+    <div class="sbox-err" id="serr">Senha incorreta. Tente novamente.</div>
+    <input class="sbox-inp" type="password" id="sinp" placeholder="••••••••" onkeydown="if(event.key==='Enter')entrar()">
+    <button class="sbox-btn" onclick="entrar()">🔐 Entrar para editar</button>
+    <button class="sbox-ver" onclick="visualizar()">👁️ Só visualizar</button>
+  </div>
+</div>
+
+<div class="modobar" id="modobar">
+  👁️ Modo visualização — dados sincronizados em tempo real
+  <button class="btsm" onclick="pedirSenha()">🔐 Editar</button>
+</div>
+
 <div class="header">
   <div class="hcity">Gerber Komprão</div>
   <div class="hinfo" id="hMes"></div>
@@ -260,7 +277,7 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
   <button class="tab" onclick="goTab('folha',this)">💰 Resultado Folha</button>
   <button class="tab" onclick="goTab('produtos',this)">📦 Produtos</button>
   <button class="tab" onclick="goTab('historico',this)">📋 Histórico</button>
-  <button class="tab" id="tabColeta" onclick="goTab('preencher',this)">✏️ Preencher</button>
+  <button class="tab hid" id="tabColeta" onclick="goTab('preencher',this)">✏️ Preencher</button>
 </div>
 
 <!-- ABA META -->
@@ -309,15 +326,15 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
   <div class="cg3" style="grid-template-columns:repeat(4,1fr)">
     <div class="cc"><div class="av al">KH</div><div style="display:flex;align-items:center;gap:4px"><div class="cn">Kézia Heloisa</div><span id="rank_kh" style="font-size:14px"></span></div><div class="cs">Consultora</div><div class="dv"></div><div class="sl">Total vendido</div><div class="sv" id="d_sv">R$ 0</div><div class="ss" id="d_sp">0 planos anuais</div></div>
     <div class="cc"><div class="av da">LI</div><div style="display:flex;align-items:center;gap:4px"><div class="cn">Liriane</div><span id="rank_li" style="font-size:14px"></span></div><div class="cs">Consultora</div><div class="dv"></div><div class="sl">Total vendido</div><div class="sv" id="d_rv">R$ 0</div><div class="ss" id="d_rp">0 planos anuais</div></div>
-    <div class="cc out"><div class="av out2">AM</div><div class="cn">Amabile</div><div class="cs">Recepção</div><div class="nb">Só registro</div><div class="dv"></div><div class="sl">Total vendido</div><div class="sv" id="d_kvv">R$ 0</div><div class="ss" id="d_kvp">0 planos anuais</div></div>
+    <div class="cc"><div class="av ky">AM</div><div style="display:flex;align-items:center;gap:4px"><div class="cn">Amabile</div><span id="rank_am" style="font-size:14px"></span></div><div class="cs">Consultora</div><div class="dv"></div><div class="sl">Total vendido</div><div class="sv" id="d_kvv">R$ 0</div><div class="ss" id="d_kvp">0 planos anuais</div></div>
     <div class="cc out"><div class="av out2">+</div><div class="cn">Outros</div><div class="cs">Líder / outros</div><div class="nb">Só registro</div><div class="dv"></div><div class="sl">Total vendido</div><div class="sv" id="d_ov">R$ 0</div><div class="ss" id="d_op">0 planos anuais</div></div>
   </div>
   <div class="anuais-card">
     <div class="anuais-titulo">📅 Planos anuais vendidos no mês</div>
-    <div class="anuais-grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="anuais-grid" style="grid-template-columns:repeat(4,1fr)">
       <div class="anuais-item"><div class="anuais-num" id="an_al">0</div><div class="anuais-lbl">Kézia Heloisa</div></div>
       <div class="anuais-item"><div class="anuais-num" id="an_da">0</div><div class="anuais-lbl">Liriane</div></div>
-      
+      <div class="anuais-item"><div class="anuais-num" id="an_kv">0</div><div class="anuais-lbl">Amabile</div></div>
       <div class="anuais-item"><div class="anuais-num" id="an_out">0</div><div class="anuais-lbl">Outros</div></div>
     </div>
     <div class="anuais-nota">💡 Planos anuais têm ticket maior e são o foco — quanto mais anuais, mais perto da meta!</div>
@@ -418,12 +435,20 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
         <div class="rl"><span class="rlbl">Bônus avaliações</span><span class="rv" id="r_da_a">R$ 0</span></div>
         <div class="rtlbl">Total variável</div><div class="rtotal" id="r_da_t">R$ 0</div>
       </div>
-      
-    <div class="eqrow"><span class="eqlbl">Total equipe (KH + LI)</span><span class="eqval" id="r_eq">R$ 0</span></div>
+      <div class="rc">
+        <div class="rn"><div class="rav ky">AM</div><span class="rnm">Amabile</span></div>
+        <div class="rl"><span class="rlbl">Vendas contabilizadas</span><span class="rv" id="r_kv_qtd" style="color:var(--txt2-b)">0 vendas</span></div>
+        <div class="rl"><span class="rlbl">Bônus vendas</span><span class="rv" id="r_kv_v">R$ 0</span></div>
+        <div class="rl"><span class="rlbl">Bônus renovações</span><span class="rv" id="r_kv_r">R$ 0</span></div>
+        <div class="rl"><span class="rlbl">Bônus avaliações</span><span class="rv" id="r_kv_a">R$ 0</span></div>
+        <div class="rtlbl">Total variável</div><div class="rtotal" id="r_kv_t">R$ 0</div>
+      </div>
+    </div>
+    <div class="eqrow"><span class="eqlbl">Total equipe (KH + LI + AM)</span><span class="eqval" id="r_eq">R$ 0</span></div>
   </div>
   <div class="card">
     <div class="ctitle">📋 Resumo de folha</div>
-    <div class="fg">
+    <div class="fg" style="grid-template-columns:repeat(3,1fr)">
       <div class="fc fc-al">
         <div class="fc-nome"><div class="fc-av">KH</div>Kézia Heloisa</div>
         <div class="fcl"><span class="fclbl">Variável</span><span class="fcv" id="f_al_v">R$ 0</span></div>
@@ -440,7 +465,14 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
         <div class="fctotal" id="f_da_t">R$ 0</div>
         <div class="fccred">Crédito produtos: R$ <span id="f_da_c">0,00</span></div>
       </div>
-      
+      <div class="fc" style="background:linear-gradient(135deg,#3b1f6e,#6d28d9);box-shadow:0 4px 16px rgba(109,40,217,.3)">
+        <div class="fc-nome"><div class="fc-av">AM</div>Amabile</div>
+        <div class="fcl"><span class="fclbl">Variável</span><span class="fcv" id="f_kv_v">R$ 0</span></div>
+        <div class="fcl"><span class="fclbl">Bônus meta financ.</span><span class="fcv" id="f_kv_m">R$ 0</span></div>
+        <div class="fctlbl">Total folha</div>
+        <div class="fctotal" id="f_kv_t">R$ 0</div>
+        <div class="fccred">Crédito produtos: R$ <span id="f_kv_c">0,00</span></div>
+      </div>
     </div>
     <div class="fgeral"><span class="fgeral-lbl">Total geral folha</span><span class="fgeral-val" id="f_geral">R$ 0</span></div>
     <div style="font-size:11px;color:var(--txt2-b);margin-top:8px">* Créditos produtos não entram na folha — lançar no sistema para uso.</div>
@@ -509,9 +541,8 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
       <div class="campo"><label>Avaliações (qtd)</label><input type="number" id="r_aval" value="0" min="0" oninput="recalc()"></div>
       <div class="campo"><label>Produtos (R$)</label><input type="number" id="ra_prod" value="0" min="0" oninput="recalc()"></div>
     </div>
-    <div class="cp out">
-      <div class="cph"><div class="av out2" style="margin-bottom:0">AM</div><div><div class="cn">Amabile</div><div class="cs" style="margin-bottom:0">Recepção</div></div></div>
-      <div class="nb">Sem bônus</div>
+    <div class="cp">
+      <div class="cph"><div class="av ky" style="margin-bottom:0">AM</div><div><div class="cn">Amabile</div></div></div>
       <div class="cpd"></div>
       <div class="campo"><label>Valor vendido (R$)</label><input type="number" id="kv_vend" value="0" min="0" oninput="recalc()"></div>
       <div class="campo"><label>Novas vendas (qtd)</label><input type="number" id="kv_novas" value="0" min="0" oninput="recalc()"></div>
@@ -534,10 +565,10 @@ body{font-family:'Sora',sans-serif;background:linear-gradient(170deg,#0a1628 0%,
   <div class="anuais-coleta">
     <div class="anuais-coleta-titulo">📅 Planos anuais vendidos</div>
     <div class="anuais-coleta-nota">Não somam no valor total — são o foco estratégico pois têm ticket maior e ajudam a bater meta.</div>
-    <div class="anuais-coleta-grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="anuais-coleta-grid" style="grid-template-columns:repeat(4,1fr)">
       <div class="acg-item"><div class="acg-nome">Kézia Heloisa</div><div class="campo" style="margin:0"><label style="display:none"></label><input type="number" id="sp" value="0" min="0" oninput="recalc()" style="width:100%;text-align:center;font-size:18px;font-weight:800;background:transparent;border-color:rgba(255,255,255,.2);color:#7dd3fc"></div></div>
       <div class="acg-item"><div class="acg-nome">Liriane</div><div class="campo" style="margin:0"><label style="display:none"></label><input type="number" id="rp" value="0" min="0" oninput="recalc()" style="width:100%;text-align:center;font-size:18px;font-weight:800;background:transparent;border-color:rgba(255,255,255,.2);color:#7dd3fc"></div></div>
-      
+      <div class="acg-item"><div class="acg-nome">Amabile</div><div class="campo" style="margin:0"><label style="display:none"></label><input type="number" id="kv_plan" value="0" min="0" oninput="recalc()" style="width:100%;text-align:center;font-size:18px;font-weight:800;background:transparent;border-color:rgba(255,255,255,.2);color:#7dd3fc"></div></div>
       <div class="acg-item"><div class="acg-nome">Outros</div><div class="campo" style="margin:0"><label style="display:none"></label><input type="number" id="op" value="0" min="0" oninput="recalc()" style="width:100%;text-align:center;font-size:18px;font-weight:800;background:transparent;border-color:rgba(255,255,255,.2);color:#7dd3fc"></div></div>
     </div>
   </div>
@@ -644,7 +675,7 @@ function aplicarMetas(mes) {
   recalc();
 }
 
-var _bonusMeta=0,_remAL=0,_remDA=0,_prodAL=0,_prodDA=0,_lastMeta=0;
+var _bonusMeta=0,_remAL=0,_remDA=0,_remKV=0,_prodAL=0,_prodDA=0,_prodKV=0,_lastMeta=0;
 
 function s(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
 function gi(id){var e=document.getElementById(id);return e?parseFloat(e.value)||0:0;}
@@ -759,7 +790,7 @@ function calcMetaDiaria() {
   // Proteção: não executar se elementos ainda não existem no DOM
   if(!document.getElementById('md_meta1')) return;
 
-  var totalVendido = (gi('sv')||0) + (gi('rv')||0) + (gi('kv_vend')||0) + (gi('ov')||0);  // AM incluso na meta
+  var totalVendido = (gi('sv')||0) + (gi('rv')||0) + (gi('kv_vend')||0) + (gi('ov')||0);
 
   // Usar mês selecionado se disponível
   var mesSel = null;
@@ -917,13 +948,18 @@ function recalcRem(){
   _remDA=rbv+rb+rba;
   s('r_da_qtd',(rn+rr)+' vendas');
   s('r_da_v',fmt(rbv));s('r_da_r',fmt(rb));s('r_da_a',fmt(rba));s('r_da_t',fmt(_remDA));
-  s('r_eq',fmt(_remAL+_remDA));
+  // Amabile
+  var kn=ii('kv_novas'),kr=ii('kv_remat'),ka=ii('kv_aval'),kbv=calcBV(kn+kr),kba=ka*10;
+  _remKV=kbv+rb+kba;
+  s('r_kv_qtd',(kn+kr)+' vendas');
+  s('r_kv_v',fmt(kbv));s('r_kv_r',fmt(rb));s('r_kv_a',fmt(kba));s('r_kv_t',fmt(_remKV));
+  s('r_eq',fmt(_remAL+_remDA+_remKV));
   atualizarFolha();
 }
 
 function recalcProd(){
   var sa=gi('sa_prod'),da=gi('ra_prod'),kv=gi('kv_prod'),out=gi('ou_prod');
-  _prodAL=sa;_prodDA=da;
+  _prodAL=sa;_prodDA=da;_prodKV=kv;
   var total=sa+da+kv+out;
   s('p_total',fmt(total));s('p_cred',fmtd((sa+da+kv)*0.01));
   s('p_al',fmt(sa));s('pc_al',fmtd(sa*0.01));
@@ -988,29 +1024,33 @@ function recalcRet(){
 
 function atualizarFolha(){
   var bonusTotal = _bonusMeta; // valor total desbloqueado (400/700/1000)
-  var svAL = gi('sv'), svDA = gi('rv');
-  var totalConsultoras = svAL + svDA; // AM recepção não entra no bônus // Outros não entra no rateio
+  var svAL = gi('sv'), svDA = gi('rv'), svKV = gi('kv_vend');
+  var totalConsultoras = svAL + svDA + svKV; // Outros não entra no rateio
 
   // Bônus proporcional: cada uma recebe (sua venda / total consultoras) * bonusTotal
   var mbAL = totalConsultoras > 0 ? Math.round((svAL / totalConsultoras) * bonusTotal) : 0;
   var mbDA = totalConsultoras > 0 ? Math.round((svDA / totalConsultoras) * bonusTotal) : 0;
+  var mbKV = totalConsultoras > 0 ? Math.round((svKV / totalConsultoras) * bonusTotal) : 0;
+
   s('f_al_v',fmt(_remAL));s('f_al_m',fmt(mbAL));s('f_al_t',fmt(_remAL+mbAL));
   s('f_da_v',fmt(_remDA));s('f_da_m',fmt(mbDA));s('f_da_t',fmt(_remDA+mbDA));
-  s('f_geral',fmt(_remAL+_remDA+mbAL+mbDA));
+  s('f_kv_v',fmt(_remKV));s('f_kv_m',fmt(mbKV));s('f_kv_t',fmt(_remKV+mbKV));
+  s('f_geral',fmt(_remAL+_remDA+_remKV+mbAL+mbDA+mbKV));
   var fd=function(v){return v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});};
-  s('f_al_c',fd(_prodAL*0.01));s('f_da_c',fd(_prodDA*0.01));
+  s('f_al_c',fd(_prodAL*0.01));s('f_da_c',fd(_prodDA*0.01));s('f_kv_c',fd(_prodKV*0.01));
 
-  // Atualizar ranking (só KH e LI)
-  atualizarRanking(svAL, svDA, totalConsultoras, bonusTotal, mbAL, mbDA);
+  // Atualizar ranking
+  atualizarRanking(svAL, svDA, svKV, totalConsultoras, bonusTotal, mbAL, mbDA, mbKV);
 }
 
-function atualizarRanking(svAL, svDA, total, bonusTotal, mbAL, mbDA) {
+function atualizarRanking(svAL, svDA, svKV, total, bonusTotal, mbAL, mbDA, mbKV) {
   var lista = document.getElementById('rankingLista');
   if(!lista) return;
 
   var consultoras = [
     {sigla:'KH', nome:'Kézia Heloisa',  venda:svAL, bonus:mbAL, cor:'#1e3a8a', bg:'rgba(30,58,138,.3)'},
     {sigla:'LI', nome:'Liriane',  venda:svDA, bonus:mbDA, cor:'#14532d', bg:'rgba(20,83,45,.3)'},
+    {sigla:'AM', nome:'Amabile',  venda:svKV, bonus:mbKV, cor:'#5b21b6', bg:'rgba(91,33,182,.3)'},
   ];
 
   // Ordenar por venda (maior primeiro)
@@ -1054,7 +1094,7 @@ function atualizarRanking(svAL, svDA, total, bonusTotal, mbAL, mbDA) {
   lista.innerHTML = html;
 
   // Atualizar medalhas nos cards de nome
-  var rankMap = {'KH':'rank_kh','LI':'rank_li'};
+  var rankMap = {'KH':'rank_kh','LI':'rank_li','AM':'rank_am'};
   consultoras.forEach(function(c, i) {
     var el = document.getElementById(rankMap[c.sigla]);
     if(el) el.textContent = (c.venda > 0 && i < 3) ? medalhas[i] : '';
@@ -1093,12 +1133,16 @@ function applySnap(v){
   // Remapear colunas do Sheets → campos visuais Amabile
   // ab_prod salvo = valor vendido Amabile; op = planos anuais Amabile
   // o_novas/o_remat/o_aval = qtd vendas Amabile
-  // AM: ab_prod do Sheets → kv_vend no HTML
   if(v.ab_prod!==undefined) v.kv_vend = v.ab_prod;
-  var campos=['sv','rv','ov','sp','rp','op','renovTotal','renovFeitos',
+  if(v.op!==undefined) v.kv_plan = v.op;
+  if(v.o_novas!==undefined) v.kv_novas = v.o_novas;
+  if(v.o_remat!==undefined) v.kv_remat = v.o_remat;
+  if(v.o_aval!==undefined)  v.kv_aval  = v.o_aval;
+  // Campos numéricos normais
+  var campos=['sv','rv','ov','sp','rp','renovTotal','renovFeitos',
     's_novas','s_remat','s_aval','r_novas','r_remat','r_aval',
-    'o_novas','o_remat','o_aval','sa_prod','ra_prod','ou_prod','ativos_inicio','cancelamentos',
-    'kv_vend','kv_novas','kv_remat','kv_aval','kv_prod'];
+    'sa_prod','ra_prod','ou_prod','ativos_inicio','cancelamentos',
+    'kv_vend','kv_novas','kv_remat','kv_aval','kv_plan','kv_prod'];
   campos.forEach(function(id){
     var el=document.getElementById(id);
     if(el&&v[id]!==undefined&&v[id]!==null&&v[id]!=='') el.value=parseFloat(v[id])||0;
@@ -1155,11 +1199,7 @@ async function carregarHistorico(){
       htm+='<div class="hi"><div><div class="hin">'+r.nome+'</div><div class="hid">'+(r.data||'')+(hora?' às '+hora:'')+'</div></div><div><div class="hit">'+fmt(r.total||0)+'</div><div class="hiv">KH: '+fmt(parseFloat(r.sv)||0)+' · LI: '+fmt(parseFloat(r.rv)||0)+'</div></div></div>';
     });
     list.innerHTML=htm;ss('ok','Conectado ao Google Sheets');
-  }catch(err){
-    list.innerHTML='<div class="hvazio">Erro: '+err.message+'</div>';
-    ss('err','Erro de conexão');
-    console.error('carregarHistorico erro:', err);
-  }
+  }catch(e){list.innerHTML='<div class="hvazio">Erro ao carregar</div>';ss('err','Erro de conexão');}
 }
 
 async function carregarUltimoSalvo(){
@@ -1181,26 +1221,46 @@ async function carregarUltimoSalvo(){
       var ui=document.getElementById('ultimoSalvo');if(ui)ui.innerHTML='Nenhum registro neste mês';
       var cu=document.getElementById('ch_ult');if(cu)cu.textContent='Nenhum registro ainda';
     }
-  }catch(err){
-    ss('err','Erro ao sincronizar');
-    console.error('carregarUltimoSalvo erro:', err);
-    recalc();
-  }
+  }catch(e){ss('err','Erro ao sincronizar');recalc();}
 }
 
-var _modoEdicao=true;
-function entrar(){}
-function visualizar(){}
-function pedirSenha(){}
+var _modoEdicao=false;
+function entrar(){
+  var inp=document.getElementById('sinp').value;
+  if(inp===SENHA){
+    _modoEdicao=true;
+    document.getElementById('overlay').style.display='none';
+    document.getElementById('modobar').style.display='none';
+    var tc=document.getElementById('tabColeta');if(tc)tc.classList.remove('hid');
+    sessionStorage.setItem('gk_auth','1');
+    carregarUltimoSalvo();carregarHistorico();
+    setTimeout(function(){var tc=document.getElementById('tabColeta');if(tc)tc.click();},200);
+  }else{
+    var er=document.getElementById('serr');er.style.display='block';
+    document.getElementById('sinp').value='';document.getElementById('sinp').focus();
+    setTimeout(()=>er.style.display='none',3000);
+  }
+}
+function visualizar(){
+  _modoEdicao=false;
+  document.getElementById('overlay').style.display='none';
+  document.getElementById('modobar').style.display='flex';
+  carregarUltimoSalvo();carregarHistorico();
+}
+function pedirSenha(){
+  document.getElementById('overlay').style.display='flex';
+  document.getElementById('sinp').value='';document.getElementById('serr').style.display='none';
+  setTimeout(()=>document.getElementById('sinp').focus(),100);
+}
 (function(){
-  carregarUltimoSalvo();
-  carregarHistorico();
-  setTimeout(function(){
-    var tc=document.getElementById('tabColeta');
-    if(tc)tc.click();
-  },400);
+  if(sessionStorage.getItem('gk_auth')==='1'){
+    _modoEdicao=true;
+    document.getElementById('overlay').style.display='none';
+    document.getElementById('modobar').style.display='none';
+    var tc=document.getElementById('tabColeta');if(tc)tc.classList.remove('hid');
+    carregarUltimoSalvo();carregarHistorico();
+  }
 })();
-
 
 (function(){
   var canvas=null,ctx=null,particles=[],animId=null;
