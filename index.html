@@ -23,38 +23,59 @@
 }
 * { margin:0; padding:0; box-sizing:border-box; }
 body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--light); color: var(--text); min-height: 100vh; }
-.header { background: linear-gradient(135deg, var(--primary), var(--accent2)); color: white; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+
+/* HEADER */
+.header { background: linear-gradient(135deg, var(--primary), var(--accent2)); color: white; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
 .header h1 { font-size: 1.5rem; font-weight: 700; }
 .header .branch { font-size: 0.85rem; opacity: 0.85; }
+.header .greeting { font-size: 0.88rem; font-weight: 600; }
+.header .date-info { font-size: 0.82rem; opacity: 0.8; text-align: right; }
+
+/* NAV */
 .nav { background: var(--secondary); display: flex; overflow-x: auto; border-bottom: 2px solid var(--accent); }
 .nav button { flex: 1; padding: 14px 8px; border: none; background: transparent; color: rgba(255,255,255,0.7); font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; white-space: nowrap; min-width: 90px; text-align: center; }
 .nav button:hover { color: white; background: rgba(255,255,255,0.05); }
 .nav button.active { color: white; background: var(--accent); }
+.nav button.hidden-tab { display: none; }
+
+/* MAIN */
 .main { padding: 20px; max-width: 1200px; margin: 0 auto; }
 .tab { display: none; }
 .tab.active { display: block; }
+
+/* CARDS */
 .card { background: var(--card-bg); border-radius: var(--radius); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow); border: 1px solid var(--border); }
 .card h2 { font-size: 1.1rem; color: var(--primary); margin-bottom: 16px; padding-bottom: 10px; border-bottom: 2px solid var(--accent); display: flex; align-items: center; gap: 8px; }
-.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
 .person-card { background: linear-gradient(135deg, #f8f9fa, #fff); border-radius: var(--radius); padding: 16px; border-left: 4px solid var(--accent); }
 .person-card .name { font-weight: 700; font-size: 1rem; color: var(--primary); }
 .person-card .role { font-size: 0.78rem; color: var(--text-light); margin-bottom: 10px; }
 .person-card .value { font-size: 1.6rem; font-weight: 800; color: var(--accent); }
 .person-card .label { font-size: 0.75rem; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; }
+.person-card .sub { font-size: 0.8rem; color: var(--text-light); margin-top: 4px; }
+
+/* PROGRESS */
 .progress-bar { width: 100%; height: 8px; background: #e9ecef; border-radius: 4px; margin-top: 8px; overflow: hidden; }
 .progress-bar .fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
 .fill.green { background: linear-gradient(90deg, #27ae60, #2ecc71); }
 .fill.gold { background: linear-gradient(90deg, #f39c12, #f5a623); }
 .fill.red { background: linear-gradient(90deg, #e74c3c, #e94560); }
+.fill.blue { background: linear-gradient(90deg, #2980b9, #3498db); }
+
+/* STATS */
 .stats-row { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
-.stat-item { flex: 1; min-width: 120px; text-align: center; padding: 12px 8px; background: #f8f9fa; border-radius: 8px; }
+.stat-item { flex: 1; min-width: 110px; text-align: center; padding: 12px 8px; background: #f8f9fa; border-radius: 8px; }
 .stat-item .stat-value { font-size: 1.4rem; font-weight: 800; color: var(--primary); }
 .stat-item .stat-label { font-size: 0.72rem; color: var(--text-light); text-transform: uppercase; }
+
+/* TABLES */
 table { width: 100%; border-collapse: collapse; margin-top: 12px; }
 th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
 th { background: var(--primary); color: white; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; }
 tr:nth-child(even) { background: #f8f9fa; }
 tr:hover { background: #f0f0f0; }
+
+/* FORMS */
 .form-group { margin-bottom: 14px; }
 .form-group label { display: block; font-weight: 600; font-size: 0.85rem; margin-bottom: 6px; color: var(--primary); }
 .form-group input, .form-group select { width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; transition: border 0.2s; }
@@ -64,32 +85,80 @@ tr:hover { background: #f0f0f0; }
 .btn-primary:hover { background: #d63851; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(233,69,96,0.3); }
 .btn-secondary { background: var(--accent2); color: white; }
 .btn-secondary:hover { background: #0c2a4d; }
-.btn-success { background: var(--green); color: white; }
 .section-title { font-size: 0.95rem; font-weight: 700; color: var(--primary); margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
-.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; }
+
+/* BADGES */
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; margin-right: 4px; margin-top: 4px; }
 .badge-green { background: #d4edda; color: #155724; }
 .badge-gold { background: #fff3cd; color: #856404; }
 .badge-red { background: #f8d7da; color: #721c24; }
+.badge-blue { background: #d1ecf1; color: #0c5460; }
+
+/* LOGIN */
 .login-overlay { display: none; position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
 .login-overlay.show { display: flex; }
 .login-box { background: white; padding: 32px; border-radius: var(--radius); width: 340px; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.2); }
 .login-box h3 { margin-bottom: 16px; color: var(--primary); }
 .login-box input { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 12px; font-size: 1rem; }
+
+/* LOADING */
 .loading { text-align: center; padding: 40px; color: var(--text-light); }
 .loading .spinner { display: inline-block; width: 36px; height: 36px; border: 4px solid #e0e0e0; border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ALERTS */
 .alert { padding: 12px 16px; border-radius: 8px; margin: 12px 0; font-size: 0.88rem; }
 .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
 .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+.alert-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+.alert-warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+
+/* RANKING */
 .ranking-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 8px; margin-bottom: 8px; background: #f8f9fa; }
 .ranking-item .pos { font-weight: 800; font-size: 1.2rem; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
 .ranking-item .pos.first { background: var(--gold); color: white; }
 .ranking-item .pos.second { background: #c0c0c0; color: white; }
+
+/* MONTH SELECTOR */
+.month-bar { background: var(--secondary); color: white; padding: 10px 20px; display: flex; align-items: center; gap: 12px; border-radius: var(--radius); margin-bottom: 16px; flex-wrap: wrap; }
+.month-bar label { font-weight: 600; font-size: 0.9rem; }
+.month-bar select { padding: 8px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; background: white; color: var(--primary); }
+.month-bar button { padding: 8px 18px; font-size: 0.82rem; }
+.month-bar .status { font-size: 0.78rem; opacity: 0.7; }
+
+/* INSIGHT BOX */
+.insight-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px 20px; border-radius: var(--radius); margin: 16px 0; font-size: 0.92rem; line-height: 1.5; }
+.insight-box strong { display: block; margin-bottom: 4px; font-size: 1rem; }
+
+/* TIPS */
+.tip-box { background: #fff9e6; border-left: 4px solid var(--gold); padding: 14px 18px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 0.88rem; }
+.tip-box strong { color: var(--gold); }
+
+/* CONFETTI CANVAS */
+#confettiCanvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+
+/* LEADERSHIP */
+.leader-badge { display: inline-block; background: linear-gradient(135deg, var(--gold), #e67e22); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.78rem; font-weight: 700; }
+
+/* PLANO ANUAL HIGHLIGHT */
+.plano-anual { background: linear-gradient(135deg, #27ae60, #2ecc71); color: white; padding: 14px 20px; border-radius: var(--radius); margin: 12px 0; }
+.plano-anual strong { font-size: 1.1rem; }
+
+/* META SEMANAL */
+.week-bar { display: flex; gap: 4px; margin: 8px 0; }
+.week-bar .day { flex: 1; height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 0.72rem; font-weight: 600; color: white; }
+.week-bar .day.done { background: var(--green); }
+.week-bar .day.partial { background: var(--gold); }
+.week-bar .day.miss { background: #e74c3c; }
+.week-bar .day.future { background: #ddd; color: #999; }
+
+/* RESPONSIVE */
 @media (max-width: 768px) {
   .header { flex-direction: column; gap: 4px; text-align: center; }
   .card-grid { grid-template-columns: 1fr; }
   .stats-row { flex-direction: column; }
   .nav button { font-size: 0.72rem; padding: 10px 6px; }
+  .month-bar { flex-wrap: wrap; }
 }
 </style>
 </head>
@@ -99,8 +168,9 @@ tr:hover { background: #f0f0f0; }
   <div>
     <h1>Komprão</h1>
     <span class="branch">Gerber Academia</span>
+    <div class="greeting" id="greeting" style="margin-top:4px"></div>
   </div>
-  <div style="font-size:0.82rem; opacity:0.8;" id="currentDate"></div>
+  <div class="date-info" id="dateInfo"></div>
 </div>
 
 <nav class="nav" id="mainNav">
@@ -109,10 +179,19 @@ tr:hover { background: #f0f0f0; }
   <button data-tab="folha">Resultado Folha</button>
   <button data-tab="produtos">Produtos</button>
   <button data-tab="historico">Histórico</button>
+  <button data-tab="lideranca">👑 Liderança</button>
   <button data-tab="preencher">✏️ Preencher</button>
 </nav>
 
 <div class="main">
+
+  <!-- Seletor de mês global -->
+  <div class="month-bar" id="globalMonthBar">
+    <label>📅 Mês/Ano:</label>
+    <select id="monthSelect"></select>
+    <button class="btn btn-primary" onclick="loadMonth()" style="padding:8px 16px;font-size:0.8rem">Carregar</button>
+    <span class="status" id="monthStatus"></span>
+  </div>
 
   <!-- ==================== ABA 1: META FINANCEIRA ==================== -->
   <div class="tab active" id="tab-meta">
@@ -123,11 +202,12 @@ tr:hover { background: #f0f0f0; }
       </div>
     </div>
 
+    <div id="insightBox"></div>
+    <div id="planoAnualBox"></div>
+
     <div class="card">
-      <h2>👥 Cards da Equipe</h2>
-      <div class="card-grid" id="cardsEquipe">
-        <!-- KH, LI, Outros — sem AM -->
-      </div>
+      <h2>👥 Cards da Equipe (KH, LI, Outros)</h2>
+      <div class="card-grid" id="cardsEquipe"></div>
     </div>
 
     <div class="card">
@@ -141,8 +221,13 @@ tr:hover { background: #f0f0f0; }
     </div>
 
     <div class="card">
-      <h2>🎯 Meta Diária</h2>
+      <h2>🎯 Meta Diária Dinâmica</h2>
       <div id="metaDiaria"></div>
+    </div>
+
+    <div class="card">
+      <h2>📆 Meta Semanal</h2>
+      <div id="metaSemanal"></div>
     </div>
   </div>
 
@@ -157,22 +242,10 @@ tr:hover { background: #f0f0f0; }
       <h2>🔄 Renovações — Equipe (KH + LI)</h2>
       <div id="renovacoesEquipe">
         <div class="stats-row">
-          <div class="stat-item">
-            <div class="stat-value" id="renovKHI">—</div>
-            <div class="stat-label">KH — Inscritos</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value" id="renovKHR">—</div>
-            <div class="stat-label">KH — Renovados</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value" id="renovLII">—</div>
-            <div class="stat-label">LI — Inscritos</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value" id="renovLIR">—</div>
-            <div class="stat-label">LI — Renovados</div>
-          </div>
+          <div class="stat-item"><div class="stat-value" id="renovKHI">—</div><div class="stat-label">KH — Inscritos</div></div>
+          <div class="stat-item"><div class="stat-value" id="renovKHR">—</div><div class="stat-label">KH — Renovados</div></div>
+          <div class="stat-item"><div class="stat-value" id="renovLII">—</div><div class="stat-label">LI — Inscritos</div></div>
+          <div class="stat-item"><div class="stat-value" id="renovLIR">—</div><div class="stat-label">LI — Renovados</div></div>
         </div>
         <div id="renovBonusInfo" style="margin-top:12px"></div>
       </div>
@@ -182,21 +255,17 @@ tr:hover { background: #f0f0f0; }
       <h2>❌ Cancelamentos — Líder/Gestão</h2>
       <div id="cancelamentosLider">
         <div class="stats-row">
-          <div class="stat-item">
-            <div class="stat-value" id="cancInsc">—</div>
-            <div class="stat-label">Total Inscritos</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value" id="cancCanc">—</div>
-            <div class="stat-label">Cancelamentos</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-value" id="cancPerc">—</div>
-            <div class="stat-label">Taxa (%)</div>
-          </div>
+          <div class="stat-item"><div class="stat-value" id="cancInsc">—</div><div class="stat-label">Ativos Início</div></div>
+          <div class="stat-item"><div class="stat-value" id="cancCanc">—</div><div class="stat-label">Cancelamentos</div></div>
+          <div class="stat-item"><div class="stat-value" id="cancPerc">—</div><div class="stat-label">Taxa (%)</div></div>
         </div>
         <div id="cancBonusInfo" style="margin-top:12px"></div>
       </div>
+    </div>
+
+    <div class="card">
+      <h2>📊 Base Líquida Final</h2>
+      <div id="baseLiquida"></div>
     </div>
   </div>
 
@@ -234,7 +303,15 @@ tr:hover { background: #f0f0f0; }
     </div>
   </div>
 
-  <!-- ==================== ABA 6: PREENCHER ==================== -->
+  <!-- ==================== ABA 6: LIDERANÇA (SENHA) ==================== -->
+  <div class="tab" id="tab-lideranca">
+    <div class="card">
+      <h2>👑 Painel da Liderança <span class="leader-badge">Restrito</span></h2>
+      <div id="liderancaContent"></div>
+    </div>
+  </div>
+
+  <!-- ==================== ABA 7: PREENCHER (SENHA) ==================== -->
   <div class="tab" id="tab-preencher">
     <div class="card" id="preencherForm">
       <h2>✏️ Preencher Registro</h2>
@@ -248,6 +325,7 @@ tr:hover { background: #f0f0f0; }
 <div class="login-overlay" id="loginOverlay">
   <div class="login-box">
     <h3>🔒 Acesso Restrito</h3>
+    <p style="font-size:0.85rem;color:var(--text-light);margin-bottom:16px" id="loginTarget"></p>
     <input type="password" id="loginPass" placeholder="Digite a senha" onkeypress="if(event.key==='Enter')checkLogin()">
     <button class="btn btn-primary" onclick="checkLogin()" style="width:100%">Entrar</button>
     <button class="btn" onclick="closeLogin()" style="margin-top:8px;background:#eee;color:#333">Cancelar</button>
@@ -255,203 +333,623 @@ tr:hover { background: #f0f0f0; }
   </div>
 </div>
 
+<!-- Confetti Canvas -->
+<canvas id="confettiCanvas"></canvas>
+
 <script>
 // ==================== CONFIG ====================
+const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzCkuDLjLeBuY0hQTOWcScNT5yzZSYf65mwjghg3WlzArj-bwsLcGbzH_gNk37agOKfgg/exec';
+const PASSWORD = 'liderkomprao';
+
 const CONFIG = {
-  sheetUrl: 'https://script.google.com/macros/s/AKfycbzCkuDLjLeBuY0hQTOWcScNT5yzZSYf65mwjghg3WlzArj-bwsLcGbzH_gNk37agOKfgg/exec',
-  password: 'liderkomprao',
-  team: {
-    KH: { name: 'Kézia Heloisa', type: 'consultora', campo: 'sv' },
-    LI: { name: 'Liriane', type: 'consultora', campo: 'rv' },
-    AM: { name: 'Amabile', type: 'recepcao', campo: 'ab_prod' },
-    outros: { name: 'Outros (Líder/Gestão)', type: 'outros', campo: 'outros' }
-  },
   metas: {
     jan2025_jun2026: [110000, 120000, 130000],
     jul2026_onwards: [70000, 77000, 84000]
   },
   bonusMeta: [400, 700, 1000],
   bonusRenov: { t70: 50, t85: 100 },
-  bonusAvaliacao: 10
+  bonusAvaliacao: 10,
+  bonusVendas15: 100,
+  bonusVendas5: 5,
+  bonusLiderVendas: 100,
+  bonusLiderVendasMin: 60,
+  bonusLiderCanc1: 200,
+  bonusLiderCanc2: 100,
+  bonusLiderRenov1: 200,
+  bonusLiderRenov2: 100,
+  planoAnualValor: 1428,
+  planoAnualMensal: 119
 };
 
+// Feriados nacionais 2026 (seg-sex)
+const FERIADOS_2026 = [
+  '2026-01-01', '2026-02-17', '2026-02-18', '2026-04-03', '2026-04-21',
+  '2026-05-01', '2026-06-04', '2026-09-07', '2026-10-12', '2026-11-02',
+  '2026-11-15', '2026-12-25'
+];
+const FERIADOS_2025 = [
+  '2025-01-01', '2025-03-04', '2025-03-05', '2025-04-18', '2025-04-21',
+  '2025-05-01', '2025-06-19', '2025-09-07', '2025-10-12', '2025-11-02',
+  '2025-11-15', '2025-12-25'
+];
+
 // ==================== STATE ====================
-let sheetData = null;
+let currentMonth = null;
+let records = [];
 let isPreencherUnlocked = false;
+let isLiderancaUnlocked = false;
+
+// ==================== GREETING ====================
+function setGreeting() {
+  const h = new Date().getHours();
+  let g = '';
+  if (h >= 5 && h < 12) g = '☀️ Bom dia, equipe!';
+  else if (h >= 12 && h < 18) g = '🌤️ Boa tarde, equipe!';
+  else g = '🌙 Boa noite, equipe!';
+  document.getElementById('greeting').textContent = g;
+  const now = new Date();
+  const diasUteis = countWorkingDaysUntilEndOfMonth(now);
+  document.getElementById('dateInfo').innerHTML =
+    '<div>' + now.toLocaleDateString('pt-BR', { weekday:'long', day:'2-digit', month:'long' }) + '</div>' +
+    '<div>' + diasUteis + ' dias úteis restantes</div>';
+}
+
+function countWorkingDaysUntilEndOfMonth(date) {
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const lastDay = new Date(year, month + 1, 0).getDate();
+  const today = date.getDate();
+  let count = 0;
+  const feriados = year === 2026 ? FERIADOS_2026 : FERIADOS_2025;
+  for (let d = today + 1; d <= lastDay; d++) {
+    const dt = new Date(year, month, d);
+    const dow = dt.getDay();
+    if (dow === 0 || dow === 6) continue;
+    const dateStr = year + '-' + String(month+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    if (!feriados.includes(dateStr)) count++;
+  }
+  return count;
+}
+
+function countWorkingDaysInMonth(year, month) {
+  const lastDay = new Date(year, month + 1, 0).getDate();
+  let count = 0;
+  const feriados = year === 2026 ? FERIADOS_2026 : FERIADOS_2025;
+  for (let d = 1; d <= lastDay; d++) {
+    const dt = new Date(year, month, d);
+    const dow = dt.getDay();
+    if (dow === 0 || dow === 6) continue;
+    const dateStr = year + '-' + String(month+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
+    if (!feriados.includes(dateStr)) count++;
+  }
+  return count;
+}
+
+// ==================== DATE ====================
+setGreeting();
 
 // ==================== NAV ====================
-document.getElementById('currentDate').textContent = new Date().toLocaleDateString('pt-BR', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
-
 document.querySelectorAll('.nav button').forEach(btn => {
   btn.addEventListener('click', () => {
     const tab = btn.dataset.tab;
-    if (tab === 'preencher' && !isPreencherUnlocked) {
-      showLogin();
-      return;
-    }
-    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('tab-' + tab).classList.add('active');
+    if (tab === 'preencher' && !isPreencherUnlocked) { pendingLogin = 'preencher'; showLogin('Preencher Registro'); return; }
+    if (tab === 'lideranca' && !isLiderancaUnlocked) { pendingLogin = 'lideranca'; showLogin('Painel da Liderança'); return; }
+    switchTab(tab);
   });
 });
 
+let pendingLogin = '';
+function switchTab(tab) {
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'preencher' || tab === 'lideranca') {
+    document.getElementById('globalMonthBar').style.display = 'none';
+  } else {
+    document.getElementById('globalMonthBar').style.display = 'flex';
+  }
+}
+
 // ==================== LOGIN ====================
-function showLogin() { document.getElementById('loginOverlay').classList.add('show'); document.getElementById('loginPass').focus(); }
-function closeLogin() { document.getElementById('loginOverlay').classList.remove('show'); document.getElementById('loginPass').value=''; document.getElementById('loginMsg').textContent=''; }
+function showLogin(target) {
+  document.getElementById('loginTarget').textContent = target;
+  document.getElementById('loginOverlay').classList.add('show');
+  document.getElementById('loginPass').focus();
+}
+function closeLogin() {
+  document.getElementById('loginOverlay').classList.remove('show');
+  document.getElementById('loginPass').value = '';
+  document.getElementById('loginMsg').textContent = '';
+}
 function checkLogin() {
-  const pass = document.getElementById('loginPass').value;
-  if (pass === CONFIG.password) {
-    isPreencherUnlocked = true;
+  if (document.getElementById('loginPass').value === PASSWORD) {
     closeLogin();
-    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelector('[data-tab="preencher"]').classList.add('active');
-    document.getElementById('tab-preencher').classList.add('active');
-    renderPreencher();
+    if (pendingLogin === 'preencher') {
+      isPreencherUnlocked = true;
+      switchTab('preencher');
+      renderPreencher();
+    } else if (pendingLogin === 'lideranca') {
+      isLiderancaUnlocked = true;
+      document.querySelector('[data-tab="lideranca"]').classList.remove('hidden-tab');
+      switchTab('lideranca');
+      renderLideranca();
+    }
+    pendingLogin = '';
   } else {
     document.getElementById('loginMsg').textContent = 'Senha incorreta!';
   }
 }
 
-// ==================== DATA FETCH ====================
-async function fetchData(action, params) {
-  const url = CONFIG.sheetUrl + '?action=' + action + '&' + new URLSearchParams(params);
+// ==================== API CALLS ====================
+async function apiGet(action, params) {
+  const url = SHEET_URL + '?action=' + action + '&' + new URLSearchParams(params);
   const res = await fetch(url);
-  if (!res.ok) throw new Error('Erro ao buscar dados: ' + res.status);
+  if (!res.ok) throw new Error('Erro HTTP ' + res.status);
   return res.json();
 }
 
-async function loadData() {
+async function apiSave(data) {
+  const url = SHEET_URL + '?action=salvar&dados=' + encodeURIComponent(JSON.stringify(data));
+  const res = await fetch(url, { method: 'POST' });
+  return res.json();
+}
+
+// ==================== INIT ====================
+async function init() {
   try {
-    sheetData = await fetchData('getData', {});
-    renderAll();
+    const meses = await apiGet('listar_meses', {});
+    const select = document.getElementById('monthSelect');
+    if (Array.isArray(meses) && meses.length) {
+      meses.forEach(m => {
+        const opt = document.createElement('option');
+        opt.value = m;
+        opt.textContent = m;
+        select.appendChild(opt);
+      });
+      // Selecionar mês atual
+      const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+      const now = new Date();
+      const currentMes = months[now.getMonth()] + '/' + now.getFullYear();
+      const idx = meses.indexOf(currentMes);
+      if (idx >= 0) {
+        select.selectedIndex = idx;
+      }
+      currentMonth = select.value;
+    } else {
+      const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+      const now = new Date();
+      currentMonth = months[now.getMonth()] + '/' + now.getFullYear();
+      const opt = document.createElement('option');
+      opt.value = currentMonth;
+      opt.textContent = currentMonth;
+      select.appendChild(opt);
+    }
+    await loadMonth();
   } catch (e) {
-    console.error(e);
-    document.querySelectorAll('.main .card').forEach(c => {
-      const el = c.querySelector('[id]');
-      if (el && el.innerHTML.includes('spinner')) el.innerHTML = '<div class="alert alert-error">Erro ao carregar dados. Verifique sua conexão.</div>';
-    });
+    console.error('Erro init:', e);
+    document.getElementById('monthStatus').textContent = 'Erro ao conectar';
   }
+}
+
+async function loadMonth() {
+  currentMonth = document.getElementById('monthSelect').value || currentMonth;
+  document.getElementById('monthStatus').textContent = 'Carregando...';
+  try {
+    records = await apiGet('carregar', { mes: currentMonth });
+    if (!Array.isArray(records)) records = [];
+    document.getElementById('monthStatus').textContent = currentMonth + ' — ' + records.length + ' registro(s)';
+    renderAll();
+    // Re-render leader/leader tab if unlocked
+    if (isLiderancaUnlocked) renderLideranca();
+  } catch (e) {
+    console.error('Erro loadMonth:', e);
+    records = [];
+    document.getElementById('monthStatus').textContent = 'Erro ao carregar';
+    renderAll();
+  }
+}
+
+// ==================== HELPERS ====================
+function num(v) { return parseFloat(v) || 0; }
+function fmt(val) {
+  if (val === null || val === undefined) return '0';
+  return Number(val).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+function sumField(field) { return records.reduce((s, r) => s + num(r[field]), 0); }
+
+// ==================== GET TOTALS ====================
+function getTotals() {
+  const sv = sumField('sv');
+  const rv = sumField('rv');
+  const ov = sumField('ov');
+  const s_novas = sumField('s_novas');
+  const s_remat = sumField('s_remat');
+  const s_aval = sumField('s_aval');
+  const r_novas = sumField('r_novas');
+  const r_remat = sumField('r_remat');
+  const r_aval = sumField('r_aval');
+  const o_novas = sumField('o_novas');
+  const o_remat = sumField('o_remat');
+  const o_aval = sumField('o_aval');
+  const renovTotal = sumField('renovTotal');
+  const renovFeitos = sumField('renovFeitos');
+  const cancelamentos = sumField('cancelamentos');
+  const ativosInicio = records.length ? num(records[0].ativos_inicio) : 0;
+
+  // Vendas totais da unidade (novas + rematrículas de todos)
+  const totalVendas = s_novas + s_remat + r_novas + r_remat + o_novas + o_remat;
+  const vendasKH = s_novas + s_remat;
+  const vendasLI = r_novas + r_remat;
+  const vendasOutros = o_novas + o_remat;
+
+  // Produtos
+  const produtos = [];
+  records.forEach(r => {
+    if (r.sp && String(r.sp).trim() !== '0' && String(r.sp).trim() !== '') produtos.push({ vendedor: 'KH', produto: r.sp });
+    if (r.rp && String(r.rp).trim() !== '0' && String(r.rp).trim() !== '') produtos.push({ vendedor: 'LI', produto: r.rp });
+    if (r.ab_prod && String(r.ab_prod).trim() !== '0' && String(r.ab_prod).trim() !== '') produtos.push({ vendedor: 'AM', produto: r.ab_prod });
+    if (r.ou_prod && String(r.ou_prod).trim() !== '0' && String(r.ou_prod).trim() !== '') produtos.push({ vendedor: 'Outros', produto: r.ou_prod });
+    if (r.sa_prod && String(r.sa_prod).trim() !== '0' && String(r.sa_prod).trim() !== '') produtos.push({ vendedor: 'KH', produto: r.sa_prod });
+    if (r.ra_prod && String(r.ra_prod).trim() !== '0' && String(r.ra_prod).trim() !== '') produtos.push({ vendedor: 'LI', produto: r.ra_prod });
+  });
+
+  return { sv, rv, ov, s_novas, s_remat, s_aval, r_novas, r_remat, r_aval, o_novas, o_remat, o_aval, renovTotal, renovFeitos, ativosInicio, cancelamentos, totalVendas, vendasKH, vendasLI, vendasOutros, produtos };
+}
+
+// ==================== META DIARIA DINÂMICA ====================
+function calcMetaDiariaDinamica(t) {
+  const metaAtual = getMetaAtual();
+  const totalAtual = t.sv + t.rv + t.ov;
+  const saldoRestante = Math.max(metaAtual - totalAtual, 0);
+
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const diasUteisRestantes = countWorkingDaysUntilEndOfMonth(now);
+  const diasUteisTotais = countWorkingDaysInMonth(year, month);
+
+  const metaDiaria = diasUteisRestantes > 0 ? Math.round(saldoRestante / diasUteisRestantes) : 0;
+  const metaDiariaGeral = diasUteisTotais > 0 ? Math.round(metaAtual / diasUteisTotais) : 0;
+  const diasRestantes = diasUteisRestantes;
+  const diasUteisPassados = diasUteisTotais - diasUteisRestantes - (now.getDay() === 0 || now.getDay() === 6 ? 0 : 1);
+
+  return { saldoRestante, metaDiaria, metaDiariaGeral, diasUteisRestantes: diasRestantes, diasUteisTotais };
+}
+
+// ==================== META SEMANAL ====================
+function calcMetaSemanal(t) {
+  const metaAtual = getMetaAtual();
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const day = now.getDate();
+  const dow = now.getDay(); // 0=Dom, 6=Sáb
+
+  // Encontrar início da semana (segunda)
+  const diff = dow === 0 ? 6 : dow - 1; // segunda = 0, terça = 1...
+  const semanaInicio = new Date(year, month, day - diff);
+  const semanaFim = new Date(year, month, day + (6 - diff));
+
+  // Filtar registros desta semana
+  const semanaRegistros = records.filter(r => {
+    if (!r.data) return false;
+    const partes = r.data.split('/');
+    if (partes.length < 3) return false;
+    const rDate = new Date(parseInt(partes[2]) + 2000 > 2030 ? parseInt(partes[2]) : parseInt(partes[2]) + 2000, parseInt(partes[1]) - 1, parseInt(partes[0]));
+    return rDate >= semanaInicio && rDate <= semanaFim;
+  });
+
+  const totalSemana = semanaRegistros.reduce((s, r) => s + num(r.sv) + num(r.rv) + num(r.ov), 0);
+
+  // Meta semanal = meta_mensal / 4 (aproximado) ou melhor: dividir pelos dias úteis do mês * dias úteis da semana
+  const diasUteisTotais = countWorkingDaysInMonth(year, month);
+  const diasUteisSemana = countWorkingDaysInWeek(year, month, semanaInicio, dow);
+  const metaSemanal = diasUteisTotais > 0 ? Math.round(metaAtual * diasUteisSemana / diasUteisTotais) : Math.round(metaAtual / 4);
+  const progresso = metaSemanal > 0 ? ((totalSemana / metaSemanal) * 100).toFixed(1) : 0;
+
+  // Dias da semana com resultado
+  const diasSemana = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(semanaInicio);
+    d.setDate(d.getDate() + i);
+    const dow = d.getDay();
+    const isWeekend = dow === 0 || dow === 6;
+    const isFuture = d > now;
+    const dayTotal = records.filter(r => {
+      if (!r.data) return false;
+      const partes = r.data.split('/');
+      if (partes.length < 3) return false;
+      const rDate = new Date(parseInt(partes[2]) + 2000 > 2030 ? parseInt(partes[2]) : parseInt(partes[2]) + 2000, parseInt(partes[1]) - 1, parseInt(partes[0]));
+      return rDate.toDateString() === d.toDateString();
+    }).reduce((s, r) => s + num(r.sv) + num(r.rv) + num(r.ov), 0);
+
+    const labels = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    diasSemana.push({ label: labels[dow], total: dayTotal, isWeekend, isFuture, isToday: d.toDateString() === now.toDateString() });
+  }
+
+  return { totalSemana, metaSemanal, progresso, diasSemana };
+}
+
+function countWorkingDaysInWeek(year, month, semanaInicio, dowAtual) {
+  let count = 0;
+  const feriados = year === 2026 ? FERIADOS_2026 : FERIADOS_2025;
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(semanaInicio);
+    d.setDate(d.getDate() + i);
+    if (d.getDay() === 0 || d.getDay() === 6) continue;
+    const dateStr = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    if (!feriados.includes(dateStr)) count++;
+  }
+  return count;
+}
+
+// ==================== BÔNUS VENDAS VOLUME ====================
+function calcBonusVendasVolume(vendas) {
+  if (vendas >= 15) {
+    const full = Math.floor(vendas / 15);
+    const remainder = vendas % 15;
+    return full * CONFIG.bonusVendas15 + remainder * CONFIG.bonusVendas5;
+  } else if (vendas >= 10) {
+    return vendas * CONFIG.bonusVendas5;
+  }
+  return 0;
+}
+
+// ==================== BÔNUS PROPORCIONAL META ====================
+function calcBonusProporcional(valAtual, totalEquipe, totalMes, metaAtual) {
+  if (totalEquipe === 0) return 0;
+  const perc = valAtual / totalEquipe;
+  const faixa = totalMes >= metaAtual ? 2 : (totalMes >= metaAtual * 0.7 ? 1 : 0);
+  const bonusTotal = CONFIG.bonusMeta[faixa] || 0;
+  return Math.round(perc * bonusTotal * 100) / 100;
+}
+
+function calcBonusRenovacao(t) {
+  const totalInsc = (t.s_novas + t.s_remat) + (t.r_novas + t.r_remat);
+  const totalRenov = t.s_remat + t.r_remat;
+  if (totalInsc === 0) return 0;
+  const taxa = (totalRenov / totalInsc) * 100;
+  if (taxa >= 85) return CONFIG.bonusRenov.t85;
+  if (taxa >= 70) return CONFIG.bonusRenov.t70;
+  return 0;
 }
 
 // ==================== RENDER ALL ====================
 function renderAll() {
-  if (!sheetData) return;
-  renderMeta();
-  renderRetencao();
-  renderFolha();
-  renderProdutos();
+  const t = getTotals();
+  renderMeta(t);
+  renderRetencao(t);
+  renderFolha(t);
+  renderProdutos(t);
   renderHistorico();
 }
 
 // ==================== META FINANCEIRA ====================
-function renderMeta() {
-  // Progresso coletivo
-  const totalAtual = calcTotalAtual();
+function getMetaAtual() {
+  const now = new Date();
+  if (now.getFullYear() >= 2026 && now.getMonth() >= 6) return CONFIG.metas.jul2026_onwards[0];
+  return CONFIG.metas.jan2025_jun2026[0];
+}
+
+function renderMeta(t) {
+  const totalAtual = t.sv + t.rv + t.ov;
   const metaAtual = getMetaAtual();
   const perc = Math.min((totalAtual / metaAtual) * 100, 100).toFixed(1);
   const fillClass = perc >= 100 ? 'green' : perc >= 70 ? 'gold' : 'red';
+
+  // Confetti check
+  if (parseFloat(perc) >= 100) {
+    setTimeout(launchConfetti, 500);
+  }
+
   document.getElementById('metaProgresso').innerHTML = `
     <div class="stats-row">
-      <div class="stat-item"><div class="stat-value">R$ ${formatMoney(totalAtual)}</div><div class="stat-label">Arrecadado</div></div>
-      <div class="stat-item"><div class="stat-value">R$ ${formatMoney(metaAtual)}</div><div class="stat-label">Meta do Mês</div></div>
+      <div class="stat-item"><div class="stat-value">R$ ${fmt(totalAtual)}</div><div class="stat-label">Arrecadado</div></div>
+      <div class="stat-item"><div class="stat-value">R$ ${fmt(metaAtual)}</div><div class="stat-label">Meta do Mês</div></div>
       <div class="stat-item"><div class="stat-value">${perc}%</div><div class="stat-label">Progresso</div></div>
     </div>
     <div class="progress-bar"><div class="fill ${fillClass}" style="width:${perc}%"></div></div>
   `;
 
-  // Cards equipe (KH, LI, Outros — SEM AM)
-  const cardsHtml = ['KH','LI'].map(key => {
-    const m = CONFIG.team[key];
-    const val = sheetData[key] || 0;
-    return `<div class="person-card"><div class="name">${m.name}</div><div class="role">${m.name.split(' ')[0]} — Consultora</div><div class="label">Valor Individual</div><div class="value">R$ ${formatMoney(val)}</div></div>`;
-  }).join('') + `
-    <div class="person-card" style="border-left-color:var(--accent2)"><div class="name">Outros (Líder/Gestão)</div><div class="role">Registro — sem bônus</div><div class="label">Valor Coletivo</div><div class="value">R$ ${formatMoney(sheetData.outros || 0)}</div></div>
+  // Insight box
+  renderInsight(t, totalAtual, metaAtual, perc);
+
+  // Plano anual box
+  renderPlanoAnual(t);
+
+  // Cards
+  document.getElementById('cardsEquipe').innerHTML = `
+    <div class="person-card">
+      <div class="name">Kézia Heloisa</div>
+      <div class="role">Consultora (KH)</div>
+      <div class="label">Vendas</div>
+      <div class="value">R$ ${fmt(t.sv)}</div>
+      <div class="sub">Vendas: ${t.vendasKH} | Planos anuais: ~${Math.round(t.sv / CONFIG.planoAnualValor)}</div>
+    </div>
+    <div class="person-card" style="border-left-color:var(--accent2)">
+      <div class="name">Liriane</div>
+      <div class="role">Consultora (LI)</div>
+      <div class="label">Vendas</div>
+      <div class="value">R$ ${fmt(t.rv)}</div>
+      <div class="sub">Vendas: ${t.vendasLI} | Planos anuais: ~${Math.round(t.rv / CONFIG.planoAnualValor)}</div>
+    </div>
+    <div class="person-card" style="border-left-color:var(--gold)">
+      <div class="name">Outros (Líder/Gestão)</div>
+      <div class="role">Registro — sem bônus folha</div>
+      <div class="label">Vendas</div>
+      <div class="value">R$ ${fmt(t.ov)}</div>
+      <div class="sub">Vendas: ${t.vendasOutros} | Unidade total: ${t.totalVendas}</div>
+    </div>
   `;
-  document.getElementById('cardsEquipe').innerHTML = cardsHtml;
 
   // Metas anuais
   document.getElementById('metasAnuais').innerHTML = `
     <table>
-      <tr><th>Período</th><th>Meta 1</th><th>Meta 2</th><th>Meta 3</th></tr>
-      <tr><td>Jan/2025 — Jun/2026</td><td>R$ ${formatMoney(110000)}</td><td>R$ ${formatMoney(120000)}</td><td>R$ ${formatMoney(130000)}</td></tr>
-      <tr><td>Jul/2026 em diante</td><td>R$ ${formatMoney(70000)}</td><td>R$ ${formatMoney(77000)}</td><td>R$ ${formatMoney(84000)}</td></tr>
+      <tr><th>Período</th><th>Meta 1</th><th>Meta 2 (+10%)</th><th>Meta 3 (+20%)</th></tr>
+      <tr><td>Jan/2025 — Jun/2026</td><td>R$ ${fmt(110000)}</td><td>R$ ${fmt(120000)}</td><td>R$ ${fmt(130000)}</td></tr>
+      <tr><td>Jul/2026 em diante</td><td>R$ ${fmt(70000)}</td><td>R$ ${fmt(77000)}</td><td>R$ ${fmt(84000)}</td></tr>
     </table>
     <div style="margin-top:12px">
-      <strong>Bônus por faixa de meta:</strong><br>
-      <span class="badge badge-green">Meta 1: R$ ${formatMoney(400)}</span>
-      <span class="badge badge-gold">Meta 2: R$ ${formatMoney(700)}</span>
-      <span class="badge badge-red">Meta 3: R$ ${formatMoney(1000)}</span>
-      <span style="font-size:0.82rem;color:var(--text-light);margin-left:8px">(proporcional entre KH e LI)</span>
+      <strong>Bônus por faixa de meta (proporcional KH + LI):</strong><br>
+      <span class="badge badge-green">Meta 1: R$ ${fmt(400)}</span>
+      <span class="badge badge-gold">Meta 2: R$ ${fmt(700)}</span>
+      <span class="badge badge-red">Meta 3: R$ ${fmt(1000)}</span>
+    </div>
+    <div style="margin-top:8px">
+      <strong>Bônus por volume de vendas (consultoras):</strong><br>
+      <span class="badge badge-blue">15+ vendas: R$ 100 a cada 15</span>
+      <span class="badge badge-gold">10-14 vendas: R$ 5 cada</span>
+      <span class="badge badge-red">&lt;10 vendas: sem bônus</span>
     </div>
   `;
 
-  // Ranking KH + LI
-  const khVal = sheetData.KH || 0;
-  const liVal = sheetData.LI || 0;
-  const totalKH_LI = khVal + liVal;
-  const khPerc = totalKH_LI > 0 ? ((khVal / totalKH_LI) * 100).toFixed(1) : '50.0';
-  const liPerc = totalKH_LI > 0 ? ((liVal / totalKH_LI) * 100).toFixed(1) : '50.0';
-  const sorted = [{key:'KH', name:'Kézia Heloisa', val:khVal}, {key:'LI', name:'Liriane', val:liVal}].sort((a,b) => b.val - a.val);
+  // Ranking
+  const totalKH_LI = t.sv + t.rv;
+  const khPerc = totalKH_LI > 0 ? ((t.sv / totalKH_LI) * 100).toFixed(1) : '50.0';
+  const liPerc = totalKH_LI > 0 ? ((t.rv / totalKH_LI) * 100).toFixed(1) : '50.0';
+  const bonusVendasKH = calcBonusVendasVolume(t.vendasKH);
+  const bonusVendasLI = calcBonusVendasVolume(t.vendasLI);
+  const sorted = [
+    {name:'Kézia Heloisa', val:t.sv, perc:khPerc, vendas:t.vendasKH, bonusV:bonusVendasKH},
+    {name:'Liriane', val:t.rv, perc:liPerc, vendas:t.vendasLI, bonusV:bonusVendasLI}
+  ].sort((a,b) => b.val - a.val);
   document.getElementById('ranking').innerHTML = sorted.map((item, i) => `
     <div class="ranking-item">
       <div class="pos ${i===0?'first':'second'}">${i+1}º</div>
-      <div style="flex:1"><div style="font-weight:700">${item.name}</div><div style="font-size:0.8rem;color:var(--text-light)">${item.key} — ${formatMoney(item.val)} (${i===0?khPerc:liPerc}%)</div></div>
+      <div style="flex:1">
+        <div style="font-weight:700">${item.name}</div>
+        <div style="font-size:0.8rem;color:var(--text-light)">R$ ${fmt(item.val)} (${item.perc}%) | ${item.vendas} vendas | Bônus vendas: R$ ${fmt(item.bonusV)}</div>
+      </div>
     </div>
   `).join('');
 
-  // Meta diária
-  const diasNoMes = new Date().getDate();
-  const diasUteis = diasNoMes;
-  const metaDiaria = Math.round(metaAtual / 30);
-  const diarioAtual = Math.round(totalAtual / diasUteis);
+  // Meta diária dinâmica
+  const dd = calcMetaDiariaDinamica(t);
   document.getElementById('metaDiaria').innerHTML = `
     <div class="stats-row">
-      <div class="stat-item"><div class="stat-value">R$ ${formatMoney(metaDiaria)}</div><div class="stat-label">Meta Diária (mês)</div></div>
-      <div class="stat-item"><div class="stat-value">R$ ${formatMoney(diarioAtual)}</div><div class="stat-label">Média Diária (atual)</div></div>
-      <div class="stat-item"><div class="stat-value">${diasUteis}</div><div class="stat-label">Dias no Mês</div></div>
+      <div class="stat-item"><div class="stat-value">R$ ${fmt(dd.saldoRestante)}</div><div class="stat-label">Saldo Restante</div></div>
+      <div class="stat-item"><div class="stat-value">R$ ${fmt(dd.metaDiaria)}</div><div class="stat-label">Meta Diária (ajustada)</div></div>
+      <div class="stat-item"><div class="stat-value">${dd.diasUteisRestantes}</div><div class="stat-label">Dias Úteis Restantes</div></div>
+    </div>
+    <div style="font-size:0.82rem;color:var(--text-light);margin-top:8px">
+      Meta geral do mês: R$ ${fmt(dd.metaDiariaGeral)}/dia útil (${dd.diasUteisTotais} dias úteis no mês)
+    </div>
+  `;
+
+  // Meta semanal
+  renderMetaSemanalCard(t);
+}
+
+function renderMetaSemanalCard(t) {
+  const ms = calcMetaSemanal(t);
+  const fillClass = parseFloat(ms.progresso) >= 100 ? 'green' : parseFloat(ms.progresso) >= 70 ? 'gold' : 'red';
+
+  const diasHtml = ms.diasSemana.map(d => {
+    let cls = 'future';
+    if (!d.isWeekend && !d.isFuture) {
+      const metaDia = ms.metaSemanal > 0 ? Math.round(ms.metaSemanal / ms.diasSemana.filter(x => !x.isWeekend).length) : 0;
+      if (d.total >= metaDia) cls = 'done';
+      else if (d.total > 0) cls = 'partial';
+      else cls = 'miss';
+    }
+    const isTodayStyle = d.isToday ? 'border:2px solid var(--accent);font-weight:800' : '';
+    return `<div class="day ${cls}" style="${isTodayStyle}">${d.label}<br>${d.isWeekend || d.isFuture ? '' : 'R$'+fmt(d.total)}</div>`;
+  }).join('');
+
+  document.getElementById('metaSemanal').innerHTML = `
+    <div class="stats-row">
+      <div class="stat-item"><div class="stat-value">R$ ${fmt(ms.totalSemana)}</div><div class="stat-label">Arrecadado na Semana</div></div>
+      <div class="stat-item"><div class="stat-value">R$ ${fmt(ms.metaSemanal)}</div><div class="stat-label">Meta Semanal</div></div>
+      <div class="stat-item"><div class="stat-value">${ms.progresso}%</div><div class="stat-label">Progresso</div></div>
+    </div>
+    <div class="week-bar">${diasHtml}</div>
+    <div style="font-size:0.75rem;color:var(--text-light);margin-top:4px">
+      <span style="color:var(--green)">■ Meta batida</span> &nbsp;
+      <span style="color:var(--gold)">■ Parcial</span> &nbsp;
+      <span style="color:#e74c3c">■ Sem venda</span> &nbsp;
+      <span style="color:#999">■ Fim de semana</span> &nbsp;
+      <span style="border:2px solid var(--accent);padding:0 4px;border-radius:3px">■ Hoje</span>
+    </div>
+  `;
+}
+
+function renderInsight(t, totalAtual, metaAtual, perc) {
+  const now = new Date();
+  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  const dayOfMonth = now.getDate();
+  const isEndOfMonth = dayOfMonth >= 20;
+  const saldoRestante = Math.max(metaAtual - totalAtual, 0);
+  const diasUteisRestantes = countWorkingDaysUntilEndOfMonth(now);
+  const metaDiaria = diasUteisRestantes > 0 ? Math.round(saldoRestante / diasUteisRestantes) : 0;
+
+  let html = '';
+  if (parseFloat(perc) >= 100) {
+    html = '<div class="insight-box"><strong>🎉 META ATINGIDA!</strong>Parabéns equipe! Vocês superaram a meta de R$ ' + fmt(metaAtual) + '. Continuem firme para desbloquear a próxima faixa!</div>';
+  } else if (isEndOfMonth) {
+    const planosNecessarios = Math.ceil(saldoRestante / CONFIG.planoAnualValor);
+    html = '<div class="insight-box"><strong>📊 Retas finais do mês!</strong>Faltam apenas R$ ' + fmt(saldoRestante) + ' com ' + diasUteisRestantes + ' dias úteis. Meta diária: R$ ' + fmt(metaDiaria) + '. ' +
+      '💡 Dica: ' + planosNecessarios + ' plano(s) anual(is) de R$ ' + fmt(CONFIG.planoAnualValor) + ' resolve(m)! Cada venda de plano anual é o caminho mais rápido para bater meta.</div>';
+  } else if (parseFloat(perc) >= 50) {
+    html = '<div class="insight-box"><strong>👊 Bom ritmo!</strong>Vocês já estão em ' + perc + '% da meta. Meta diária ajustada: R$ ' + fmt(metaDiaria) + '. Mantenham o foco nos planos anuais!</div>';
+  } else {
+    const planosNecessarios = Math.ceil(saldoRestante / CONFIG.planoAnualValor);
+    html = '<div class="insight-box"><strong>🎯 Atenção!</strong>A meta está em ' + perc + '%. Faltam R$ ' + fmt(saldoRestante) + '. Com ' + diasUteisRestantes + ' dias úteis, a meta diária é R$ ' + fmt(metaDiaria) + '. ' +
+      '💡 Venda ' + planosNecessarios + ' plano(s) anual(is) e a meta se aproxima!</div>';
+  }
+  document.getElementById('insightBox').innerHTML = html;
+}
+
+function renderPlanoAnual(t) {
+  const totalAnuais = Math.round((t.sv + t.rv + t.ov) / CONFIG.planoAnualValor);
+  const khAnuais = Math.round(t.sv / CONFIG.planoAnualValor);
+  const liAnuais = Math.round(t.rv / CONFIG.planoAnualValor);
+  document.getElementById('planoAnualBox').innerHTML = `
+    <div class="plano-anual">
+      <strong>📋 Planos Anuais (12x R$ 119 = R$ 1.428)</strong><br>
+      <span style="font-size:0.9rem">KH: ~${khAnuais} | LI: ~${liAnuais} | Total unidade: ~${totalAnuais}</span><br>
+      <span style="font-size:0.82rem;opacity:0.9">Cada plano anual vendido é o caminho mais rápido para bater meta. Foquem!</span>
     </div>
   `;
 }
 
 // ==================== RETENÇÃO ====================
-function renderRetencao() {
-  // Crescimento base
-  const totalInsc = sheetData.renov_inscritos || 0;
-  const totalRenov = sheetData.renov_renovados || 0;
-  const baseAnterior = sheetData.base_anterior || 0;
-  const baseAtual = sheetData.base_atual || totalInsc;
-  const crescimento = baseAnterior > 0 ? (((baseAtual - baseAnterior) / baseAnterior) * 100).toFixed(1) : '—';
+function renderRetencao(t) {
+  const baseAtual = t.ativosInicio || 0;
+  const baseFinal = baseAtual - t.cancelamentos + t.renovFeitos;
+  const variacao = baseAtual > 0 ? (((baseFinal - baseAtual) / baseAtual) * 100).toFixed(1) : '0.0';
+
   document.getElementById('crescimentoBase').innerHTML = `
     <div class="stats-row">
-      <div class="stat-item"><div class="stat-value">${baseAtual}</div><div class="stat-label">Base Atual</div></div>
-      <div class="stat-item"><div class="stat-value">${baseAnterior || '—'}</div><div class="stat-label">Base Anterior</div></div>
-      <div class="stat-item"><div class="stat-value">${crescimento}${crescimento!=='—'?'%':''}</div><div class="stat-label">Crescimento</div></div>
+      <div class="stat-item"><div class="stat-value">${baseAtual}</div><div class="stat-label">Ativos Início</div></div>
+      <div class="stat-item"><div class="stat-value">${baseFinal}</div><div class="stat-label">Base Líquida Final</div></div>
+      <div class="stat-item"><div class="stat-value">${variacao > 0 ? '+' : ''}${variacao}%</div><div class="stat-label">Variação</div></div>
     </div>
+    <div class="progress-bar"><div class="fill ${parseFloat(variacao) >= 0 ? 'green' : 'red'}" style="width:${Math.min(Math.abs(parseFloat(variacao)) * 5, 100)}%"></div></div>
   `;
 
-  // Renovações equipe
-  const rki = sheetData.kh_inscritos || 0;
-  const rkr = sheetData.kh_renovados || 0;
-  const rli = sheetData.li_inscritos || 0;
-  const rlr = sheetData.li_renovados || 0;
-  document.getElementById('renovKHI').textContent = rki;
-  document.getElementById('renovKHR').textContent = rkr;
-  document.getElementById('renovLII').textContent = rli;
-  document.getElementById('renovLIR').textContent = rlr;
+  // Renovações
+  const khInsc = t.s_novas + t.s_remat;
+  const khRenov = t.s_remat;
+  const liInsc = t.r_novas + t.r_remat;
+  const liRenov = t.r_remat;
+  document.getElementById('renovKHI').textContent = khInsc;
+  document.getElementById('renovKHR').textContent = khRenov;
+  document.getElementById('renovLII').textContent = liInsc;
+  document.getElementById('renovLIR').textContent = liRenov;
 
-  // Bônus renovação
-  const taxaTotal = (rki + rli) > 0 ? (((rkr + rlr) / (rki + rli)) * 100).toFixed(1) : 0;
+  const taxaTotal = (khInsc + liInsc) > 0 ? (((khRenov + liRenov) / (khInsc + liInsc)) * 100).toFixed(1) : '0.0';
+  const taxaNum = parseFloat(taxaTotal);
   let renovBonusHtml = '';
-  if (taxaTotal >= 85) renovBonusHtml = '<div class="alert alert-success">Taxa de renovação ≥ 85% — Bônus de R$ 100 por consultora</div>';
-  else if (taxaTotal >= 70) renovBonusHtml = '<div class="alert" style="background:#fff3cd;color:#856404;border:1px solid #ffeaa7">Taxa de renovação ≥ 70% — Bônus de R$ 50 por consultora</div>';
-  else if (rki + rli > 0) renovBonusHtml = '<div class="alert" style="background:#f8d7da;color:#721c24;border:1px solid #f5c6cb">Taxa de renovação abaixo de 70% — Sem bônus</div>';
+  if (taxaNum >= 85) renovBonusHtml = '<div class="alert alert-success">✅ Taxa de renovação ≥ 85% — Bônus de R$ 100 por consultora</div>';
+  else if (taxaNum >= 70) renovBonusHtml = '<div class="alert alert-warning">⚠️ Taxa de renovação ≥ 70% — Bônus de R$ 50 por consultora</div>';
+  else if (khInsc + liInsc > 0) renovBonusHtml = '<div class="alert alert-error">❌ Taxa de renovação abaixo de 70% — Sem bônus</div>';
+  else renovBonusHtml = '<div class="alert alert-info">Sem dados de renovação neste mês.</div>';
   document.getElementById('renovBonusInfo').innerHTML = renovBonusHtml;
 
-  // Cancelamentos líder
-  const cancInsc = sheetData.canc_inscritos || 0;
-  const cancCanc = sheetData.canc_cancelamentos || 0;
+  // Cancelamentos
+  const cancInsc = t.ativosInicio || 0;
+  const cancCanc = t.cancelamentos || 0;
   const cancPerc = cancInsc > 0 ? ((cancCanc / cancInsc) * 100).toFixed(1) : '—';
   document.getElementById('cancInsc').textContent = cancInsc;
   document.getElementById('cancCanc').textContent = cancCanc;
@@ -459,62 +957,75 @@ function renderRetencao() {
   let cancBonusHtml = '';
   if (cancPerc !== '—') {
     const cp = parseFloat(cancPerc);
-    if (cp <= 3) cancBonusHtml = '<div class="alert alert-success">Taxa de cancelamento ≤ 3% — Excelente!</div>';
-    else if (cp <= 4) cancBonusHtml = '<div class="alert" style="background:#fff3cd;color:#856404;border:1px solid #ffeaa7">Taxa de cancelamento ≤ 4% — Meta atingida</div>';
-    else cancBonusHtml = '<div class="alert" style="background:#f8d7da;color:#721c24;border:1px solid #f5c6cb">Taxa de cancelamento acima de 4% — Atenção!</div>';
+    if (cp <= 3) cancBonusHtml = '<div class="alert alert-success">✅ Taxa ≤ 3% — Excelente!</div>';
+    else if (cp <= 4) cancBonusHtml = '<div class="alert alert-warning">⚠️ Taxa ≤ 4% — Meta 2 atingida</div>';
+    else cancBonusHtml = '<div class="alert alert-error">❌ Taxa acima de 4% — Atenção!</div>';
   }
   document.getElementById('cancBonusInfo').innerHTML = cancBonusHtml;
+
+  // Base líquida detalhada
+  document.getElementById('baseLiquida').innerHTML = `
+    <table>
+      <tr><th>Indicador</th><th>Valor</th><th>Impacto</th></tr>
+      <tr><td>Ativos no início do mês</td><td>${baseAtual}</td><td>—</td></tr>
+      <tr><td>Planos que venceram</td><td>${t.renovTotal}</td><td style="color:#e74c3c">-${t.renovTotal}</td></tr>
+      <tr><td>Renovações efetivadas</td><td>${t.renovFeitos}</td><td style="color:var(--green)">+${t.renovFeitos}</td></tr>
+      <tr><td>Cancelamentos</td><td>${cancCanc}</td><td style="color:#e74c3c">-${cancCanc}</td></tr>
+      <tr><td><strong>Base líquida final</strong></td><td><strong>${baseFinal}</strong></td><td><strong>${variacao > 0 ? '+' : ''}${variacao}%</strong></td></tr>
+    </table>
+    ${parseFloat(variacao) < 0 ? '<div class="tip-box" style="margin-top:12px"><strong>💡 Insight:</strong> A base diminuiu. Seriam necessárias ' + Math.ceil(Math.abs(baseFinal - baseAtual) / (CONFIG.planoAnualValor/12)) + ' novas vendas para recuperar o crescimento.</div>' : '<div class="alert alert-success" style="margin-top:12px">A unidade cresceu! Parabéns!</div>'}
+  `;
 }
 
 // ==================== FOLHA ====================
-function renderFolha() {
-  const khVal = sheetData.KH || 0;
-  const liVal = sheetData.LI || 0;
-  const bonusMetaKH = calcBonusProporcional(khVal, liVal);
-  const bonusMetaLI = calcBonusProporcional(liVal, khVal);
-  const bonusRenov = calcBonusRenovacao();
+function renderFolha(t) {
+  const totalMes = t.sv + t.rv + t.ov;
+  const totalEquipe = t.sv + t.rv;
+  const metaAtual = getMetaAtual();
+  const bonusMetaKH = calcBonusProporcional(t.sv, totalEquipe, totalMes, metaAtual);
+  const bonusMetaLI = calcBonusProporcional(t.rv, totalEquipe, totalMes, metaAtual);
+  const bonusRenov = calcBonusRenovacao(t);
+  const bonusVendasKH = calcBonusVendasVolume(t.vendasKH);
+  const bonusVendasLI = calcBonusVendasVolume(t.vendasLI);
+  const bonusAval = CONFIG.bonusAvaliacao;
+
+  const totalKH = t.sv + bonusMetaKH + bonusVendasKH + bonusRenov + bonusAval;
+  const totalLI = t.rv + bonusMetaLI + bonusVendasLI + bonusRenov + bonusAval;
 
   document.getElementById('folhaKH').innerHTML = `
     <div class="stats-row">
-      <div class="stat-item"><div class="stat-value">R$ ${formatMoney(khVal)}</div><div class="stat-label">Vendas KH</div></div>
-      <div class="stat-item"><div class="stat-value">R$ ${formatMoney(bonusMetaKH)}</div><div class="stat-label">Bônus Meta</div></div>
-      <div class="stat-item"><div class="stat-value">R$ ${formatMoney(bonusRenov)}</div><div class="stat-label">Bônus Renovação</div></div>
+      <div class="stat-item"><div class="stat-value">R$ ${fmt(t.sv)}</div><div class="stat-label">Vendas</div></div>
+      <div class="stat-item"><div class="stat-value">R$ ${fmt(bonusMetaKH)}</div><div class="stat-label">Bônus Meta</div></div>
+      <div class="stat-item"><div class="stat-value">R$ ${fmt(bonusVendasKH)}</div><div class="stat-label">Bônus Vendas (${t.vendasKH})</div></div>
     </div>
-    <div class="progress-bar" style="margin-top:8px"><div class="fill green" style="width:${Math.min((khVal / getMetaAtual())*100, 100)}%"></div></div>
+    <div class="progress-bar" style="margin-top:8px"><div class="fill green" style="width:${Math.min((t.sv / metaAtual)*100, 100)}%"></div></div>
   `;
 
   document.getElementById('folhaLI').innerHTML = `
     <div class="stats-row">
-      <div class="stat-item"><div class="stat-value">R$ ${formatMoney(liVal)}</div><div class="stat-label">Vendas LI</div></div>
-      <div class="stat-item"><div class="stat-value">R$ ${formatMoney(bonusMetaLI)}</div><div class="stat-label">Bônus Meta</div></div>
-      <div class="stat-item"><div class="stat-value">R$ ${formatMoney(bonusRenov)}</div><div class="stat-label">Bônus Renovação</div></div>
+      <div class="stat-item"><div class="stat-value">R$ ${fmt(t.rv)}</div><div class="stat-label">Vendas</div></div>
+      <div class="stat-item"><div class="stat-value">R$ ${fmt(bonusMetaLI)}</div><div class="stat-label">Bônus Meta</div></div>
+      <div class="stat-item"><div class="stat-value">R$ ${fmt(bonusVendasLI)}</div><div class="stat-label">Bônus Vendas (${t.vendasLI})</div></div>
     </div>
-    <div class="progress-bar" style="margin-top:8px"><div class="fill gold" style="width:${Math.min((liVal / getMetaAtual())*100, 100)}%"></div></div>
+    <div class="progress-bar" style="margin-top:8px"><div class="fill gold" style="width:${Math.min((t.rv / metaAtual)*100, 100)}%"></div></div>
   `;
 
   document.getElementById('resumoFolha').innerHTML = `
     <table>
-      <tr><th>Consultora</th><th>Vendas</th><th>Bônus Meta</th><th>Bônus Renovação</th><th>Bônus Avaliação</th><th>Total Estimado</th></tr>
-      <tr><td>Kézia Heloisa (KH)</td><td>R$ ${formatMoney(khVal)}</td><td>R$ ${formatMoney(bonusMetaKH)}</td><td>R$ ${formatMoney(bonusRenov)}</td><td>R$ ${formatMoney(CONFIG.bonusAvaliacao)}</td><td><strong>R$ ${formatMoney(khVal + bonusMetaKH + bonusRenov + CONFIG.bonusAvaliacao)}</strong></td></tr>
-      <tr><td>Liriane (LI)</td><td>R$ ${formatMoney(liVal)}</td><td>R$ ${formatMoney(bonusMetaLI)}</td><td>R$ ${formatMoney(bonusRenov)}</td><td>R$ ${formatMoney(CONFIG.bonusAvaliacao)}</td><td><strong>R$ ${formatMoney(liVal + bonusMetaLI + bonusRenov + CONFIG.bonusAvaliacao)}</strong></td></tr>
+      <tr><th>Consultora</th><th>Vendas</th><th>Bônus Meta</th><th>Bônus Vendas</th><th>Bônus Renovação</th><th>Bônus Avaliação</th><th>Total Folha</th></tr>
+      <tr><td><strong>Kézia Heloisa (KH)</strong></td><td>R$ ${fmt(t.sv)}</td><td>R$ ${fmt(bonusMetaKH)}</td><td>R$ ${fmt(bonusVendasKH)}</td><td>R$ ${fmt(bonusRenov)}</td><td>R$ ${fmt(bonusAval)}</td><td><strong>R$ ${fmt(totalKH)}</strong></td></tr>
+      <tr><td><strong>Liriane (LI)</strong></td><td>R$ ${fmt(t.rv)}</td><td>R$ ${fmt(bonusMetaLI)}</td><td>R$ ${fmt(bonusVendasLI)}</td><td>R$ ${fmt(bonusRenov)}</td><td>R$ ${fmt(bonusAval)}</td><td><strong>R$ ${fmt(totalLI)}</strong></td></tr>
     </table>
   `;
 }
 
 // ==================== PRODUTOS ====================
-function renderProdutos() {
-  const prods = sheetData.produtos || [];
-  if (!prods.length) {
-    document.getElementById('produtosTable').innerHTML = '<div class="alert" style="background:#f8f9fa">Nenhum produto registrado ainda.</div>';
+function renderProdutos(t) {
+  if (!t.produtos || !t.produtos.length) {
+    document.getElementById('produtosTable').innerHTML = '<div class="alert alert-info">Nenhum produto registrado neste mês.</div>';
     return;
   }
-  const rows = prods.map(p => {
-    let vendedor = p.vendedor || '';
-    let produto = p.produto || '';
-    // AM: o campo é salvo como ab_prod no Sheets, mas exibido como AM
-    if (vendedor === 'ab_prod' || vendedor === 'am_prod') vendedor = 'AM';
-    return `<tr><td>${vendedor}</td><td>${produto}</td></tr>`;
-  }).join('');
+  const rows = t.produtos.map(p => `<tr><td>${p.vendedor}</td><td>${p.produto}</td></tr>`).join('');
   document.getElementById('produtosTable').innerHTML = `
     <table>
       <tr><th>Vendedor</th><th>Produto</th></tr>
@@ -525,73 +1036,228 @@ function renderProdutos() {
 
 // ==================== HISTÓRICO ====================
 function renderHistorico() {
-  const registros = sheetData.registros || [];
-  if (!registros.length) {
-    document.getElementById('historicoTable').innerHTML = '<div class="alert" style="background:#f8f9fa">Nenhum registro encontrado.</div>';
+  if (!records || !records.length) {
+    document.getElementById('historicoTable').innerHTML = '<div class="alert alert-info">Nenhum registro encontrado neste mês.</div>';
     return;
   }
-  const rows = registros.slice(-50).reverse().map(r => {
-    return `<tr>
-      <td>${r.data || '—'}</td>
-      <td>${r.kh || '—'}</td>
-      <td>${r.li || '—'}</td>
-      <td>${r.ab_prod || r.am_prod || '—'}</td>
-      <td>${r.outros || '—'}</td>
-      <td>${r.renovacoes || '—'}</td>
-      <td>${r.retencoes || '—'}</td>
-    </tr>`;
-  }).join('');
+  const rows = records.map(r => `<tr>
+    <td>${r.nome || '—'}</td>
+    <td>${r.data || '—'}</td>
+    <td>${r.hora || '—'}</td>
+    <td>R$ ${fmt(num(r.sv))}</td>
+    <td>R$ ${fmt(num(r.rv))}</td>
+    <td>${r.ab_prod ? String(r.ab_prod) : '—'}</td>
+    <td>R$ ${fmt(num(r.ov))}</td>
+    <td>${fmt(num(r.renovTotal))}</td>
+    <td>${fmt(num(r.renovFeitos))}</td>
+    <td>${fmt(num(r.cancelamentos))}</td>
+  </tr>`).join('');
   document.getElementById('historicoTable').innerHTML = `
     <table>
-      <tr><th>Data</th><th>KH</th><th>LI</th><th>AM (Produto)</th><th>Outros</th><th>Renovações</th><th>Retenção</th></tr>
+      <tr><th>Nome</th><th>Data Apuração</th><th>Hora</th><th>KH (R$)</th><th>LI (R$)</th><th>AM (Produto)</th><th>Outros (R$)</th><th>Ren. Inscritos</th><th>Ren. Feitas</th><th>Cancel.</th></tr>
       ${rows}
     </table>
+  `;
+}
+
+// ==================== LIDERANÇA ====================
+function renderLideranca() {
+  if (!isLiderancaUnlocked) {
+    document.getElementById('liderancaContent').innerHTML = '<div class="alert alert-error">Acesso restrito. Digite a senha para visualizar.</div>';
+    return;
+  }
+  const t = getTotals();
+  const totalMes = t.sv + t.rv + t.ov;
+  const metaAtual = getMetaAtual();
+
+  // Bônus financeiro integral
+  const faixa = totalMes >= metaAtual ? 2 : (totalMes >= metaAtual * 0.7 ? 1 : 0);
+  const bonusFinanceiroLider = CONFIG.bonusMeta[faixa] || 0;
+
+  // Bônus vendas liderança (60=R$100, 80=R$200, 100=R$300...)
+  const totalVendasUnidade = t.totalVendas;
+  let bonusVendasLider = 0;
+  if (totalVendasUnidade >= 60) {
+    const faixas = Math.floor((totalVendasUnidade - 60) / 20) + 1;
+    bonusVendasLider = faixas * CONFIG.bonusLiderVendas;
+  }
+
+  // Bônus cancelamento
+  const cancPerc = t.ativosInicio > 0 ? ((t.cancelamentos / t.ativosInicio) * 100) : 99;
+  let bonusCancLider = 0;
+  if (cancPerc <= 3) bonusCancLider = CONFIG.bonusLiderCanc1;
+  else if (cancPerc <= 4) bonusCancLider = CONFIG.bonusLiderCanc2;
+
+  // Bônus renovação
+  const totalInscRenov = (t.s_novas + t.s_remat) + (t.r_novas + t.r_remat);
+  const totalRenovRenov = t.s_remat + t.r_remat;
+  const taxaRenov = totalInscRenov > 0 ? ((totalRenovRenov / totalInscRenov) * 100) : 0;
+  let bonusRenovLider = 0;
+  if (taxaRenov >= 85) bonusRenovLider = CONFIG.bonusLiderRenov1;
+  else if (taxaRenov >= 70) bonusRenovLider = CONFIG.bonusLiderRenov2;
+
+  // Bônus 1% sobre vendas totais (crédito interno)
+  const bonusLider1pct = Math.round(totalMes * 0.01);
+
+  const totalBonusLider = bonusFinanceiroLider + bonusVendasLider + bonusCancLider + bonusRenovLider;
+
+  document.getElementById('liderancaContent').innerHTML = `
+    <div class="card-grid" style="margin-bottom:20px">
+      <div class="person-card" style="border-left-color:var(--gold)">
+        <div class="name">Bônus Financeiro</div>
+        <div class="role">Meta atingida: Faixa ${faixa + 1}</div>
+        <div class="value">R$ ${fmt(bonusFinanceiroLider)}</div>
+        <div class="sub">${parseFloat((totalMes/metaAtual*100).toFixed(1))}% da meta</div>
+      </div>
+      <div class="person-card" style="border-left-color:var(--green)">
+        <div class="name">Bônus Vendas</div>
+        <div class="role">${totalVendasUnidade} vendas na unidade</div>
+        <div class="value">R$ ${fmt(bonusVendasLider)}</div>
+        <div class="sub">${totalVendasUnidade >= 60 ? (60 + (faixas-1)*20) + ' vendas base' : 'Faltam ' + (60 - totalVendasUnidade) + ' vendas para ativar'}</div>
+      </div>
+      <div class="person-card" style="border-left-color:var(--accent2)">
+        <div class="name">Bônus Cancelamento</div>
+        <div class="role">Taxa: ${cancPerc.toFixed(1)}%</div>
+        <div class="value">R$ ${fmt(bonusCancLider)}</div>
+        <div class="sub">${cancPerc <= 3 ? 'Meta 1 (3%)' : cancPerc <= 4 ? 'Meta 2 (4%)' : 'Sem bônus'}</div>
+      </div>
+      <div class="person-card" style="border-left-color:var(--accent)">
+        <div class="name">Bônus Renovação</div>
+        <div class="role">Taxa: ${taxaRenov.toFixed(1)}%</div>
+        <div class="value">R$ ${fmt(bonusRenovLider)}</div>
+        <div class="sub">${taxaRenov >= 85 ? 'Meta 1 (85%)' : taxaRenov >= 70 ? 'Meta 2 (70%)' : 'Sem bônus'}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>💳 Crédito Interno — Líder (1% sobre vendas)</h2>
+      <div class="stats-row">
+        <div class="stat-item"><div class="stat-value">R$ ${fmt(bonusLider1pct)}</div><div class="stat-label">Crédito (1% de R$ ${fmt(totalMes)})</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>📊 Resumo Total — Liderança</h2>
+      <table>
+        <tr><th>Descrição</th><th>Valor</th><th>Condição</th></tr>
+        <tr><td>Bônus Financeiro (meta unidade)</td><td><strong>R$ ${fmt(bonusFinanceiroLider)}</strong></td><td>Faixa ${faixa + 1}</td></tr>
+        <tr><td>Bônus Vendas (${totalVendasUnidade} vendas)</td><td><strong>R$ ${fmt(bonusVendasLider)}</strong></td><td>≥60 vendas</td></tr>
+        <tr><td>Bônus Cancelamento (${cancPerc.toFixed(1)}%)</td><td><strong>R$ ${fmt(bonusCancLider)}</strong></td><td>≤3% ou ≤4%</td></tr>
+        <tr><td>Bônus Renovação (${taxaRenov.toFixed(1)}%)</td><td><strong>R$ ${fmt(bonusRenovLider)}</strong></td><td>≥85% ou ≥70%</td></tr>
+        <tr><td>Crédito Interno (1%)</td><td><strong>R$ ${fmt(bonusLider1pct)}</strong></td><td>1% sobre total</td></tr>
+        <tr style="background:#f0f0f0"><td><strong>TOTAL LIDERANÇA</strong></td><td><strong>R$ ${fmt(totalBonusLider + bonusLider1pct)}</strong></td><td>—</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>📈 Regras de Bônus — Liderança</h2>
+      <div class="tip-box">
+        <strong>Financeiro:</strong> Meta atingida pela unidade = bônus integral para líder<br>
+        <strong>Vendas:</strong> 60 vendas = R$100 | 80 = R$200 | 100 = R$300 | a cada 20 vendas +R$100 | abaixo de 60 = 0<br>
+        <strong>Cancelamento:</strong> ≤3% = R$200 | ≤4% = R$100 | acima de 4% = 0<br>
+        <strong>Renovação:</strong> ≥85% = R$200 | ≥70% = R$100 | abaixo de 70% = 0<br>
+        <strong>Crédito interno:</strong> 1% sobre vendas totais da equipe
+      </div>
+    </div>
   `;
 }
 
 // ==================== PREENCHER ====================
 function renderPreencher() {
   if (!isPreencherUnlocked) return;
+  const now = new Date();
+  const dataStr = now.toLocaleDateString('pt-BR');
+  const horaStr = now.toTimeString().slice(0,5);
+
+  // Mostrar dados anteriores sempre visíveis
+  const ultimosRegistros = records.slice(0, 5);
+  const historioHtml = ultimosRegistros.length ? ultimosRegistros.map(r => `
+    <tr>
+      <td style="font-size:0.8rem">${r.nome || '—'}</td>
+      <td style="font-size:0.8rem">${r.data || '—'}</td>
+      <td style="font-size:0.8rem">R$ ${fmt(num(r.sv))}</td>
+      <td style="font-size:0.8rem">R$ ${fmt(num(r.rv))}</td>
+      <td style="font-size:0.8rem">${r.ab_prod || '—'}</td>
+      <td style="font-size:0.8rem">R$ ${fmt(num(r.ov))}</td>
+    </tr>
+  `).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--text-light)">Nenhum registro anterior neste mês</td></tr>';
+
   document.getElementById('preencherContent').innerHTML = `
     <div id="preencherMsg"></div>
+
+    <div class="alert alert-info">
+      <strong>📋 Últimos registros deste mês (para referência):</strong>
+      <table style="margin-top:8px">
+        <tr><th>Nome</th><th>Data</th><th>KH</th><th>LI</th><th>AM</th><th>Outros</th></tr>
+        ${historioHtml}
+      </table>
+      <div style="font-size:0.8rem;margin-top:8px;color:var(--text-light)">
+        Preencha os dados de hoje. Os registros anteriores permanecem salvos e visíveis no Histórico.
+      </div>
+    </div>
+
+    <div class="section-title">Identificação</div>
+    <div class="form-group"><label>Nome de quem está registrando</label><input type="text" id="fill_nome" placeholder="Seu nome"></div>
+    <div class="card-grid">
+      <div class="form-group"><label>Data de Apuração</label><input type="text" id="fill_data" value="${dataStr}"></div>
+      <div class="form-group"><label>Hora</label><input type="text" id="fill_hora" value="${horaStr}"></div>
+    </div>
 
     <div class="section-title">Consultoras (KH e LI)</div>
     <div class="card-grid">
       <div>
-        <div class="form-group"><label>KH — Valor (R$)</label><input type="number" id="fill_kh" step="0.01" placeholder="0,00"></div>
-        <div class="form-group"><label>LI — Valor (R$)</label><input type="number" id="fill_li" step="0.01" placeholder="0,00"></div>
+        <div class="form-group"><label>KH — Valor Venda (R$)</label><input type="number" id="fill_sv" step="0.01" placeholder="0,00"></div>
+        <div class="form-group"><label>KH — Produto/Serviço</label><input type="text" id="fill_sp" placeholder="Nome do produto"></div>
+      </div>
+      <div>
+        <div class="form-group"><label>LI — Valor Venda (R$)</label><input type="number" id="fill_rv" step="0.01" placeholder="0,00"></div>
+        <div class="form-group"><label>LI — Produto/Serviço</label><input type="text" id="fill_rp" placeholder="Nome do produto"></div>
       </div>
     </div>
 
-    <div class="section-title">AM (Produto apenas)</div>
-    <div class="form-group"><label>AM — Produto</label><input type="text" id="fill_am_prod" placeholder="Nome do produto"></div>
+    <div class="section-title">AM — Produto (recepção, crédito interno)</div>
+    <div class="form-group"><label>AM — Produto</label><input type="text" id="fill_ab_prod" placeholder="Produto da Amabile"></div>
 
     <div class="section-title">Outros (Líder/Gestão — só registro)</div>
-    <div class="form-group"><label>Outros — Valor (R$)</label><input type="number" id="fill_outros" step="0.01" placeholder="0,00"></div>
-
-    <div class="section-title">Anuais</div>
     <div class="card-grid">
-      <div class="form-group"><label>Anuais (Inscritos)</label><input type="number" id="fill_anuais" placeholder="0"></div>
-      <div class="form-group"><label>Anuais (Renovados)</label><input type="number" id="fill_renovados" placeholder="0"></div>
+      <div class="form-group"><label>Outros — Valor (R$)</label><input type="number" id="fill_ov" step="0.01" placeholder="0,00"></div>
+      <div class="form-group"><label>Outros — Produto</label><input type="text" id="fill_ou_prod" placeholder="Nome do produto"></div>
     </div>
 
-    <div class="section-title">Renovações</div>
+    <div class="section-title">KH — Inscrições (novas + rematrículas)</div>
     <div class="card-grid">
-      <div class="form-group"><label>KH — Inscritos</label><input type="number" id="fill_kh_insc" placeholder="0"></div>
-      <div class="form-group"><label>KH — Renovados</label><input type="number" id="fill_kh_renov" placeholder="0"></div>
-      <div class="form-group"><label>LI — Inscritos</label><input type="number" id="fill_li_insc" placeholder="0"></div>
-      <div class="form-group"><label>LI — Renovados</label><input type="number" id="fill_li_renov" placeholder="0"></div>
+      <div class="form-group"><label>KH — Novas</label><input type="number" id="fill_s_novas" placeholder="0"></div>
+      <div class="form-group"><label>KH — Rematrículas</label><input type="number" id="fill_s_remat" placeholder="0"></div>
+      <div class="form-group"><label>KH — Avaliações</label><input type="number" id="fill_s_aval" placeholder="0"></div>
     </div>
 
-    <div class="section-title">Retenção</div>
+    <div class="section-title">LI — Inscrições (novas + rematrículas)</div>
     <div class="card-grid">
-      <div class="form-group"><label>Total Inscritos (Líder)</label><input type="number" id="fill_canc_insc" placeholder="0"></div>
-      <div class="form-group"><label>Cancelamentos (Líder)</label><input type="number" id="fill_canc_canc" placeholder="0"></div>
-      <div class="form-group"><label>Base Atual</label><input type="number" id="fill_base_atual" placeholder="0"></div>
-      <div class="form-group"><label>Base Anterior</label><input type="number" id="fill_base_anterior" placeholder="0"></div>
+      <div class="form-group"><label>LI — Novas</label><input type="number" id="fill_r_novas" placeholder="0"></div>
+      <div class="form-group"><label>LI — Rematrículas</label><input type="number" id="fill_r_remat" placeholder="0"></div>
+      <div class="form-group"><label>LI — Avaliações</label><input type="number" id="fill_r_aval" placeholder="0"></div>
     </div>
 
-    <div style="margin-top:20px;display:flex;gap:12px">
+    <div class="section-title">Outros — Inscrições</div>
+    <div class="card-grid">
+      <div class="form-group"><label>Outros — Novas</label><input type="number" id="fill_o_novas" placeholder="0"></div>
+      <div class="form-group"><label>Outros — Rematrículas</label><input type="number" id="fill_o_remat" placeholder="0"></div>
+      <div class="form-group"><label>Outros — Avaliações</label><input type="number" id="fill_o_aval" placeholder="0"></div>
+    </div>
+
+    <div class="section-title">Renovações (consolidado)</div>
+    <div class="card-grid">
+      <div class="form-group"><label>Renovações — Total Inscritos (planos que vencem)</label><input type="number" id="fill_renovTotal" placeholder="0"></div>
+      <div class="form-group"><label>Renovações — Efetivadas</label><input type="number" id="fill_renovFeitos" placeholder="0"></div>
+    </div>
+
+    <div class="section-title">Retenção (Líder)</div>
+    <div class="card-grid">
+      <div class="form-group"><label>Ativos Início do Mês</label><input type="number" id="fill_ativos_inicio" placeholder="0"></div>
+      <div class="form-group"><label>Cancelamentos</label><input type="number" id="fill_cancelamentos" placeholder="0"></div>
+    </div>
+
+    <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap">
       <button class="btn btn-primary" onclick="saveData()">💾 Salvar Registro</button>
       <button class="btn btn-secondary" onclick="clearForm()">🗑️ Limpar Formulário</button>
     </div>
@@ -600,41 +1266,46 @@ function renderPreencher() {
 
 async function saveData() {
   const payload = {
-    kh: document.getElementById('fill_kh').value || '0',
-    li: document.getElementById('fill_li').value || '0',
-    ab_prod: document.getElementById('fill_am_prod').value || '',
-    outros: document.getElementById('fill_outros').value || '0',
-    anuais: document.getElementById('fill_anuais').value || '0',
-    renovados_anuais: document.getElementById('fill_renovados').value || '0',
-    kh_inscritos: document.getElementById('fill_kh_insc').value || '0',
-    kh_renovados: document.getElementById('fill_kh_renov').value || '0',
-    li_inscritos: document.getElementById('fill_li_insc').value || '0',
-    li_renovados: document.getElementById('fill_li_renov').value || '0',
-    canc_inscritos: document.getElementById('fill_canc_insc').value || '0',
-    canc_cancelamentos: document.getElementById('fill_canc_canc').value || '0',
-    base_atual: document.getElementById('fill_base_atual').value || '0',
-    base_anterior: document.getElementById('fill_base_anterior').value || '0',
-    timestamp: new Date().toISOString()
+    nome: document.getElementById('fill_nome').value || 'Líder',
+    data: document.getElementById('fill_data').value || '',
+    hora: document.getElementById('fill_hora').value || '',
+    total: num(document.getElementById('fill_sv').value) + num(document.getElementById('fill_rv').value) + num(document.getElementById('fill_ov').value),
+    sv: num(document.getElementById('fill_sv').value),
+    sp: document.getElementById('fill_sp').value || 0,
+    rv: num(document.getElementById('fill_rv').value),
+    rp: document.getElementById('fill_rp').value || 0,
+    ov: num(document.getElementById('fill_ov').value),
+    op: document.getElementById('fill_ou_prod').value || 0,
+    renovTotal: num(document.getElementById('fill_renovTotal').value),
+    renovFeitos: num(document.getElementById('fill_renovFeitos').value),
+    s_novas: num(document.getElementById('fill_s_novas').value),
+    s_remat: num(document.getElementById('fill_s_remat').value),
+    s_aval: num(document.getElementById('fill_s_aval').value),
+    r_novas: num(document.getElementById('fill_r_novas').value),
+    r_remat: num(document.getElementById('fill_r_remat').value),
+    r_aval: num(document.getElementById('fill_r_aval').value),
+    o_novas: num(document.getElementById('fill_o_novas').value),
+    o_remat: num(document.getElementById('fill_o_remat').value),
+    o_aval: num(document.getElementById('fill_o_aval').value),
+    sa_prod: document.getElementById('fill_sp').value || 0,
+    ra_prod: document.getElementById('fill_rp').value || 0,
+    ab_prod: document.getElementById('fill_ab_prod').value || 0,
+    ou_prod: document.getElementById('fill_ou_prod').value || 0,
+    ativos_inicio: num(document.getElementById('fill_ativos_inicio').value),
+    cancelamentos: num(document.getElementById('fill_cancelamentos').value)
   };
 
   const msgEl = document.getElementById('preencherMsg');
   msgEl.innerHTML = '<div class="loading"><div class="spinner"></div><p style="margin-top:8px">Salvando...</p></div>';
 
   try {
-    const res = await fetch(CONFIG.sheetUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'save', data: payload })
-    });
-    const result = await res.json();
-    if (result.success) {
-      msgEl.innerHTML = '<div class="alert alert-success">Registro salvo com sucesso!</div>';
+    const result = await apiSave(payload);
+    if (result && result.ok) {
+      msgEl.innerHTML = '<div class="alert alert-success">✅ Registro salvo com sucesso!</div>';
       clearForm();
-      // Recarregar dados
-      sheetData = await fetchData('getData', {});
-      renderAll();
+      await loadMonth();
     } else {
-      msgEl.innerHTML = '<div class="alert alert-error">Erro ao salvar: ' + (result.error || 'desconhecido') + '</div>';
+      msgEl.innerHTML = '<div class="alert alert-error">Erro ao salvar. Tente novamente.</div>';
     }
   } catch (e) {
     msgEl.innerHTML = '<div class="alert alert-error">Erro de conexão: ' + e.message + '</div>';
@@ -642,52 +1313,61 @@ async function saveData() {
 }
 
 function clearForm() {
-  document.querySelectorAll('#preencherContent input').forEach(i => i.value = '');
+  document.querySelectorAll('#preencherContent input').forEach(i => {
+    if (i.id === 'fill_data' || i.id === 'fill_hora') return;
+    i.value = '';
+  });
   const msgEl = document.getElementById('preencherMsg');
   if (msgEl) msgEl.innerHTML = '';
 }
 
-// ==================== HELPERS ====================
-function formatMoney(val) {
-  if (val === null || val === undefined) return '0';
-  return Number(val).toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-}
+// ==================== CONFETTI ====================
+function launchConfetti() {
+  const canvas = document.getElementById('confettiCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
-function calcTotalAtual() {
-  if (!sheetData) return 0;
-  return (parseFloat(sheetData.KH) || 0) + (parseFloat(sheetData.LI) || 0) + (parseFloat(sheetData.outros) || 0);
-}
+  const pieces = [];
+  const colors = ['#e94560','#f5a623','#27ae60','#2980b9','#9b59b6','#f1c40f','#1abc9c'];
 
-function getMetaAtual() {
-  const now = new Date();
-  if (now.getFullYear() >= 2026 && now.getMonth() >= 6) {
-    return CONFIG.metas.jul2026_onwards[0];
+  for (let i = 0; i < 150; i++) {
+    pieces.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height - canvas.height,
+      w: Math.random() * 10 + 5,
+      h: Math.random() * 6 + 3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      vy: Math.random() * 3 + 2,
+      vx: Math.random() * 2 - 1,
+      rotation: Math.random() * 360,
+      rotSpeed: Math.random() * 6 - 3
+    });
   }
-  return CONFIG.metas.jan2025_jun2026[0];
+
+  let frame = 0;
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      p.y += p.vy;
+      p.x += p.vx;
+      p.rotation += p.rotSpeed;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rotation * Math.PI / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+      ctx.restore();
+    });
+    frame++;
+    if (frame < 180) requestAnimationFrame(animate);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+  animate();
 }
 
-function calcBonusProporcional(valAtual, outraVal) {
-  const total = valAtual + outraVal;
-  if (total === 0) return 0;
-  const metaAtual = getMetaAtual();
-  const totalAtual = calcTotalAtual();
-  const faixa = totalAtual >= metaAtual ? 2 : (totalAtual >= metaAtual * 0.7 ? 1 : 0);
-  const bonusTotal = CONFIG.bonusMeta[faixa] || 0;
-  return Math.round((valAtual / total) * bonusTotal * 100) / 100;
-}
-
-function calcBonusRenovacao() {
-  const totalInsc = (parseFloat(sheetData.kh_inscritos) || 0) + (parseFloat(sheetData.li_inscritos) || 0);
-  const totalRenov = (parseFloat(sheetData.kh_renovados) || 0) + (parseFloat(sheetData.li_renovados) || 0);
-  if (totalInsc === 0) return 0;
-  const taxa = (totalRenov / totalInsc) * 100;
-  if (taxa >= 85) return CONFIG.bonusRenov.t85;
-  if (taxa >= 70) return CONFIG.bonusRenov.t70;
-  return 0;
-}
-
-// ==================== INIT ====================
-loadData();
+// ==================== START ====================
+init();
 </script>
 
 </body>
