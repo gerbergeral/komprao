@@ -223,7 +223,7 @@ tr:hover { background: #f0f0f0; }
   <button data-tab="folha">Resultado Folha</button>
   <button data-tab="produtos">Produtos</button>
   <button data-tab="historico">Histórico</button>
-  <button data-tab="insights">🧠 Insights</button>
+  <button data-tab="insights" class="hidden-tab">🧠 Insights</button>
   <button data-tab="lideranca">👑 Liderança</button>
   <button data-tab="preencher">✏️ Preencher</button>
 </nav>
@@ -444,6 +444,7 @@ let records = [];
 let isPreencherUnlocked = false;
 let isLiderancaUnlocked = false;
 let isHistoricoUnlocked = false;
+let isInsightsUnlocked = false;
 
 // ==================== GREETING ====================
 function setGreeting() {
@@ -501,6 +502,7 @@ document.querySelectorAll('.nav button').forEach(btn => {
     if (tab === 'preencher' && !isPreencherUnlocked) { pendingLogin = 'preencher'; showLogin('Preencher Registro'); return; }
     if (tab === 'lideranca' && !isLiderancaUnlocked) { pendingLogin = 'lideranca'; showLogin('Painel da Liderança'); return; }
     if (tab === 'historico' && !isHistoricoUnlocked) { pendingLogin = 'historico'; showLogin('Histórico de Registros'); return; }
+    if (tab === 'insights' && !isInsightsUnlocked) { pendingLogin = 'insights'; showLogin('Insights Inteligentes (Restrito)'); return; }
     switchTab(tab);
   });
 });
@@ -548,6 +550,11 @@ function checkLogin() {
       document.querySelector('[data-tab="historico"]').classList.remove('hidden-tab');
       switchTab('historico');
       renderHistorico();
+    } else if (pendingLogin === 'insights') {
+      isInsightsUnlocked = true;
+      document.querySelector('[data-tab="insights"]').classList.remove('hidden-tab');
+      switchTab('insights');
+      renderInsights();
     }
     pendingLogin = '';
   } else {
@@ -1457,11 +1464,141 @@ function getOrderedMonths() {
   return Object.keys(allMonthsData).sort((a, b) => mesToKey(a) - mesToKey(b));
 }
 
+// Feedback individual personalizado — gera mensagem única baseada no comportamento histórico
+function gerarFeedbackIndividual(nome, vendas, qualidade, dadosMeses, nomeCampoVendas, nomeCampoAnuais) {
+  // Pegar todos os meses disponíveis para essa consultora
+  const histVendas = [];
+  const histQualidade = [];
+  orderedMonthsData.forEach(m => {
+    const d = allMonthsData[m];
+    if (d) {
+      const v = num(d[nomeCampoVendas + '_novas']) + num(d[nomeCampoVendas + '_remat']);
+      const a = num(d[nomeCampoVendas + '_anuais']);
+      histVendas.push(v);
+      histQualidade.push(v > 0 ? (a / v * 100) : 0);
+    }
+  });
+
+  const atual = histVendas.length ? histVendas[histVendas.length - 1] : 0;
+  const qualidadeAtual = histQualidade.length ? histQualidade[histQualidade.length - 1] : 0;
+
+  // Determinar tendência (últimos 3)
+  let tendencia = 'estavel';
+  if (histVendas.length >= 3) {
+    const a = histVendas[histVendas.length - 1];
+    const b = histVendas[histVendas.length - 2];
+    const c = histVendas[histVendas.length - 3];
+    if (a > b && b > c) tendencia = 'melhorando';
+    else if (a < b && b < c) tendencia = 'piorando';
+    else if (a > b || a > c) tendencia = 'recuperando';
+  } else if (histVendas.length >= 2) {
+    const a = histVendas[histVendas.length - 1];
+    const b = histVendas[histVendas.length - 2];
+    if (a > b * 1.15) tendencia = 'melhorando';
+    else if (a < b * 0.85) tendencia = 'piorando';
+  }
+
+  // Classificação
+  function clsV(v) {
+    if (v >= 80) return 'excepcional';
+    if (v >= 70) return 'acima';
+    if (v >= 50) return 'bom';
+    if (v >= 40) return 'padrao';
+    if (v > 0) return 'abaixo';
+    return 'sem';
+  }
+  function clsQ(q) {
+    if (q >= 70) return 'excellent';
+    if (q >= 50) return 'good';
+    if (q >= 30) return 'attention';
+    if (q > 0) return 'critical';
+    return 'none';
+  }
+
+  const cv = clsV(atual);
+  const cq = clsQ(qualidadeAtual);
+
+  // Banco de frases variadas por combinação
+  const feedbacks = {
+    // ALTO VOLUME + ALTA QUALIDADE
+    excepcional_excellent: [
+      `${nome} está no auge. ${atual} planos com ${qualidadeAtual.toFixed(0)}% de anuais mostra que ela domina tanto o fechamento quanto a passagem de preço. Use ela como referência para a equipe — peça que ela compartilhe como aborda a objeção do anual.`,
+      `Resultado impressionante de ${nome}: ${atual} vendas e ${qualidadeAtual.toFixed(0)}% de qualidade. Ela não só fecha muito como fecha bem. Quando alguém da equipe perguntar "como ela faz?", direcione para acompanhar uma negociação dela presencialmente.`
+    ],
+    excepcional_good: [
+      `${nome} tem volume de elite (${atual} planos) mas a qualidade dos anuais (${qualidadeAtual.toFixed(0)}%) poderia ser melhor. Ela já tem a técnica de fechamento — o próximo passo é treinar a passagem de valor do plano anual. Uma conversa sobre como apresentar o benefício do pagamento à vista pode resolver.`,
+      `Volume absurdo de ${nome} (${atual} planos), mas ${qualidadeAtual.toFixed(0)}% de anuais mostra que ela está deixando dinheiro na mesa. Cada plano mensal que ela vende mas poderia ser anual representa R$ ${fmt(CONFIG.planoAnualValor - CONFIG.planoAnualMensal)} a menos. Treinar a abordagem de "e se você parcelar tudo de uma vez?" resolve.`
+    ],
+    acima_excellent: [
+      `Performance sólida de ${nome}: ${atual} planos com ${qualidadeAtual.toFixed(0)}% de anuais. Ela já tem o pacote completo. O foco agora é mantê-la motivada para não cair na zona de conforto — quem bate meta fácil pode relaxar.`,
+      `${nome} está em outro nível: ${atual} vendas com qualidade de ${qualidadeAtual.toFixed(0)}%. Ela entende que vender anual não é sobre o cliente ter dinheiro, é sobre mostrar que o anual resolve mais objeções. Considere premiar publicamente para reforçar esse comportamento.`
+    ],
+    acima_good: [
+      `${nome} é uma vendedora forte (${atual} planos) com qualidade razoável (${qualidadeAtual.toFixed(0)}% anuais). Ela tem o ritmo certo mas pode refinar a abordagem de preço. Simular com ela um atendimento onde o cliente diz "prefiro o mensal, é mais barato" e mostrar como ela contorna isso seria produtivo.`,
+      `Bom volume de ${nome} (${atual} planos) mas a qualidade está em ${qualidadeAtual.toFixed(0)}%. Ela fecha rápido, o que é ótimo, mas pode estar cortando caminho na negociação. Observar como ela conduz os primeiros minutos do atendimento vai revelar se está pulando a etapa de apresentação de benefícios do anual.`
+    ],
+    bom_excellent: [
+      `${nome} tem qualidade excelente (${qualidadeAtual.toFixed(0)}% de anuais) mas o volume (${atual} planos) ainda está aquém do que ela é capaz. Ela sabe vender anual, o que significa que quando fecha, fecha bem. O problema pode ser prospecção ou ritmo de atendimento. Acompanhar quantas abordagens ela faz por dia pode ser revelador.`,
+      `A qualidade de ${nome} é nota 10 (${qualidadeAtual.toFixed(0)}% anuais), mas com apenas ${atual} planos, ela está subutilizada. Ela provavelmente gasta muito tempo em cada negociação. Treinar agilidade no atendimento e mostrar que nem toda objeção precisa de 30 minutos de conversa pode dobrar o volume dela.`
+    ],
+    bom_good: [
+      `${nome} está no padrão (${atual} planos, ${qualidadeAtual.toFixed(0)}% anuais). Ela é consistente, mas consistência sem evolução vira estagnação. O próximo passo é definir uma meta pessoal: subir para 50 planos no próximo mês. Se ela tem qualidade, o volume é questão de ritmo.`,
+      `Desempenho estável de ${nome}: ${atual} planos com ${qualidadeAtual.toFixed(0)}% de qualidade. Ela não erra, mas também não se destaca. Uma conversa individual sobre "o que falta para você bater 50+?" pode destravar. Talvez ela precise de mais leads ou de ajustar o horário de atendimento.`
+    ],
+    padrao_excellent: [
+      `${nome} tem ${atual} planos com ${qualidadeAtual.toFixed(0)}% de anuais — a qualidade é o ponto forte. Ela sabe trabalhar objeção e passar valor. Agora precisa de volume. Verificar se ela está recebendo a mesma quantidade de leads que as outras pode explicar o gap.`,
+      `Qualidade de ${nome} é referência (${qualidadeAtual.toFixed(0)}% anuais) mas com ${atual} planos, ela está abaixo do esperado. Ela pode estar sendo "perfeccionista" demais no atendimento — nem todo cliente precisa de uma negociação elaborada. Treinar objetividade.`
+    ],
+    padrao_good: [
+      `${nome} está no padrão (${atual} planos, ${qualidadeAtual.toFixed(0)}% anuais). Nada errado, mas nada além. Ela precisa de um objetivo claro para crescer. Definir junto com ela: "este mês quero chegar a ${Math.min(atual + 10, 50)} planos com pelo menos ${Math.min(qualidadeAtual + 10, 70)}% de anuais".`,
+      `Consistência de ${nome}: ${atual} vendas com ${qualidadeAtual.toFixed(0)}% de qualidade. Ela é previsível, o que é bom para planejamento, mas para a unidade crescer, ela precisa dar um passo a mais. Acompanhar de perto nas próximas 2 semanas pode ser o catalisador.`
+    ],
+    abaixo_excellent: [
+      `A qualidade de ${nome} é surpreendente (${qualidadeAtual.toFixed(0)}% anuais) considerando que ela vendeu apenas ${atual} planos. Ela tem a técnica, mas algo está travando o volume. Pode ser timidez na abordagem, falta de confiança, ou receio de insistir. Uma simulação de atendimento focada em "não ter medo de oferecer" pode destravar.`,
+      `${nome} vende pouco (${atual} planos) mas quando vende, vende anual (${qualidadeAtual.toFixed(0)}%). Isso indica que ela tem capacidade de negociação, mas não está prospectando o suficiente. Verificar se ela está fazendo follow-up de leads antigos pode ser a chave.`
+    ],
+    abaixo_good: [
+      `Atenção com ${nome}: ${atual} planos com ${qualidadeAtual.toFixed(0)}% de anuais. Ela não está atingindo o padrão mínimo de 40 planos. A qualidade está razoável, então o problema não é técnica de negociação — é volume. Ela precisa de mais oportunidades ou de acelerar o atendimento.`,
+      `${nome} está abaixo do esperado (${atual} planos). A qualidade de ${qualidadeAtual.toFixed(0)}% mostra que ela não é ruim, apenas está com ritmo lento. Duas hipóteses: (1) ela está com poucos leads, ou (2) está demorando demais por atendimento. Investigar e ajustar.`
+    ],
+    sem_excellent: [
+      `${nome} ainda não tem dados suficientes para análise, mas quando vendeu, a qualidade foi alta (${qualidadeAtual.toFixed(0)}% anuais). Monitorar de perto este mês para ver se ela mantém o ritmo.`,
+      `Dados parciais de ${nome}: qualidade de ${qualidadeAtual.toFixed(0)}% nos anuais, mas volume insuficiente para avaliação. Acompanhar a evolução semanal.`
+    ],
+    sem_none: [
+      `Sem dados de ${nome} para este mês. Sem análise possível ainda.`,
+    ]
+  };
+
+  // Selecionar frase baseada em tendência e combinação
+  const key = cv + '_' + cq;
+  const options = feedbacks[key] || feedbacks['sem_none'];
+  
+  // Variar a frase baseada no mês (para não repetir)
+  const mesNum = mesToKey(currentMonth);
+  const idx = mesNum % options.length;
+  let msg = options[idx];
+
+  // Adicionar contexto de tendência
+  if (tendencia === 'melhorando') {
+    msg += ` \n📈 Tendência: melhorando nos últimos meses. Manter o ritmo e reconhecer publicamente.`;
+  } else if (tendencia === 'piorando') {
+    msg += ` \n📉 Tendência: queda nos últimos meses. Ação urgente: conversa individual esta semana.`;
+  } else if (tendencia === 'recuperando') {
+    msg += ` \n📊 Tendência: mostrando sinais de recuperação. Acompanhar para garantir que não volte a cair.`;
+  }
+
+  return { msg, tendencia, cv, cq, color: cv === 'excepcional' || cv === 'acima' ? '#1b5e20' : cv === 'bom' ? '#f57c00' : cv === 'padrao' ? '#666' : '#c62828' };
+}
+
+// Variável global para meses ordenados
+let orderedMonthsData = [];
+
 async function renderInsights() {
   const container = document.getElementById('insightsContent');
   await loadAllMonthsData();
 
-  const orderedMonths = getOrderedMonths();
+  orderedMonthsData = getOrderedMonths();
   const currentData = allMonthsData[currentMonth];
 
   if (!currentData) {
@@ -1469,145 +1606,92 @@ async function renderInsights() {
     return;
   }
 
-  // Pegar últimos 3 meses para tendência
-  const currentKey = mesToKey(currentMonth);
-  const last3 = orderedMonths.filter(m => mesToKey(m) <= currentKey).slice(-3);
-
   // Indicadores chave
   const meta = currentData.meta;
   const total = currentData.total;
-  const percMeta = meta > 0 ? (total / meta * 100) : 0;
   const totalVendas = currentData.totalVendas;
   const totalAnuais = currentData.totalAnuais;
   const qualidade = totalVendas > 0 ? (totalAnuais / totalVendas * 100) : 0;
   const ativosInicio = currentData.ativos_inicio;
   const cancelamentos = currentData.cancelamentos;
-  const taxaCanc = ativosInicio > 0 ? (cancelamentos / ativosInicio * 100) : 0;
   const baseFinal = ativosInicio - cancelamentos + currentData.renovFeitos;
   const variacao = ativosInicio > 0 ? ((baseFinal - ativosInicio) / ativosInicio * 100) : 0;
   const renovFeitos = currentData.renovFeitos;
-  const taxaRenov = (currentData.s_novas + currentData.s_remat + currentData.r_novas + currentData.r_remat) > 0
-    ? ((currentData.s_remat + currentData.r_remat) / (currentData.s_novas + currentData.s_remat + currentData.r_novas + currentData.r_remat) * 100) : 0;
 
-  // Diagnóstico individual por consultora
-  const vendasKH = currentData.s_novas + currentData.s_remat;
-  const vendasLI = currentData.r_novas + currentData.r_remat;
-  const qualidadeKH = vendasKH > 0 ? (currentData.s_anuais / vendasKH * 100) : 0;
-  const qualidadeLI = vendasLI > 0 ? (currentData.r_anuais / vendasLI * 100) : 0;
-
-  // Função de classificação de desempenho individual
-  function classVendas(v) {
-    if (v >= 80) return { cls: 'excepcional', label: '🌟 Excepcional', color: '#1b5e20' };
-    if (v >= 70) return { cls: 'acima', label: '🔥 Acima da média', color: '#2e7d32' };
-    if (v >= 50) return { cls: 'bom', label: '✅ Bom', color: '#f57c00' };
-    if (v >= 40) return { cls: 'padrao', label: '👍 Padrão', color: '#666' };
-    if (v > 0) return { cls: 'abaixo', label: '⚠️ Abaixo', color: '#c62828' };
-    return { cls: 'sem', label: '📋 Sem dados', color: '#888' };
-  }
-
-  function classQualidade(q) {
-    if (q >= 70) return { label: 'Excelente', color: '#1b5e20', desc: 'Vendendo planos anuais com qualidade.' };
-    if (q >= 50) return { label: 'Bom', color: '#f57c00', desc: 'Qualidade razoável, pode melhorar.' };
-    if (q >= 30) return { label: 'Atenção', color: '#e65100', desc: 'Poucos anuais. Pode estar com dificuldade de passar preço ou trabalhar objeções.' };
-    if (q > 0) return { label: 'Crítico', color: '#c62828', desc: 'Quase sem qualidade. Simulação de atendimento e observação de fechamento são essenciais.' };
-    return { label: 'Sem dados', color: '#888', desc: '' };
-  }
-
-  function classComb(v, q) {
-    const cv = classVendas(v);
-    const cq = classQualidade(q);
-    if (cv.cls === 'excepcional' || cv.cls === 'acima') {
-      if (cq.label === 'Excelente') return { msg: '🏆 Performance elite: volume + qualidade. Referência!', color: '#1b5e20' };
-      if (cq.label === 'Bom') return { msg: '✅ Boa vendedora com qualidade aceitável. Pode evoluir ainda mais.', color: '#2e7d32' };
-      if (cq.label === 'Atenção') return { msg: '⚡ Vende muito mas com baixa qualidade. Atenção: pode não estar passando preço corretamente ou trabalhando objeções. Simular atendimento e observar fechamento.', color: '#e65100' };
-      return { msg: '⚡ Vende muito mas sem qualidade. Treinamento urgente em negociação.', color: '#c62828' };
-    }
-    if (cv.cls === 'bom' || cv.cls === 'padrao') {
-      if (cq.label === 'Excelente') return { msg: '🎯 Boa qualidade, precisa aumentar volume. Treinar escolha de plano foco (anual > recorrência > mensal).', color: '#f57c00' };
-      if (cq.label === 'Bom') return { msg: '👍 No padrão. Manter ritmo e buscar crescer volume.', color: '#666' };
-      return { msg: '⚠️ Volume e qualidade abaixo. Ação: acompanhamento presencial no fechamento + simulação de atendimento.', color: '#c62828' };
-    }
-    return { msg: '🚨 Ação urgente: acompanhamento individual. Verificar se está vendendo plano foco, recorrência como alternativa ao anual, e qualidade do atendimento.', color: '#b71c1c' };
-  }
-
-  const khComb = classComb(vendasKH, qualidadeKH);
-  const liComb = classComb(vendasLI, qualidadeLI);
+  // Feedback individual personalizado
+  const feedbackKH = gerarFeedbackIndividual('Kézia Heloisa', currentData.s_novas + currentData.s_remat, currentData.s_novas + currentData.s_remat > 0 ? (currentData.s_anuais / (currentData.s_novas + currentData.s_remat) * 100) : 0, allMonthsData, 's', 's');
+  const feedbackLI = gerarFeedbackIndividual('Liriane', currentData.r_novas + currentData.r_remat, currentData.r_novas + currentData.r_remat > 0 ? (currentData.r_anuais / (currentData.r_novas + currentData.r_remat) * 100) : 0, allMonthsData, 'r', 'r');
 
   // Composição de crescimento
   let compMsg = '';
   let compColor = '#888';
   if (ativosInicio > 0 && variacao > 0) {
-    const renovCresc = renovFeitos;
-    const vendasCresc = totalVendas;
-    const perdidos = cancelamentos;
-    if (renovCresc > perdidos && vendasCresc === 0) {
-      compMsg = '🛡️ Crescimento sustentado pela retenção! Apesar de poucas vendas, a boa gestão de cancelamentos e renovações garantiu crescimento da base.';
+    if (renovFeitos > cancelamentos && totalVendas === 0) {
+      compMsg = '🛡️ A base cresceu exclusivamente pela gestão de retenção. Renovações superaram cancelamentos sem ajuda de novas vendas. Isso demonstra maturidade operacional, mas não é sustentável — a unidade precisa de prospecção ativa para não depender apenas de quem já está dentro.';
       compColor = '#1b5e20';
-    } else if (vendasCresc > perdidos && renovCresc <= perdidos) {
-      compMsg = '🚀 Crescimento impulsionado pelas vendas! As novas vendas superaram as perdas, mas a retenção precisa de atenção — poucas vendas não sustentam a operação no longo prazo.';
+    } else if (totalVendas > cancelamentos && renovFeitos <= cancelamentos) {
+      compMsg = '🚀 As novas vendas carregaram o mês, mas a retenção está frágil. Mais clientes entraram do que saíram, mas muitos dos que estavam saindo não foram recuperados. Vendas sustentam o curto prazo, mas sem retenção a base vai sangrar nos próximos meses.';
       compColor = '#e65100';
-    } else if (renovCresc > perdidos && vendasCresc > perdidos) {
-      compMsg = '🎯 Crescimento equilibrado! Boas vendas + boa retenção = base sólida. A combinação ideal para crescimento sustentável.';
+    } else if (renovFeitos > cancelamentos && totalVendas > cancelamentos) {
+      compMsg = '🎯 Mês equilibrado: vendas e retenção trabalharam juntas. Novos clientes entraram e os existentes ficaram. Essa é a composição ideal — crescimento orgânico com base preservada. O desafio é manter esse ritmo nos próximos meses.';
       compColor = '#1b5e20';
     } else if (variacao < 0) {
-      compMsg = '📉 Base em retração. As perdas (cancelamentos) superaram as renovações e novas vendas. Ação urgente: acompanhar retenção e treinar equipe em fechamento.';
+      compMsg = '📉 A base está encolhendo. Mais clientes saíram do que ficaram ou entraram. Independente de quão bom foi o volume de vendas, se a retenção não melhorar, cada venda nova será anulada por uma saída. Prioridade: acompanhamento de renovação e recuperação de cancelamentos.';
       compColor = '#c62828';
     }
   } else if (variacao === 0 && ativosInicio > 0) {
-    compMsg = '➡️ Base estável, mas sem crescimento. Novas vendas e retenção estão equilibrando as perdas.';
+    compMsg = '➡️ Base estagnada. O que entra equilibra o que sai, mas não há crescimento real. A unidade precisa de um "empurrão" — seja uma campanha de renovação antecipada ou um aumento na prospecção para desequilibrar a balança a favor do crescimento.';
     compColor = '#f57c00';
   } else {
-    compMsg = '📋 Dados insuficientes para análise de composição.';
+    compMsg = '📋 Dados insuficientes para análise de composição. Preencha ativos início, cancelamentos e renovações.';
     compColor = '#888';
   }
 
-  // Alertas de tendência (3 meses consecutivos em queda)
+  // Alertas de tendência (3 meses consecutivos)
   let alertas = [];
-  if (last3.length >= 3) {
-    const d0 = allMonthsData[last3[0]];
-    const d1 = allMonthsData[last3[1]];
-    const d2 = allMonthsData[last3[2]];
+  if (orderedMonthsData.length >= 3) {
+    const m0 = orderedMonthsData[orderedMonthsData.length - 3];
+    const m1 = orderedMonthsData[orderedMonthsData.length - 2];
+    const m2 = orderedMonthsData[orderedMonthsData.length - 1];
+    const d0 = allMonthsData[m0];
+    const d1 = allMonthsData[m1];
+    const d2 = allMonthsData[m2];
 
-    // Meta financeira em queda
-    if (d2 && d1 && d0) {
-      if (d0.total < d1.total && d1.total < d2.total && d0.total > 0) {
-        alertas.push({ tipo: '🔴 ALERTA VERMELHO', msg: `Meta financeira em queda por 3 meses consecutivos: ${last3[0]} (R$ ${fmt(d0.total)}) → ${last3[1]} (R$ ${fmt(d1.total)}) → ${last3[2]} (R$ ${fmt(d2.total)}). Se não ajustado, impactará os próximos meses.`, color: '#c62828' });
+    if (d0 && d1 && d2) {
+      if (d2.total < d1.total && d1.total < d0.total && d2.total > 0) {
+        alertas.push({ tipo: '🔴 ALERTA VERMELHO — Receita em declínio', msg: `A unidade perdeu R$ ${fmt(d0.total - d2.total)} em 3 meses (${m0}: R$ ${fmt(d0.total)} → ${m1}: R$ ${fmt(d1.total)} → ${m2}: R$ ${fmt(d2.total)}). Se essa curva continuar, em 3 meses a unidade estará operando no prejuízo. Ação: reunião de alinhamento com a equipe e revisão de meta diária.`, color: '#c62828' });
       }
-      // Qualidade de vendas em queda
       const q0 = d0.totalVendas > 0 ? d0.totalAnuais / d0.totalVendas * 100 : 0;
       const q1 = d1.totalVendas > 0 ? d1.totalAnuais / d1.totalVendas * 100 : 0;
       const q2 = d2.totalVendas > 0 ? d2.totalAnuais / d2.totalVendas * 100 : 0;
-      if (q0 < q1 && q1 < q2 && q0 < 70 && q2 > 0) {
-        alertas.push({ tipo: '🟠 ALERTA LARANJA', msg: `Qualidade de vendas (anuais) em queda por 3 meses: ${last3[0]} (${q0.toFixed(0)}%) → ${last3[1]} (${q1.toFixed(0)}%) → ${last3[2]} (${q2.toFixed(0)}%). Treinar equipe em passagem de preço e objeções.`, color: '#e65100' });
+      if (q0 > 0 && q2 < q0 && q1 < q0 && q2 < 70) {
+        alertas.push({ tipo: '🟠 ALERTA LARANJA — Qualidade em erosão', msg: `A porcentagem de planos anuais caiu de ${q0.toFixed(0)}% (${m0}) para ${q2.toFixed(0)}% (${m2}). Isso significa que a equipe está vendendo mais mensais e menos anuais — cada plano mensal a mais é receita futura perdida. Treinar objeção de preço e benefício do anual urgentemente.`, color: '#e65100' });
       }
-      // Cancelamento em alta
       const c0 = d0.ativos_inicio > 0 ? d0.cancelamentos / d0.ativos_inicio * 100 : 0;
       const c1 = d1.ativos_inicio > 0 ? d1.cancelamentos / d1.ativos_inicio * 100 : 0;
       const c2 = d2.ativos_inicio > 0 ? d2.cancelamentos / d2.ativos_inicio * 100 : 0;
-      if (c0 > c1 && c1 > c2 && c0 > 3) {
-        alertas.push({ tipo: '🟡 ALERTA AMARELO', msg: `Taxa de cancelamento subindo por 3 meses: ${last3[0]} (${c0.toFixed(1)}%) → ${last3[1]} (${c1.toFixed(1)}%) → ${last3[2]} (${c2.toFixed(1)}%). Ajustar processo de retenção antes que perca bônus.`, color: '#f9a825' });
+      if (c2 > c1 && c1 > c0 && c2 > 3) {
+        alertas.push({ tipo: '🟡 ALERTA AMARELO — Fuga de clientes', msg: `Taxa de cancelamento escalando: ${c0.toFixed(1)}% → ${c1.toFixed(1)}% → ${c2.toFixed(1)}%. A cada 1% acima de 3%, a unidade perde R$ ${fmt(ativosInicio * 0.01 * CONFIG.planoAnualMensal * 12)} em receita anualizada. Implementar processo de retenção proativa: ligar 15 dias antes do vencimento.`, color: '#f9a825' });
       }
-    }
 
-    // Alerta individual por consultora (3 meses em queda)
-    if (d0 && d1 && d2) {
+      // Alertas individuais
       const kh0 = d0.s_novas + d0.s_remat;
       const kh1 = d1.s_novas + d1.s_remat;
       const kh2 = d2.s_novas + d2.s_remat;
-      if (kh0 < kh1 && kh1 < kh2 && kh0 > 0) {
-        alertas.push({ tipo: '👤 KH EM QUEDA', msg: `Kézia Heloisa em queda por 3 meses: ${last3[0]} (${kh0} planos) → ${last3[1]} (${kh1} planos) → ${last3[2]} (${kh2} planos). Considerar acompanhamento individual: simulação de atendimento, observação de fechamento presencial, e acompanhar negociações de WhatsApp.`, color: '#6a1b9a' });
+      if (kh0 > 0 && kh2 < kh1 && kh1 < kh0) {
+        alertas.push({ tipo: '👤 Kézia Heloisa — Queda sustentada', msg: `KH caiu de ${kh0} planos (${m0}) para ${kh2} planos (${m2}). Perda de ${kh0 - kh2} vendas em 3 meses. Investigar: ela está motivada? Está com problema pessoal? O atendimento dela mudou? Sugerir simulação de atendimento esta semana e acompanhar 3 fechamentos presenciais.`, color: '#6a1b9a' });
       }
       const li0 = d0.r_novas + d0.r_remat;
       const li1 = d1.r_novas + d1.r_remat;
       const li2 = d2.r_novas + d2.r_remat;
-      if (li0 < li1 && li1 < li2 && li0 > 0) {
-        alertas.push({ tipo: '👤 LI EM QUEDA', msg: `Liriane em queda por 3 meses: ${last3[0]} (${li0} planos) → ${last3[1]} (${li1} planos) → ${last3[2]} (${li2} planos). Considerar acompanhamento individual: simulação de atendimento, observação de fechamento presencial, e acompanhar negociações de WhatsApp.`, color: '#6a1b9a' });
+      if (li0 > 0 && li2 < li1 && li1 < li0) {
+        alertas.push({ tipo: '👤 Liriane — Queda sustentada', msg: `LI caiu de ${li0} planos (${m0}) para ${li2} planos (${m2}). Perda de ${li0 - li2} vendas em 3 meses. Investigar: ela está com leads suficientes? Está demorando no atendimento? Verificar WhatsApp e presencialmente o ritmo de negociação.`, color: '#6a1b9a' });
       }
     }
   }
 
   // Linha do tempo
-  const timelineHtml = orderedMonths.length ? orderedMonths.map(m => {
+  const timelineHtml = orderedMonthsData.length ? orderedMonthsData.map(m => {
     const d = allMonthsData[m];
     const pMeta = d.meta > 0 ? (d.total / d.meta * 100).toFixed(0) : 0;
     const pVendas = d.totalVendas;
@@ -1615,8 +1699,8 @@ async function renderInsights() {
     const baseIni = d.ativos_inicio;
     const baseFin = baseIni - d.cancelamentos + d.renovFeitos;
     const pVar = baseIni > 0 ? ((baseFin - baseIni) / baseIni * 100).toFixed(1) : '0.0';
-    const highlight = m === currentMonth ? 'style="background:#e8eaf6;border-radius:8px;padding:8px 12px"' : '';
-    return `<tr ${highlight}>
+    const highlight = m === currentMonth ? ' style="background:#e8eaf6;border-radius:8px;padding:8px 12px"' : '';
+    return `<tr${highlight}>
       <td style="font-size:0.82rem;font-weight:600">${m}</td>
       <td style="font-size:0.82rem">R$ ${fmt(d.total)}</td>
       <td style="font-size:0.82rem;color:${pMeta >= 100 ? '#1b5e20' : pMeta >= 70 ? '#e65100' : '#c62828'}">${pMeta}%</td>
@@ -1626,12 +1710,39 @@ async function renderInsights() {
     </tr>`;
   }).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--text-light)">Sem dados históricos</td></tr>';
 
+  // Tendência da equipe (feedback geral)
+  const teamMsgs = [];
+  if (orderedMonthsData.length >= 3) {
+    const m0 = orderedMonthsData[orderedMonthsData.length - 3];
+    const m2 = orderedMonthsData[orderedMonthsData.length - 1];
+    const d0 = allMonthsData[m0];
+    const d2 = allMonthsData[m2];
+    if (d0 && d2) {
+      const diff = d2.total - d0.total;
+      const diffPct = d0.total > 0 ? (diff / d0.total * 100).toFixed(1) : '0.0';
+      if (diff > 0) {
+        teamMsgs.push(`A unidade cresceu ${diffPct}% em receita nos últimos 3 meses (${fmt(d0.total)} → ${fmt(d2.total)}).`);
+      } else if (diff < 0) {
+        teamMsgs.push(`A unidade recuou ${Math.abs(diffPct)}% em receita nos últimos 3 meses (${fmt(d0.total)} → ${fmt(d2.total)}).`);
+      } else {
+        teamMsgs.push(`A receita da unidade está estagnada nos últimos 3 meses (${fmt(d2.total)}).`);
+      }
+      const q0 = d0.totalVendas > 0 ? d0.totalAnuais / d0.totalVendas * 100 : 0;
+      const q2 = d2.totalVendas > 0 ? d2.totalAnuais / d2.totalVendas * 100 : 0;
+      if (q2 > q0 && q2 >= 70) {
+        teamMsgs.push(`A qualidade da equipe melhorou: ${q0.toFixed(0)}% → ${q2.toFixed(0)}% de anuais. A equipe está aprendendo a vender melhor.`);
+      } else if (q2 < q0 && q2 < 50) {
+        teamMsgs.push(`A qualidade da equipe está em erosão: ${q0.toFixed(0)}% → ${q2.toFixed(0)}% de anuais. Urgente treinar passagem de preço e objeções.`);
+      }
+    }
+  }
+
   // Renderizar
   container.innerHTML = `
     <!-- Composição de Crescimento -->
     <div style="background:linear-gradient(135deg,#e8f5e9 0%,#c8e6c9 100%);border-left:4px solid ${compColor};padding:16px;margin-bottom:16px;border-radius:8px">
       <h3 style="font-size:1rem;margin-bottom:8px;color:${compColor}">📊 Composição de Crescimento — ${currentMonth}</h3>
-      <p style="font-size:0.9rem;line-height:1.6;margin:0">${compMsg}</p>
+      <p style="font-size:0.9rem;line-height:1.6;margin:0;white-space:pre-line">${compMsg}</p>
       <div class="stats-row" style="margin-top:12px">
         <div class="stat-item"><div class="stat-value" style="font-size:1rem">${variacao >= 0 ? '+' : ''}${variacao.toFixed(1)}%</div><div class="stat-label">Variação da Base</div></div>
         <div class="stat-item"><div class="stat-value" style="font-size:1rem">${renovFeitos}</div><div class="stat-label">Renovações Efetivadas</div></div>
@@ -1644,27 +1755,27 @@ async function renderInsights() {
     <div style="margin-bottom:16px">
       <h3 style="font-size:1rem;margin-bottom:12px;color:var(--primary)">👤 Diagnóstico Individual — Consultoras</h3>
       <div class="stats-row">
-        <div class="stat-item" style="border-left:4px solid ${khComb.color};min-width:280px">
+        <div class="stat-item" style="border-left:4px solid ${feedbackKH.color};min-width:280px">
           <div class="stat-label">Kézia Heloisa</div>
-          <div class="stat-value" style="font-size:1.1rem;color:${khComb.color}">${vendasKH} planos · ${qualidadeKH.toFixed(0)}% anuais</div>
-          <div style="font-size:0.8rem;color:${khComb.color};margin-top:6px;font-weight:600">${khComb.msg}</div>
-          <div style="font-size:0.75rem;color:var(--text-light);margin-top:4px">Volume: ${classVendas(vendasKH).label} | Qualidade: ${classQualidade(qualidadeKH).label}</div>
+          <div class="stat-value" style="font-size:1.1rem;color:${feedbackKH.color}">${currentData.s_novas + currentData.s_remat} planos · ${qualidadeKH.toFixed(0)}% anuais</div>
+          <div style="font-size:0.78rem;color:${feedbackKH.color};margin-top:4px">Tendência: <strong>${feedbackKH.tendencia === 'melhorando' ? '📈 Melhorando' : feedbackKH.tendencia === 'piorando' ? '📉 Piorando' : feedbackKH.tendencia === 'recuperando' ? '📊 Recuperando' : '➡️ Estável'}</strong></div>
+          <div style="font-size:0.8rem;color:var(--text-dark);margin-top:6px;line-height:1.5;white-space:pre-line">${feedbackKH.msg}</div>
         </div>
-        <div class="stat-item" style="border-left:4px solid ${liComb.color};min-width:280px">
+        <div class="stat-item" style="border-left:4px solid ${feedbackLI.color};min-width:280px">
           <div class="stat-label">Liriane</div>
-          <div class="stat-value" style="font-size:1.1rem;color:${liComb.color}">${vendasLI} planos · ${qualidadeLI.toFixed(0)}% anuais</div>
-          <div style="font-size:0.8rem;color:${liComb.color};margin-top:6px;font-weight:600">${liComb.msg}</div>
-          <div style="font-size:0.75rem;color:var(--text-light);margin-top:4px">Volume: ${classVendas(vendasLI).label} | Qualidade: ${classQualidade(qualidadeLI).label}</div>
+          <div class="stat-value" style="font-size:1.1rem;color:${feedbackLI.color}">${currentData.r_novas + currentData.r_remat} planos · ${qualidadeLI.toFixed(0)}% anuais</div>
+          <div style="font-size:0.78rem;color:${feedbackLI.color};margin-top:4px">Tendência: <strong>${feedbackLI.tendencia === 'melhorando' ? '📈 Melhorando' : feedbackLI.tendencia === 'piorando' ? '📉 Piorando' : feedbackLI.tendencia === 'recuperando' ? '📊 Recuperando' : '➡️ Estável'}</strong></div>
+          <div style="font-size:0.8rem;color:var(--text-dark);margin-top:6px;line-height:1.5;white-space:pre-line">${feedbackLI.msg}</div>
         </div>
       </div>
     </div>
 
     <!-- Alertas de Tendência -->
-    ${alertas.length ? '<div style="margin-bottom:16px"><h3 style="font-size:1rem;margin-bottom:12px;color:var(--primary)">🚨 Alertas de Tendência (3 meses consecutivos)</h3>' +
+    ${alertas.length ? '<div style="margin-bottom:16px"><h3 style="font-size:1rem;margin-bottom:12px;color:var(--primary)">🚨 Alertas de Tendência</h3>' +
       alertas.map(a => `<div style="background:${a.color}15;border-left:4px solid ${a.color};padding:12px 16px;margin-bottom:8px;border-radius:4px">
         <div style="font-size:0.82rem;font-weight:700;color:${a.color};margin-bottom:4px">${a.tipo}</div>
-        <div style="font-size:0.82rem;color:var(--text-dark)">${a.msg}</div>
-      </div>`).join('') + '</div>' : ''}
+        <div style="font-size:0.82rem;color:var(--text-dark);line-height:1.5;white-space:pre-line">${a.msg}</div>
+      </div>`).join('') + '</div>' : '<div class="alert alert-success" style="margin-bottom:16px">✅ Nenhum alerta de tendência negativa. Os indicadores estão estáveis ou em evolução positiva.</div>'}
 
     <!-- Linha do Tempo -->
     <div style="margin-bottom:16px">
@@ -1688,7 +1799,7 @@ async function renderInsights() {
 
     <!-- Insight Final -->
     <div class="alert alert-info" style="font-size:0.85rem;line-height:1.6">
-      <strong>💡 Como usar este painel:</strong> Se algum indicador ficar em alerta por 3 meses consecutivos, é hora de agir. Nenhum dado pode piorar continuamente. Use os diagnósticos individuais para direcionar acompanhamento: simulação de atendimento para quem tem baixa qualidade, e foco em volume para quem tem boa qualidade mas vende pouco. A renovação é uma oportunidade de migrar mensalista para anual — sempre treinar a equipe nisso.
+      <strong>💡 Regra de ouro:</strong> Nenhum indicador pode piorar por 3 meses seguidos. Se acontecer, é hora de agir imediatamente. Use o diagnóstico individual para direcionar ações específicas: simulação de atendimento para quem tem baixa qualidade, foco em volume para quem tem boa qualidade mas vende pouco, e acompanhamento presencial no fechamento para quem está em queda.
     </div>
   `;
 }
