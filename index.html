@@ -1892,8 +1892,8 @@ function renderLideranca() {
   if (totalInscRenov > 0 && taxaRenov >= 85) bonusRenovLider = CONFIG.bonusLiderRenov1;
   else if (totalInscRenov > 0 && taxaRenov >= 70) bonusRenovLider = CONFIG.bonusLiderRenov2;
 
-  // Bônus 1% sobre vendas totais (crédito interno)
-  const bonusLider1pct = Math.round(totalMes * 0.01);
+  // Crédito 1% da liderança sobre o total de produtos da unidade
+  const bonusLider1pct = Math.round(t.totalProdutos * 0.01);
 
   const totalBonusLider = bonusFinanceiroLider + bonusVendasLider + bonusCancLider + bonusRenovLider;
 
@@ -1926,9 +1926,9 @@ function renderLideranca() {
     </div>
 
     <div class="card">
-      <h2>💳 Crédito Interno (1% sobre vendas)</h2>
+      <h2>💳 Crédito Produtos — Liderança (1%)</h2>
       <div class="stats-row">
-        <div class="stat-item"><div class="stat-value">R$ ${fmt(bonusLider1pct)}</div><div class="stat-label">Crédito (1% de R$ ${fmt(totalMes)})</div></div>
+        <div class="stat-item"><div class="stat-value">R$ ${fmt(bonusLider1pct)}</div><div class="stat-label">Crédito (1% de R$ ${fmt(t.totalProdutos)} — total produtos da unidade)</div></div>
       </div>
     </div>
 
@@ -1940,7 +1940,7 @@ function renderLideranca() {
         <tr><td>Bônus Vendas (${totalVendasUnidade} vendas)</td><td><strong>R$ ${fmt(bonusVendasLider)}</strong></td><td>≥60 vendas</td></tr>
         <tr><td>Bônus Cancelamento (${t.ativosInicio > 0 ? cancPerc.toFixed(1) : 0}%)</td><td><strong>R$ ${fmt(bonusCancLider)}</strong></td><td>${t.ativosInicio > 0 ? '≤3% ou ≤4%' : 'Sem dados'}</td></tr>
         <tr><td>Bônus Renovação (${totalInscRenov > 0 ? taxaRenov.toFixed(1) : 0}%)</td><td><strong>R$ ${fmt(bonusRenovLider)}</strong></td><td>${totalInscRenov > 0 ? '≥85% ou ≥70%' : 'Sem dados'}</td></tr>
-        <tr><td>Crédito Interno (1%)</td><td><strong>R$ ${fmt(bonusLider1pct)}</strong></td><td>1% sobre total</td></tr>
+        <tr><td>Crédito Produtos (1%) — Liderança</td><td><strong>R$ ${fmt(bonusLider1pct)}</strong></td><td>1% sobre total de produtos da unidade</td></tr>
         <tr style="background:#f0f0f0"><td><strong>TOTAL LIDERANÇA</strong></td><td><strong>R$ ${fmt(totalBonusLider + bonusLider1pct)}</strong></td><td>—</td></tr>
       </table>
     </div>
@@ -1968,9 +1968,9 @@ function renderLideranca() {
         <span style="color:#666;font-size:0.78rem">Calculado: (rematrículas / novos + rematrículas) × 100</span>
       </div>
       <div class="tip-box" style="font-size:0.88rem;line-height:1.8;margin-top:8px">
-        <strong>Crédito Interno (1%):</strong><br>
-        1% sobre o total de vendas da unidade (meta financeira)<br>
-        <span style="color:#666;font-size:0.78rem">Sempre calculado, independente de meta atingida.</span>
+        <strong>Crédito Produtos (1%):</strong><br>
+        1% sobre o total de produtos vendidos por cada consultora (KH, LI e Amabile). O crédito de "Outros" vai para a liderança.<br>
+        <span style="color:#666;font-size:0.78rem">Sempre calculado, independente de meta atingida. Base: valor em R$ de produtos vendidos (aba Produtos).</span>
       </div>
     </div>
   `;
