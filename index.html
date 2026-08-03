@@ -687,26 +687,30 @@ function fmt(val) {
 function sumField(field) { return records.reduce((s, r) => s + num(r[field]), 0); }
 
 // ==================== GET TOTALS ====================
+// Modelo: pega APENAS o último registro salvo no mês (valor acumulado)
 function getTotals() {
-  const sv = sumField('sv');
-  const rv = sumField('rv');
-  const ov = sumField('ov');
-  const s_novas = sumField('s_novas');
-  const s_remat = sumField('s_remat');
-  const s_aval = sumField('s_aval');
-  const r_novas = sumField('r_novas');
-  const r_remat = sumField('r_remat');
-  const r_aval = sumField('r_aval');
-  const o_novas = sumField('o_novas');
-  const o_remat = sumField('o_remat');
-  const o_aval = sumField('o_aval');
-  const s_anuais = sumField('s_anuais');
-  const r_anuais = sumField('r_anuais');
-  const o_anuais = sumField('o_anuais');
-  const renovTotal = sumField('renovTotal');
-  const renovFeitos = sumField('renovFeitos');
-  const cancelamentos = sumField('cancelamentos');
-  const ativosInicio = records.length ? num(records[0].ativos_inicio) : 0;
+  // Último registro do mês (mais recente)
+  const last = records.length ? records[records.length - 1] : {};
+
+  const sv = num(last.sv);
+  const rv = num(last.rv);
+  const ov = num(last.ov);
+  const s_novas = num(last.s_novas);
+  const s_remat = num(last.s_remat);
+  const s_aval = num(last.s_aval);
+  const r_novas = num(last.r_novas);
+  const r_remat = num(last.r_remat);
+  const r_aval = num(last.r_aval);
+  const o_novas = num(last.o_novas);
+  const o_remat = num(last.o_remat);
+  const o_aval = num(last.o_aval);
+  const s_anuais = num(last.s_anuais);
+  const r_anuais = num(last.r_anuais);
+  const o_anuais = num(last.o_anuais);
+  const renovTotal = num(last.renovTotal);
+  const renovFeitos = num(last.renovFeitos);
+  const cancelamentos = num(last.cancelamentos);
+  const ativosInicio = num(last.ativos_inicio);
 
   // Vendas totais da unidade (novas + rematrículas de todos)
   const totalVendas = s_novas + s_remat + r_novas + r_remat + o_novas + o_remat;
@@ -714,11 +718,11 @@ function getTotals() {
   const vendasLI = r_novas + r_remat;
   const vendasOutros = o_novas + o_remat;
 
-  // Produtos (valores em reais)
-  const produtosKH = sumField('sp') + sumField('sa_prod');
-  const produtosLI = sumField('rp') + sumField('ra_prod');
-  const produtosAM = sumField('ab_prod');
-  const produtosOutros = sumField('ou_prod');
+  // Produtos (valores em reais) — último registro
+  const produtosKH = num(last.sp) + num(last.sa_prod);
+  const produtosLI = num(last.rp) + num(last.ra_prod);
+  const produtosAM = num(last.ab_prod);
+  const produtosOutros = num(last.ou_prod);
   const totalProdutos = produtosKH + produtosLI + produtosAM + produtosOutros;
 
   // Crédito 1% (só para Kézia Heloisa, Liriane e Amabile — Outros não)
@@ -1402,8 +1406,33 @@ function renderPreencher() {
   const dataStr = now.toLocaleDateString('pt-BR');
   const horaStr = now.toTimeString().slice(0,5);
 
+  // Último registro salvo (valores acumulados atuais)
+  const ult = records.length ? records[records.length - 1] : {};
+  const acc = {
+    sv: num(ult.sv),
+    rv: num(ult.rv),
+    ov: num(ult.ov),
+    sp: num(ult.sp),
+    rp: num(ult.rp),
+    ab_prod: num(ult.ab_prod),
+    ou_prod: num(ult.ou_prod),
+    s_novas: num(ult.s_novas),
+    s_remat: num(ult.s_remat),
+    s_anuais: num(ult.s_anuais),
+    r_novas: num(ult.r_novas),
+    r_remat: num(ult.r_remat),
+    r_anuais: num(ult.r_anuais),
+    o_novas: num(ult.o_novas),
+    o_remat: num(ult.o_remat),
+    o_anuais: num(ult.o_anuais),
+    renovTotal: num(ult.renovTotal),
+    renovFeitos: num(ult.renovFeitos),
+    ativos_inicio: num(ult.ativos_inicio),
+    cancelamentos: num(ult.cancelamentos)
+  };
+
   // Mostrar dados anteriores sempre visíveis
-  const ultimosRegistros = records.slice(0, 5);
+  const ultimosRegistros = records.slice(-5);
   const historioHtml = ultimosRegistros.length ? ultimosRegistros.map(r => `
     <tr>
       <td style="font-size:0.8rem">${r.nome || '—'}</td>
@@ -1414,6 +1443,13 @@ function renderPreencher() {
       <td style="font-size:0.8rem">R$ ${fmt(num(r.ov))}</td>
     </tr>
   `).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--text-light)">Nenhum registro anterior neste mês</td></tr>';
+
+  // Helper para label com acumulado
+  const accLabel = (field, isReal = true) => {
+    const val = acc[field];
+    const display = isReal ? `R$ ${fmt(val)}` : fmt(val);
+    return val > 0 ? `<span style="font-size:0.72rem;color:#666;margin-left:6px;font-weight:400">(atual: ${display})</span>` : '';
+  };
 
   document.getElementById('preencherContent').innerHTML = `
     <div id="preencherMsg"></div>
@@ -1438,17 +1474,17 @@ function renderPreencher() {
 
     <div class="section-title">Vendas — Meta Financeira (R$) — Vendas apenas recebidas</div>
     <div class="card-grid">
-      <div class="form-group"><label>Kézia Heloisa</label><input type="number" id="fill_sv" step="0.01" placeholder="0,00"></div>
-      <div class="form-group"><label>Liriane</label><input type="number" id="fill_rv" step="0.01" placeholder="0,00"></div>
-      <div class="form-group"><label>Outros</label><input type="number" id="fill_ov" step="0.01" placeholder="0,00"></div>
+      <div class="form-group"><label>Kézia Heloisa${accLabel('sv')}</label><input type="number" id="fill_sv" step="0.01" placeholder="0,00"></div>
+      <div class="form-group"><label>Liriane${accLabel('rv')}</label><input type="number" id="fill_rv" step="0.01" placeholder="0,00"></div>
+      <div class="form-group"><label>Outros${accLabel('ov')}</label><input type="number" id="fill_ov" step="0.01" placeholder="0,00"></div>
     </div>
 
     <div class="section-title">Produtos Vendidos (R$)</div>
     <div class="card-grid">
-      <div class="form-group"><label>Kézia Heloisa</label><input type="number" id="fill_sp" step="0.01" placeholder="0,00"></div>
-      <div class="form-group"><label>Liriane</label><input type="number" id="fill_rp" step="0.01" placeholder="0,00"></div>
-      <div class="form-group"><label>Amabile</label><input type="number" id="fill_ab_prod" step="0.01" placeholder="0,00"></div>
-      <div class="form-group"><label>Outros</label><input type="number" id="fill_ou_prod" step="0.01" placeholder="0,00"></div>
+      <div class="form-group"><label>Kézia Heloisa${accLabel('sp')}</label><input type="number" id="fill_sp" step="0.01" placeholder="0,00"></div>
+      <div class="form-group"><label>Liriane${accLabel('rp')}</label><input type="number" id="fill_rp" step="0.01" placeholder="0,00"></div>
+      <div class="form-group"><label>Amabile${accLabel('ab_prod')}</label><input type="number" id="fill_ab_prod" step="0.01" placeholder="0,00"></div>
+      <div class="form-group"><label>Outros${accLabel('ou_prod')}</label><input type="number" id="fill_ou_prod" step="0.01" placeholder="0,00"></div>
     </div>
 
     <div class="section-title">Planos Vendidos</div>
@@ -1459,19 +1495,19 @@ function renderPreencher() {
       </thead>
       <tbody>
         <tr><td><strong>Kézia Heloisa</strong></td>
-            <td><input type="number" id="fill_s_novas" placeholder="0" style="width:70px"></td>
-            <td><input type="number" id="fill_s_remat" placeholder="0" style="width:70px"></td>
-            <td><input type="number" id="fill_s_anuais" placeholder="0" style="width:70px"></td>
+            <td><input type="number" id="fill_s_novas" placeholder="${acc.s_novas || 0}" style="width:70px"></td>
+            <td><input type="number" id="fill_s_remat" placeholder="${acc.s_remat || 0}" style="width:70px"></td>
+            <td><input type="number" id="fill_s_anuais" placeholder="${acc.s_anuais || 0}" style="width:70px"></td>
         </tr>
         <tr><td><strong>Liriane</strong></td>
-            <td><input type="number" id="fill_r_novas" placeholder="0" style="width:70px"></td>
-            <td><input type="number" id="fill_r_remat" placeholder="0" style="width:70px"></td>
-            <td><input type="number" id="fill_r_anuais" placeholder="0" style="width:70px"></td>
+            <td><input type="number" id="fill_r_novas" placeholder="${acc.r_novas || 0}" style="width:70px"></td>
+            <td><input type="number" id="fill_r_remat" placeholder="${acc.r_remat || 0}" style="width:70px"></td>
+            <td><input type="number" id="fill_r_anuais" placeholder="${acc.r_anuais || 0}" style="width:70px"></td>
         </tr>
         <tr><td><strong>Outros</strong></td>
-            <td><input type="number" id="fill_o_novas" placeholder="0" style="width:70px"></td>
-            <td><input type="number" id="fill_o_remat" placeholder="0" style="width:70px"></td>
-            <td><input type="number" id="fill_o_anuais" placeholder="0" style="width:70px"></td>
+            <td><input type="number" id="fill_o_novas" placeholder="${acc.o_novas || 0}" style="width:70px"></td>
+            <td><input type="number" id="fill_o_remat" placeholder="${acc.o_remat || 0}" style="width:70px"></td>
+            <td><input type="number" id="fill_o_anuais" placeholder="${acc.o_anuais || 0}" style="width:70px"></td>
         </tr>
       </tbody>
     </table>
@@ -1479,14 +1515,14 @@ function renderPreencher() {
 
     <div class="section-title">Renovações</div>
     <div class="card-grid">
-      <div class="form-group"><label>Previstas para o mês</label><input type="number" id="fill_renovTotal" placeholder="0"></div>
-      <div class="form-group"><label>Efetivadas</label><input type="number" id="fill_renovFeitos" placeholder="0"></div>
+      <div class="form-group"><label>Previstas para o mês${accLabel('renovTotal', false)}</label><input type="number" id="fill_renovTotal" placeholder="0"></div>
+      <div class="form-group"><label>Efetivadas${accLabel('renovFeitos', false)}</label><input type="number" id="fill_renovFeitos" placeholder="0"></div>
     </div>
 
     <div class="section-title">Dados de Retenção</div>
     <div class="card-grid">
-      <div class="form-group"><label>Ativos Início do Mês</label><input type="number" id="fill_ativos_inicio" placeholder="0"></div>
-      <div class="form-group"><label>Cancelamentos</label><input type="number" id="fill_cancelamentos" placeholder="0"></div>
+      <div class="form-group"><label>Ativos Início do Mês${accLabel('ativos_inicio', false)}</label><input type="number" id="fill_ativos_inicio" placeholder="0"></div>
+      <div class="form-group"><label>Cancelamentos${accLabel('cancelamentos', false)}</label><input type="number" id="fill_cancelamentos" placeholder="0"></div>
     </div>
 
     <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap">
