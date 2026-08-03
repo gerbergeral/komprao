@@ -2030,41 +2030,14 @@ function renderLideranca() {
   `;
 }
 
-// Protege o seletor de mês: sem senha = só vigente + anterior (se dentro de 10 dias)
-// Com senha = todos os meses disponíveis no Sheets
+// Seletor de mês: todos podem ver TODOS os meses (leitura)
+// Sem senha: visualiza qualquer mês (Meta Financeira, Retenção, Folha, Produtos, Histórico)
+// Com senha: além disso, acessa Preencher, Liderança, Insights
 function updateMonthSelector() {
   const select = document.getElementById('monthSelect');
   const notice = document.getElementById('monthLockNotice');
-  
-  if (isMonthUnlocked) {
-    // Com senha: mostra TODOS os meses, sem limite
-    notice.style.display = 'none';
-    select.disabled = false;
-    return;
-  }
-  
-  // Sem senha: limita a visualização ao mês vigente + anterior (se dentro de 10 dias)
-  notice.style.display = 'inline';
-  const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-  const now = new Date();
-  const currentMes = months[now.getMonth()] + '/' + now.getFullYear();
-  const prevMes = months[(now.getMonth() - 1 + 12) % 12];
-  const prevYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
-  const prevMesStr = prevMes + '/' + prevYear;
-  const prevStillOpen = !isMesFechado(prevMesStr);
-  
-  // Limpa e adiciona apenas os meses permitidos
-  const allowed = [currentMes];
-  if (prevStillOpen) allowed.unshift(prevMesStr);
-  
-  select.innerHTML = '';
-  allowed.forEach(m => {
-    const opt = document.createElement('option');
-    opt.value = m;
-    opt.textContent = m;
-    select.appendChild(opt);
-  });
-  select.selectedIndex = 0;
+  if (notice) notice.style.display = 'none';
+  // Nunca limita o seletor — todos os meses ficam disponíveis para visualização
   select.disabled = false;
 }
 
