@@ -939,19 +939,6 @@ function getMetaAtual() {
   return CONFIG.metas.periods[CONFIG.metas.periods.length - 1].meta;
 }
 
-// Verifica se um mês está "fechado" (passaram mais de 10 dias do mês seguinte) — só para lógica de insight
-function isMesFechado(mesStr) {
-  const meses = { 'Jan':0,'Fev':1,'Mar':2,'Abr':3,'Mai':4,'Jun':5,'Jul':6,'Ago':7,'Set':8,'Out':9,'Nov':10,'Dez':11 };
-  const partes = mesStr.split('/');
-  if (partes.length !== 2) return false;
-  const mesNum = meses[partes[0]];
-  const ano = parseInt(partes[1]);
-  const now = new Date();
-  const ultimoDiaMes = new Date(ano, mesNum + 1, 0).getDate();
-  const dataLimite = new Date(ano, mesNum, ultimoDiaMes + 10);
-  return now > dataLimite;
-}
-
 function renderMeta(t) {
   const totalAtual = t.sv + t.rv + t.ov;
   const metaAtual = getMetaAtual();
@@ -965,21 +952,15 @@ function renderMeta(t) {
 
   const meta2 = Math.round(metaAtual * 1.1);
   const meta3 = Math.round(metaAtual * 1.2);
-  const mesFechado = isMesFechado(currentMonth);
-
   // Progresso geral — direto e claro
   let statusMsg = '';
   let statusColor = '#888';
   if (totalAtual === 0) {
-    statusMsg = mesFechado ? '📋 Mês encerrado sem dados registrados.' : '📋 Aguardando dados do mês';
+    statusMsg = '📋 Aguardando dados do mês';
     statusColor = '#888';
   } else if (parseFloat(perc) >= 100) {
     statusMsg = '🎉 META ATINGIDA!';
     statusColor = '#2e7d32';
-  } else if (mesFechado) {
-    const saldo = Math.max(metaAtual - totalAtual, 0);
-    statusMsg = '📉 Meta não atingida — Faltou R$ ' + fmt(saldo);
-    statusColor = '#c62828';
   } else if (parseFloat(perc) >= 70) {
     statusMsg = '🔥 Quase lá! Faltam R$ ' + fmt(Math.max(metaAtual - totalAtual, 0));
     statusColor = '#e65100';
@@ -1171,21 +1152,6 @@ function renderMetaSemanalCard(t) {
 }
 
 function renderInsight(t, totalAtual, metaAtual, perc) {
-  const mesFechado = isMesFechado(currentMonth);
-
-  // Mês fechado — resultado final, sem sugestões de "falta X"
-  if (mesFechado) {
-    if (totalAtual === 0) {
-      document.getElementById('insightBox').innerHTML = '<div class="insight-box" style="background:linear-gradient(135deg,#666 0%,#888 100%)"><strong>📋 Mês encerrado</strong>Este mês não teve dados registrados. Resultado: 0% da meta.</div>';
-    } else if (parseFloat(perc) >= 100) {
-      document.getElementById('insightBox').innerHTML = '<div class="insight-box" style="background:linear-gradient(135deg,#1b5e20 0%,#2e7d32 100%)"><strong>🏆 Resultado final: Meta atingida!</strong>A equipe fechou o mês com ' + perc + '% da meta (R$ ' + fmt(totalAtual) + ' de R$ ' + fmt(metaAtual) + '). Excelente resultado!</div>';
-    } else {
-      const saldo = Math.max(metaAtual - totalAtual, 0);
-      document.getElementById('insightBox').innerHTML = '<div class="insight-box" style="background:linear-gradient(135deg,#b71c1c 0%,#c62828 100%)"><strong>📉 Resultado final: Meta não atingida.</strong>A equipe fechou com ' + perc + '% (R$ ' + fmt(totalAtual) + ' de R$ ' + fmt(metaAtual) + '). Faltaram R$ ' + fmt(saldo) + '. Use os Insights para entender o que pode melhorar no próximo mês.</div>';
-    }
-    return;
-  }
-
   // Se não há dados, não mostrar insight enganoso
   if (totalAtual === 0) {
     document.getElementById('insightBox').innerHTML = '<div class="insight-box" style="background:linear-gradient(135deg,#4a6fa5 0%,#6b8fc4 100%)"><strong>📊 Mês em andamento</strong>Nenhum dado registrado ainda. Os resultados aparecerão aqui assim que a apuração for feita.</div>';
@@ -2132,7 +2098,7 @@ function renderPreencher() {
       <div class="form-group"><label>Mês que está preenchendo</label><select id="fill_mes">${availableMonths.map(m => '<option value="' + m + '"' + (m === currentMonth ? ' selected' : '') + '>' + m + '</option>').join('')}</select></div>
       <div class="form-group"><label>Data do lançamento (automático)</label><input type="text" id="fill_data_real" value="${dataStr} às ${horaStr}" readonly style="background:#f5f5f5;color:#888"></div>
     </div>
-    <div style="font-size:0.78rem;color:#666;margin-top:4px">⚠️ Meses anteriores ficam bloqueados 10 dias após o fechamento. Hoje você pode preencher: ${availableMonths.join(', ')}.</div>
+    <div style="font-size:0.78rem;color:#666;margin-top:4px">Escolha o mês que deseja preencher acima.</div>
 
     <div class="section-title">Identificação</div>
     <div class="form-group"><label>Nome de quem está registrando</label><input type="text" id="fill_nome" placeholder="Seu nome (ex: Maria)" value="${records.length ? (records[0].nome || '') : ''}"></div>
