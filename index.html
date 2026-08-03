@@ -931,29 +931,55 @@ function getMetaAtual() {
   return CONFIG.metas.periods[CONFIG.metas.periods.length - 1].meta;
 }
 
+// Verifica se um mês está "fechado" (passaram mais de 10 dias do mês seguinte)
+function isMesFechado(mesStr) {
+  const meses = { 'Jan':0,'Fev':1,'Mar':2,'Abr':3,'Mai':4,'Jun':5,'Jul':6,'Ago':7,'Set':8,'Out':9,'Nov':10,'Dez':11 };
+  const partes = mesStr.split('/');
+  if (partes.length !== 2) return false;
+  const mesNum = meses[partes[0]];
+  const ano = parseInt(partes[1]);
+  const now = new Date();
+  // Data limite: 10 dias após o fim do mês selecionado
+  const mesSelecionado = new Date(ano, mesNum, 1);
+  const ultimoDiaMes = new Date(ano, mesNum + 1, 0).getDate();
+  const dataLimite = new Date(ano, mesNum, ultimoDiaMes + 10);
+  return now > dataLimite;
+}
+
 function renderMeta(t) {
   const totalAtual = t.sv + t.rv + t.ov;
   const metaAtual = getMetaAtual();
   const perc = totalAtual > 0 ? Math.min((totalAtual / metaAtual) * 100, 100).toFixed(1) : '0.0';
   const fillClass = totalAtual === 0 ? 'blue' : perc >= 100 ? 'green' : perc >= 70 ? 'gold' : 'red';
 
-  // Confetti check — só se houver dados reais
-  if (totalAtual > 0 && parseFloat(perc) >= 100) {
+  // Confetti check — só se houver dados reais e mês atual
+  if (totalAtual > 0 && parseFloat(perc) >= 100 && !isMesFechado(currentMonth)) {
     setTimeout(launchConfetti, 500);
   }
 
   const meta2 = Math.round(metaAtual * 1.1);
   const meta3 = Math.round(metaAtual * 1.2);
+  const mesFechado = isMesFechado(currentMonth);
 
   // Progresso geral — direto e claro
   let statusMsg = '';
   let statusColor = '#888';
   if (totalAtual === 0) {
-    statusMsg = '📋 Aguardando dados do mês';
-    statusColor = '#888';
+    if (mesFechado) {
+      statusMsg = '📋 Mês encerrado sem dados registrados.';
+      statusColor = '#888';
+    } else {
+      statusMsg = '📋 Aguardando dados do mês';
+      statusColor = '#888';
+    }
   } else if (parseFloat(perc) >= 100) {
     statusMsg = '🎉 META ATINGIDA!';
     statusColor = '#2e7d32';
+  } else if (mesFechado) {
+    // Mês fechado e meta não batida
+    const saldo = Math.max(metaAtual - totalAtual, 0);
+    statusMsg = '📉 Meta não atingida — Faltou R$ ' + fmt(saldo);
+    statusColor = '#c62828';
   } else if (parseFloat(perc) >= 70) {
     statusMsg = '🔥 Quase lá! Faltam R$ ' + fmt(Math.max(metaAtual - totalAtual, 0));
     statusColor = '#e65100';
@@ -963,16 +989,13 @@ function renderMeta(t) {
   } else if (parseFloat(perc) > 0) {
     statusMsg = '⚠️ Atenção! Faltam R$ ' + fmt(Math.max(metaAtual - totalAtual, 0));
     statusColor = '#c62828';
-  } else {
-    statusMsg = '📋 Aguardando dados do mês';
-    statusColor = '#888';
   }
 
   document.getElementById('metaProgresso').innerHTML = `
     <div class="stats-row">
       <div class="stat-item"><div class="stat-value">R$ ${fmt(totalAtual)}</div><div class="stat-label">Arrecadado</div></div>
       <div class="stat-item"><div class="stat-value" style="color:${statusColor};font-size:1.6rem">${perc}%</div><div class="stat-label">Progresso</div></div>
-      <div class="stat-item" style="flex:2"><div class="stat-value" style="color:${statusColor};font-size:1rem;text-align:left">${statusMsg}</div><div class="stat-label">${totalAtual > 0 ? 'Faltam R$ ' + fmt(Math.max(metaAtual - totalAtual, 0)) + ' para Meta 1' : ''}</div></div>
+      <div class="stat-item" style="flex:2"><div class="stat-value" style="color:${statusColor};font-size:1rem;text-align:left">${statusMsg}</div><div class="stat-label" style="font-size:0.72rem">${mesFechado ? '🔒 Dados encerrados (mês + 10 dias)' : ''}</div></div>
     </div>
     <div class="progress-bar"><div class="fill ${fillClass}" style="width:${perc}%"></div></div>
     <div class="metas-row" style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap">
@@ -1148,6 +1171,21 @@ function renderMetaSemanalCard(t) {
 }
 
 function renderInsight(t, totalAtual, metaAtual, perc) {
+  const mesFechado = isMesFechado(currentMonth);
+
+  // Mês fechado — resultado final, sem sugestões de "falta X"
+  if (mesFechado) {
+    if (totalAtual === 0) {
+      document.getElementById('insightBox').innerHTML = '<div class="insight-box" style="background:linear-gradient(135deg,#666 0%,#888 100%)"><strong>📋 Mês encerrado</strong>Este mês não teve dados registrados. Resultado: 0% da meta.</div>';
+    } else if (parseFloat(perc) >= 100) {
+      document.getElementById('insightBox').innerHTML = '<div class="insight-box" style="background:linear-gradient(135deg,#1b5e20 0%,#2e7d32 100%)"><strong>🏆 Resultado final: Meta atingida!</strong>A equipe fechou o mês com ' + perc + '% da meta (R$ ' + fmt(totalAtual) + ' de R$ ' + fmt(metaAtual) + '). Excelente resultado!</div>';
+    } else {
+      const saldo = Math.max(metaAtual - totalAtual, 0);
+      document.getElementById('insightBox').innerHTML = '<div class="insight-box" style="background:linear-gradient(135deg,#b71c1c 0%,#c62828 100%)"><strong>📉 Resultado final: Meta não atingida.</strong>A equipe fechou com ' + perc + '% (R$ ' + fmt(totalAtual) + ' de R$ ' + fmt(metaAtual) + '). Faltaram R$ ' + fmt(saldo) + '. Use os Insights para entender o que pode melhorar no próximo mês.</div>';
+    }
+    return;
+  }
+
   // Se não há dados, não mostrar insight enganoso
   if (totalAtual === 0) {
     document.getElementById('insightBox').innerHTML = '<div class="insight-box" style="background:linear-gradient(135deg,#4a6fa5 0%,#6b8fc4 100%)"><strong>📊 Mês em andamento</strong>Nenhum dado registrado ainda. Os resultados aparecerão aqui assim que a apuração for feita.</div>';
