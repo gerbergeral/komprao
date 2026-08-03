@@ -223,6 +223,7 @@ tr:hover { background: #f0f0f0; }
   <button data-tab="folha">Resultado Folha</button>
   <button data-tab="produtos">Produtos</button>
   <button data-tab="historico">Histórico</button>
+  <button data-tab="insights">🧠 Insights</button>
   <button data-tab="lideranca">👑 Liderança</button>
   <button data-tab="preencher">✏️ Preencher</button>
 </nav>
@@ -338,6 +339,16 @@ tr:hover { background: #f0f0f0; }
       <h2>📜 Histórico</h2>
       <div id="historicoTable">
         <div class="loading"><div class="spinner"></div><p style="margin-top:12px">Carregando histórico...</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ABA INSIGHTS (AUTOMÁTICO) ==================== -->
+  <div class="tab" id="tab-insights">
+    <div class="card">
+      <h2>🧠 Insights Inteligentes — Desempenho da Unidade</h2>
+      <div id="insightsContent">
+        <div class="loading"><div class="spinner"></div><p style="margin-top:12px">Analisando dados históricos...</p></div>
       </div>
     </div>
   </div>
@@ -500,11 +511,13 @@ function switchTab(tab) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
   document.getElementById('tab-' + tab).classList.add('active');
-  if (tab === 'preencher' || tab === 'lideranca' || tab === 'historico') {
+  if (tab === 'preencher' || tab === 'lideranca' || tab === 'historico' || tab === 'insights') {
     document.getElementById('globalMonthBar').style.display = 'none';
   } else {
     document.getElementById('globalMonthBar').style.display = 'flex';
   }
+  // Render insights when switching to it
+  if (tab === 'insights') renderInsights();
 }
 
 // ==================== LOGIN ====================
@@ -925,11 +938,34 @@ function renderMeta(t) {
   const meta2 = Math.round(metaAtual * 1.1);
   const meta3 = Math.round(metaAtual * 1.2);
 
-  // Progresso geral
+  // Progresso geral — direto e claro
+  let statusMsg = '';
+  let statusColor = '#888';
+  if (totalAtual === 0) {
+    statusMsg = '📋 Aguardando dados do mês';
+    statusColor = '#888';
+  } else if (parseFloat(perc) >= 100) {
+    statusMsg = '🎉 META ATINGIDA!';
+    statusColor = '#2e7d32';
+  } else if (parseFloat(perc) >= 70) {
+    statusMsg = '🔥 Quase lá! Faltam R$ ' + fmt(Math.max(metaAtual - totalAtual, 0));
+    statusColor = '#e65100';
+  } else if (parseFloat(perc) >= 40) {
+    statusMsg = '👊 No ritmo! Faltam R$ ' + fmt(Math.max(metaAtual - totalAtual, 0));
+    statusColor = '#f57c00';
+  } else if (parseFloat(perc) > 0) {
+    statusMsg = '⚠️ Atenção! Faltam R$ ' + fmt(Math.max(metaAtual - totalAtual, 0));
+    statusColor = '#c62828';
+  } else {
+    statusMsg = '📋 Aguardando dados do mês';
+    statusColor = '#888';
+  }
+
   document.getElementById('metaProgresso').innerHTML = `
     <div class="stats-row">
       <div class="stat-item"><div class="stat-value">R$ ${fmt(totalAtual)}</div><div class="stat-label">Arrecadado</div></div>
-      <div class="stat-item"><div class="stat-value">${perc}%</div><div class="stat-label">Progresso</div></div>
+      <div class="stat-item"><div class="stat-value" style="color:${statusColor};font-size:1.6rem">${perc}%</div><div class="stat-label">Progresso</div></div>
+      <div class="stat-item" style="flex:2"><div class="stat-value" style="color:${statusColor};font-size:1rem;text-align:left">${statusMsg}</div><div class="stat-label">${totalAtual > 0 ? 'Faltam R$ ' + fmt(Math.max(metaAtual - totalAtual, 0)) + ' para Meta 1' : ''}</div></div>
     </div>
     <div class="progress-bar"><div class="fill ${fillClass}" style="width:${perc}%"></div></div>
     <div class="metas-row" style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap">
@@ -990,9 +1026,34 @@ function renderMeta(t) {
 
   // Ranking — Medalhas + Participação
   const totalKH_LI = t.sv + t.rv;
+  const totalAtual2 = t.sv + t.rv + t.ov;
+  const metaAtual2 = getMetaAtual();
+  const metaBater = totalAtual2 >= metaAtual2;
   if (totalKH_LI === 0) {
     document.getElementById('ranking').innerHTML = '<div class="ranking-empty"><div class="big-emoji">🤝</div><p>Consultoras estão empatadas! Os dados aparecerão aqui assim que a apuração for feita.</p></div>';
+  } else if (!metaBater) {
+    // Meta ainda não batida — mostra participação mas sem definir vencedor
+    const khPerc = ((t.sv / totalKH_LI) * 100).toFixed(1);
+    const liPerc = ((t.rv / totalKH_LI) * 100).toFixed(1);
+    const bonusVendasKH = calcBonusVendasVolume(t.vendasKH);
+    const bonusVendasLI = calcBonusVendasVolume(t.vendasLI);
+    const sorted = [
+      {name:'Kézia Heloisa', val:t.sv, perc:khPerc, vendas:t.vendasKH, bonusV:bonusVendasKH},
+      {name:'Liriane', val:t.rv, perc:liPerc, vendas:t.vendasLI, bonusV:bonusVendasLI}
+    ].sort((a,b) => b.val - a.val);
+    document.getElementById('ranking').innerHTML = '<div class="ranking-container">' + sorted.map((item, i) => `
+      <div class="ranking-card ${i===0?'gold':'silver'}" style="opacity:0.85">
+        <div class="medal" style="filter:grayscale(100%)">🏅</div>
+        <div class="rank-name">${item.name}</div>
+        <div class="rank-pct">${item.perc}% da participação</div>
+        <div class="rank-value">R$ ${fmt(item.val)}</div>
+        <div class="rank-bar"><div class="fill" style="width:${item.perc}%"></div></div>
+        <div class="rank-detail">${item.vendas} vendas · Bônus vendas: R$ ${fmt(item.bonusV)}</div>
+        <div class="rank-detail" style="font-weight:700;color:#888">Bater a meta para definir a campeã!</div>
+      </div>
+    `).join('') + '</div>';
   } else {
+    // Meta batida! Define campeã
     const khPerc = ((t.sv / totalKH_LI) * 100).toFixed(1);
     const liPerc = ((t.rv / totalKH_LI) * 100).toFixed(1);
     const bonusVendasKH = calcBonusVendasVolume(t.vendasKH);
@@ -1007,7 +1068,7 @@ function renderMeta(t) {
       <div class="ranking-card ${i===0?'gold':'silver'}">
         <div class="medal">${medalIcons[i]}</div>
         <div class="rank-name">${item.name}</div>
-        <div class="rank-pct">${item.perc}% da meta</div>
+        <div class="rank-pct">${item.perc}% da participação</div>
         <div class="rank-value">R$ ${fmt(item.val)}</div>
         <div class="rank-bar"><div class="fill" style="width:${item.perc}%"></div></div>
         <div class="rank-detail">${item.vendas} vendas · Bônus vendas: R$ ${fmt(item.bonusV)}</div>
@@ -1236,12 +1297,399 @@ function renderFolha(t) {
     <div class="progress-bar" style="margin-top:8px"><div class="fill gold" style="width:${Math.min((t.rv / metaAtual)*100, 100)}%"></div></div>
   `;
 
+  // Destaque de desempenho individual
+  function getDesempenho(vendas) {
+    if (vendas >= 80) return { label: '🌟 Excepcional', color: '#1b5e20', desc: 'Desempenho de alta performance! Vendedora foda!' };
+    if (vendas >= 70) return { label: '🔥 Acima da média', color: '#2e7d32', desc: 'Performance muito acima da média! Referência na equipe.' };
+    if (vendas >= 50) return { label: '✅ Bom desempenho', color: '#f57c00', desc: 'Acima do esperado. Segue firme!' };
+    if (vendas >= 40) return { label: '👍 No padrão', color: '#666', desc: 'Desempenho adequado. Vendas no padrão esperado.' };
+    if (vendas > 0) return { label: '⚠️ Abaixo do esperado', color: '#c62828', desc: 'Abaixo do padrão. Uma boa consultora vende 40+ planos/mês.' };
+    return { label: '📋 Sem dados', color: '#888', desc: 'Aguardando dados.' };
+  }
+
+  const desempKH = getDesempenho(t.vendasKH);
+  const empLI = getDesempenho(t.vendasLI);
+
   document.getElementById('resumoFolha').innerHTML = `
     <table>
       <tr><th>Consultora</th><th>Vendas</th><th>Bônus Meta</th><th>Bônus Vendas</th><th>Bônus Renovação</th><th>Bônus Avaliação</th><th>Crédito Produtos (1%)</th><th>Total Folha</th></tr>
       <tr><td><strong>Kézia Heloisa</strong></td><td>R$ ${fmt(t.sv)}</td><td>R$ ${fmt(bonusMetaKH)}</td><td>R$ ${fmt(bonusVendasKH)}</td><td>R$ ${fmt(bonusRenov)}</td><td>R$ ${fmt(bonusAvalKH)}</td><td>R$ ${fmt(t.creditoKH)}</td><td><strong>R$ ${fmt(totalKH)}</strong></td></tr>
       <tr><td><strong>Liriane</strong></td><td>R$ ${fmt(t.rv)}</td><td>R$ ${fmt(bonusMetaLI)}</td><td>R$ ${fmt(bonusVendasLI)}</td><td>R$ ${fmt(bonusRenov)}</td><td>R$ ${fmt(bonusAvalLI)}</td><td>R$ ${fmt(t.creditoLI)}</td><td><strong>R$ ${fmt(totalLI)}</strong></td></tr>
     </table>
+
+    <div style="margin-top:20px">
+      <h2 style="font-size:1.05rem;margin-bottom:12px;color:var(--primary)">📋 Política de Bonificação — Consultoras</h2>
+      <div class="card" style="background:#f8f9ff;border-left:4px solid #3f51b5;padding:16px;margin-bottom:16px">
+        <div style="font-size:0.88rem;line-height:1.8">
+          <strong>Bônus Meta (proporcional KH/LI):</strong><br>
+          Meta 1 atingida (100%) → R$ 400 divididos proporcionalmente<br>
+          Meta 2 atingida (110%) → R$ 700 divididos proporcionalmente<br>
+          Meta 3 atingida (120%) → R$ 1.000 divididos proporcionalmente<br>
+          <span style="color:#666;font-size:0.78rem">Exemplo: se a meta é R$80.000 e KH vendeu R$45.000 e LI R$35.000, o bônus é dividido 56%/44%</span>
+        </div>
+        <hr style="margin:10px 0;border:none;border-top:1px solid #e0e0e0">
+        <div style="font-size:0.88rem;line-height:1.8">
+          <strong>Bônus Vendas (por volume individual):</strong><br>
+          15 vendas → R$ 100 | 20 vendas → R$ 200 | 25 vendas → R$ 300 | a cada 5 vendas +R$ 100<br>
+          <span style="color:#666;font-size:0.78rem">Considera novos + rematrículas de cada consultora</span>
+        </div>
+        <hr style="margin:10px 0;border:none;border-top:1px solid #e0e0e0">
+        <div style="font-size:0.88rem;line-height:1.8">
+          <strong>Bônus Renovação (por consultora):</strong><br>
+          Taxa ≥ 70% → R$ 50 | Taxa ≥ 85% → R$ 100<br>
+          <span style="color:#666;font-size:0.78rem">Calculado: (rematrículas / novos + rematrículas) × 100</span>
+        </div>
+        <hr style="margin:10px 0;border:none;border-top:1px solid #e0e0e0">
+        <div style="font-size:0.88rem;line-height:1.8">
+          <strong>Bônus Avaliação:</strong><br>
+          R$ 10 por cada avaliação vendida (individual)<br>
+        </div>
+        <hr style="margin:10px 0;border:none;border-top:1px solid #e0e0e0">
+        <div style="font-size:0.88rem;line-height:1.8">
+          <strong>Crédito Produtos (1%):</strong><br>
+          1% do valor de produtos vendidos (KH, LI e Amabile). Outros não geram crédito individual.
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:20px">
+      <h2 style="font-size:1.05rem;margin-bottom:12px;color:var(--primary)">📊 Destaque de Desempenho — Planos Vendidos</h2>
+      <div class="stats-row">
+        <div class="stat-item" style="border-left:4px solid ${desempKH.color}">
+          <div class="stat-label">Kézia Heloisa</div>
+          <div class="stat-value" style="color:${desempKH.color};font-size:1.1rem">${t.vendasKH} planos</div>
+          <div style="font-size:0.78rem;color:${desempKH.color};margin-top:4px"><strong>${desempKH.label}</strong></div>
+          <div style="font-size:0.72rem;color:var(--text-light);margin-top:2px">${desempKH.desc}</div>
+          <div style="margin-top:6px">
+            <div class="progress-bar" style="height:6px"><div class="fill green" style="width:${Math.min((t.vendasKH/80)*100,100)}%"></div></div>
+          </div>
+        </div>
+        <div class="stat-item" style="border-left:4px solid ${empLI.color}">
+          <div class="stat-label">Liriane</div>
+          <div class="stat-value" style="color:${empLI.color};font-size:1.1rem">${t.vendasLI} planos</div>
+          <div style="font-size:0.78rem;color:${empLI.color};margin-top:4px"><strong>${empLI.label}</strong></div>
+          <div style="font-size:0.72rem;color:var(--text-light);margin-top:2px">${empLI.desc}</div>
+          <div style="margin-top:6px">
+            <div class="progress-bar" style="height:6px"><div class="fill green" style="width:${Math.min((t.vendasLI/80)*100,100)}%"></div></div>
+          </div>
+        </div>
+        <div class="stat-item" style="border-left:4px solid #4a6fa5">
+          <div class="stat-label">Indicador Financeiro</div>
+          <div class="stat-value" style="font-size:1.1rem">${t.vendasKH + t.vendasLI} planos</div>
+          <div style="font-size:0.78rem;color:var(--text-light);margin-top:4px">Total da equipe (KH + LI)</div>
+          <div style="font-size:0.72rem;color:var(--text-light);margin-top:2px">Meta de 40+ planos/pessoa para performance adequada</div>
+          <div style="margin-top:6px">
+            <div class="progress-bar" style="height:6px"><div class="fill blue" style="width:${Math.min(((t.vendasKH+t.vendasLI)/160)*100,100)}%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ==================== INSIGHTS INTELIGENTES ====================
+// Função auxiliar: carregar dados de um mês específico via API
+let allMonthsData = {};
+let allMonthsLoaded = false;
+
+async function loadAllMonthsData() {
+  if (allMonthsLoaded) return;
+  try {
+    const select = document.getElementById('monthSelect');
+    const options = Array.from(select.options).map(o => o.value);
+    for (const mes of options) {
+      try {
+        const recs = await apiGet('carregar', { mes });
+        if (Array.isArray(recs) && recs.length) {
+          const last = recs[0]; // mais recente (reverse feito pelo Apps Script)
+          const meta = getMetaForMonth(mes);
+          allMonthsData[mes] = {
+            mes,
+            meta,
+            sv: num(last.sv), rv: num(last.rv), ov: num(last.ov),
+            s_novas: num(last.s_novas), s_remat: num(last.s_remat), s_anuais: num(last.s_anuais),
+            r_novas: num(last.r_novas), r_remat: num(last.r_remat), r_anuais: num(last.r_anuais),
+            o_novas: num(last.o_novas), o_remat: num(last.o_remat), o_anuais: num(last.o_anuais),
+            renovFeitos: num(last.renovFeitos), cancelamentos: num(last.cancelamentos),
+            ativos_inicio: num(last.ativos_inicio),
+            total: num(last.sv) + num(last.rv) + num(last.ov),
+            totalVendas: num(last.s_novas) + num(last.s_remat) + num(last.r_novas) + num(last.r_remat) + num(last.o_novas) + num(last.o_remat),
+            totalAnuais: num(last.s_anuais) + num(last.r_anuais) + num(last.o_anuais)
+          };
+        }
+      } catch (e) {
+        console.warn('Erro ao carregar mês ' + mes + ':', e);
+      }
+    }
+    allMonthsLoaded = true;
+  } catch (e) {
+    console.error('Erro ao carregar todos os meses:', e);
+  }
+}
+
+function getMetaForMonth(mes) {
+  const partes = mes.split('/');
+  if (partes.length === 2) {
+    const mesNomes = { 'Jan':1,'Fev':2,'Mar':3,'Abr':4,'Mai':5,'Jun':6,'Jul':7,'Ago':8,'Set':9,'Out':10,'Nov':11,'Dez':12 };
+    const ano = parseInt(partes[1]);
+    const mesNum = mesNomes[partes[0]];
+    const key = ano + '-' + String(mesNum).padStart(2, '0');
+    if (CONFIG.metas.history[key]) return CONFIG.metas.history[key];
+    for (const period of CONFIG.metas.periods) {
+      if (key >= period.from && key <= period.to) return period.meta;
+    }
+  }
+  return CONFIG.metas.periods[CONFIG.metas.periods.length - 1].meta;
+}
+
+function mesToKey(mes) {
+  const partes = mes.split('/');
+  if (partes.length === 2) {
+    const mesNomes = { 'Jan':1,'Fev':2,'Mar':3,'Abr':4,'Mai':5,'Jun':6,'Jul':7,'Ago':8,'Set':9,'Out':10,'Nov':11,'Dez':12 };
+    const ano = parseInt(partes[1]);
+    const mesNum = mesNomes[partes[0]];
+    return ano * 100 + mesNum;
+  }
+  return 0;
+}
+
+function getOrderedMonths() {
+  return Object.keys(allMonthsData).sort((a, b) => mesToKey(a) - mesToKey(b));
+}
+
+async function renderInsights() {
+  const container = document.getElementById('insightsContent');
+  await loadAllMonthsData();
+
+  const orderedMonths = getOrderedMonths();
+  const currentData = allMonthsData[currentMonth];
+
+  if (!currentData) {
+    container.innerHTML = '<div class="alert alert-info">Nenhum dado disponível para análise. Preencha os dados do mês para gerar insights.</div>';
+    return;
+  }
+
+  // Pegar últimos 3 meses para tendência
+  const currentKey = mesToKey(currentMonth);
+  const last3 = orderedMonths.filter(m => mesToKey(m) <= currentKey).slice(-3);
+
+  // Indicadores chave
+  const meta = currentData.meta;
+  const total = currentData.total;
+  const percMeta = meta > 0 ? (total / meta * 100) : 0;
+  const totalVendas = currentData.totalVendas;
+  const totalAnuais = currentData.totalAnuais;
+  const qualidade = totalVendas > 0 ? (totalAnuais / totalVendas * 100) : 0;
+  const ativosInicio = currentData.ativos_inicio;
+  const cancelamentos = currentData.cancelamentos;
+  const taxaCanc = ativosInicio > 0 ? (cancelamentos / ativosInicio * 100) : 0;
+  const baseFinal = ativosInicio - cancelamentos + currentData.renovFeitos;
+  const variacao = ativosInicio > 0 ? ((baseFinal - ativosInicio) / ativosInicio * 100) : 0;
+  const renovFeitos = currentData.renovFeitos;
+  const taxaRenov = (currentData.s_novas + currentData.s_remat + currentData.r_novas + currentData.r_remat) > 0
+    ? ((currentData.s_remat + currentData.r_remat) / (currentData.s_novas + currentData.s_remat + currentData.r_novas + currentData.r_remat) * 100) : 0;
+
+  // Diagnóstico individual por consultora
+  const vendasKH = currentData.s_novas + currentData.s_remat;
+  const vendasLI = currentData.r_novas + currentData.r_remat;
+  const qualidadeKH = vendasKH > 0 ? (currentData.s_anuais / vendasKH * 100) : 0;
+  const qualidadeLI = vendasLI > 0 ? (currentData.r_anuais / vendasLI * 100) : 0;
+
+  // Função de classificação de desempenho individual
+  function classVendas(v) {
+    if (v >= 80) return { cls: 'excepcional', label: '🌟 Excepcional', color: '#1b5e20' };
+    if (v >= 70) return { cls: 'acima', label: '🔥 Acima da média', color: '#2e7d32' };
+    if (v >= 50) return { cls: 'bom', label: '✅ Bom', color: '#f57c00' };
+    if (v >= 40) return { cls: 'padrao', label: '👍 Padrão', color: '#666' };
+    if (v > 0) return { cls: 'abaixo', label: '⚠️ Abaixo', color: '#c62828' };
+    return { cls: 'sem', label: '📋 Sem dados', color: '#888' };
+  }
+
+  function classQualidade(q) {
+    if (q >= 70) return { label: 'Excelente', color: '#1b5e20', desc: 'Vendendo planos anuais com qualidade.' };
+    if (q >= 50) return { label: 'Bom', color: '#f57c00', desc: 'Qualidade razoável, pode melhorar.' };
+    if (q >= 30) return { label: 'Atenção', color: '#e65100', desc: 'Poucos anuais. Pode estar com dificuldade de passar preço ou trabalhar objeções.' };
+    if (q > 0) return { label: 'Crítico', color: '#c62828', desc: 'Quase sem qualidade. Simulação de atendimento e observação de fechamento são essenciais.' };
+    return { label: 'Sem dados', color: '#888', desc: '' };
+  }
+
+  function classComb(v, q) {
+    const cv = classVendas(v);
+    const cq = classQualidade(q);
+    if (cv.cls === 'excepcional' || cv.cls === 'acima') {
+      if (cq.label === 'Excelente') return { msg: '🏆 Performance elite: volume + qualidade. Referência!', color: '#1b5e20' };
+      if (cq.label === 'Bom') return { msg: '✅ Boa vendedora com qualidade aceitável. Pode evoluir ainda mais.', color: '#2e7d32' };
+      if (cq.label === 'Atenção') return { msg: '⚡ Vende muito mas com baixa qualidade. Atenção: pode não estar passando preço corretamente ou trabalhando objeções. Simular atendimento e observar fechamento.', color: '#e65100' };
+      return { msg: '⚡ Vende muito mas sem qualidade. Treinamento urgente em negociação.', color: '#c62828' };
+    }
+    if (cv.cls === 'bom' || cv.cls === 'padrao') {
+      if (cq.label === 'Excelente') return { msg: '🎯 Boa qualidade, precisa aumentar volume. Treinar escolha de plano foco (anual > recorrência > mensal).', color: '#f57c00' };
+      if (cq.label === 'Bom') return { msg: '👍 No padrão. Manter ritmo e buscar crescer volume.', color: '#666' };
+      return { msg: '⚠️ Volume e qualidade abaixo. Ação: acompanhamento presencial no fechamento + simulação de atendimento.', color: '#c62828' };
+    }
+    return { msg: '🚨 Ação urgente: acompanhamento individual. Verificar se está vendendo plano foco, recorrência como alternativa ao anual, e qualidade do atendimento.', color: '#b71c1c' };
+  }
+
+  const khComb = classComb(vendasKH, qualidadeKH);
+  const liComb = classComb(vendasLI, qualidadeLI);
+
+  // Composição de crescimento
+  let compMsg = '';
+  let compColor = '#888';
+  if (ativosInicio > 0 && variacao > 0) {
+    const renovCresc = renovFeitos;
+    const vendasCresc = totalVendas;
+    const perdidos = cancelamentos;
+    if (renovCresc > perdidos && vendasCresc === 0) {
+      compMsg = '🛡️ Crescimento sustentado pela retenção! Apesar de poucas vendas, a boa gestão de cancelamentos e renovações garantiu crescimento da base.';
+      compColor = '#1b5e20';
+    } else if (vendasCresc > perdidos && renovCresc <= perdidos) {
+      compMsg = '🚀 Crescimento impulsionado pelas vendas! As novas vendas superaram as perdas, mas a retenção precisa de atenção — poucas vendas não sustentam a operação no longo prazo.';
+      compColor = '#e65100';
+    } else if (renovCresc > perdidos && vendasCresc > perdidos) {
+      compMsg = '🎯 Crescimento equilibrado! Boas vendas + boa retenção = base sólida. A combinação ideal para crescimento sustentável.';
+      compColor = '#1b5e20';
+    } else if (variacao < 0) {
+      compMsg = '📉 Base em retração. As perdas (cancelamentos) superaram as renovações e novas vendas. Ação urgente: acompanhar retenção e treinar equipe em fechamento.';
+      compColor = '#c62828';
+    }
+  } else if (variacao === 0 && ativosInicio > 0) {
+    compMsg = '➡️ Base estável, mas sem crescimento. Novas vendas e retenção estão equilibrando as perdas.';
+    compColor = '#f57c00';
+  } else {
+    compMsg = '📋 Dados insuficientes para análise de composição.';
+    compColor = '#888';
+  }
+
+  // Alertas de tendência (3 meses consecutivos em queda)
+  let alertas = [];
+  if (last3.length >= 3) {
+    const d0 = allMonthsData[last3[0]];
+    const d1 = allMonthsData[last3[1]];
+    const d2 = allMonthsData[last3[2]];
+
+    // Meta financeira em queda
+    if (d2 && d1 && d0) {
+      if (d0.total < d1.total && d1.total < d2.total && d0.total > 0) {
+        alertas.push({ tipo: '🔴 ALERTA VERMELHO', msg: `Meta financeira em queda por 3 meses consecutivos: ${last3[0]} (R$ ${fmt(d0.total)}) → ${last3[1]} (R$ ${fmt(d1.total)}) → ${last3[2]} (R$ ${fmt(d2.total)}). Se não ajustado, impactará os próximos meses.`, color: '#c62828' });
+      }
+      // Qualidade de vendas em queda
+      const q0 = d0.totalVendas > 0 ? d0.totalAnuais / d0.totalVendas * 100 : 0;
+      const q1 = d1.totalVendas > 0 ? d1.totalAnuais / d1.totalVendas * 100 : 0;
+      const q2 = d2.totalVendas > 0 ? d2.totalAnuais / d2.totalVendas * 100 : 0;
+      if (q0 < q1 && q1 < q2 && q0 < 70 && q2 > 0) {
+        alertas.push({ tipo: '🟠 ALERTA LARANJA', msg: `Qualidade de vendas (anuais) em queda por 3 meses: ${last3[0]} (${q0.toFixed(0)}%) → ${last3[1]} (${q1.toFixed(0)}%) → ${last3[2]} (${q2.toFixed(0)}%). Treinar equipe em passagem de preço e objeções.`, color: '#e65100' });
+      }
+      // Cancelamento em alta
+      const c0 = d0.ativos_inicio > 0 ? d0.cancelamentos / d0.ativos_inicio * 100 : 0;
+      const c1 = d1.ativos_inicio > 0 ? d1.cancelamentos / d1.ativos_inicio * 100 : 0;
+      const c2 = d2.ativos_inicio > 0 ? d2.cancelamentos / d2.ativos_inicio * 100 : 0;
+      if (c0 > c1 && c1 > c2 && c0 > 3) {
+        alertas.push({ tipo: '🟡 ALERTA AMARELO', msg: `Taxa de cancelamento subindo por 3 meses: ${last3[0]} (${c0.toFixed(1)}%) → ${last3[1]} (${c1.toFixed(1)}%) → ${last3[2]} (${c2.toFixed(1)}%). Ajustar processo de retenção antes que perca bônus.`, color: '#f9a825' });
+      }
+    }
+
+    // Alerta individual por consultora (3 meses em queda)
+    if (d0 && d1 && d2) {
+      const kh0 = d0.s_novas + d0.s_remat;
+      const kh1 = d1.s_novas + d1.s_remat;
+      const kh2 = d2.s_novas + d2.s_remat;
+      if (kh0 < kh1 && kh1 < kh2 && kh0 > 0) {
+        alertas.push({ tipo: '👤 KH EM QUEDA', msg: `Kézia Heloisa em queda por 3 meses: ${last3[0]} (${kh0} planos) → ${last3[1]} (${kh1} planos) → ${last3[2]} (${kh2} planos). Considerar acompanhamento individual: simulação de atendimento, observação de fechamento presencial, e acompanhar negociações de WhatsApp.`, color: '#6a1b9a' });
+      }
+      const li0 = d0.r_novas + d0.r_remat;
+      const li1 = d1.r_novas + d1.r_remat;
+      const li2 = d2.r_novas + d2.r_remat;
+      if (li0 < li1 && li1 < li2 && li0 > 0) {
+        alertas.push({ tipo: '👤 LI EM QUEDA', msg: `Liriane em queda por 3 meses: ${last3[0]} (${li0} planos) → ${last3[1]} (${li1} planos) → ${last3[2]} (${li2} planos). Considerar acompanhamento individual: simulação de atendimento, observação de fechamento presencial, e acompanhar negociações de WhatsApp.`, color: '#6a1b9a' });
+      }
+    }
+  }
+
+  // Linha do tempo
+  const timelineHtml = orderedMonths.length ? orderedMonths.map(m => {
+    const d = allMonthsData[m];
+    const pMeta = d.meta > 0 ? (d.total / d.meta * 100).toFixed(0) : 0;
+    const pVendas = d.totalVendas;
+    const pQual = d.totalVendas > 0 ? (d.totalAnuais / d.totalVendas * 100).toFixed(0) : 0;
+    const baseIni = d.ativos_inicio;
+    const baseFin = baseIni - d.cancelamentos + d.renovFeitos;
+    const pVar = baseIni > 0 ? ((baseFin - baseIni) / baseIni * 100).toFixed(1) : '0.0';
+    const highlight = m === currentMonth ? 'style="background:#e8eaf6;border-radius:8px;padding:8px 12px"' : '';
+    return `<tr ${highlight}>
+      <td style="font-size:0.82rem;font-weight:600">${m}</td>
+      <td style="font-size:0.82rem">R$ ${fmt(d.total)}</td>
+      <td style="font-size:0.82rem;color:${pMeta >= 100 ? '#1b5e20' : pMeta >= 70 ? '#e65100' : '#c62828'}">${pMeta}%</td>
+      <td style="font-size:0.82rem">${pVendas}</td>
+      <td style="font-size:0.82rem;color:${pQual >= 70 ? '#1b5e20' : pQual >= 50 ? '#f57c00' : '#c62828'}">${pQual}%</td>
+      <td style="font-size:0.82rem;color:${parseFloat(pVar) >= 0 ? '#1b5e20' : '#c62828'}">${parseFloat(pVar) >= 0 ? '+' : ''}${pVar}%</td>
+    </tr>`;
+  }).join('') : '<tr><td colspan="6" style="text-align:center;color:var(--text-light)">Sem dados históricos</td></tr>';
+
+  // Renderizar
+  container.innerHTML = `
+    <!-- Composição de Crescimento -->
+    <div style="background:linear-gradient(135deg,#e8f5e9 0%,#c8e6c9 100%);border-left:4px solid ${compColor};padding:16px;margin-bottom:16px;border-radius:8px">
+      <h3 style="font-size:1rem;margin-bottom:8px;color:${compColor}">📊 Composição de Crescimento — ${currentMonth}</h3>
+      <p style="font-size:0.9rem;line-height:1.6;margin:0">${compMsg}</p>
+      <div class="stats-row" style="margin-top:12px">
+        <div class="stat-item"><div class="stat-value" style="font-size:1rem">${variacao >= 0 ? '+' : ''}${variacao.toFixed(1)}%</div><div class="stat-label">Variação da Base</div></div>
+        <div class="stat-item"><div class="stat-value" style="font-size:1rem">${renovFeitos}</div><div class="stat-label">Renovações Efetivadas</div></div>
+        <div class="stat-item"><div class="stat-value" style="font-size:1rem">${cancelamentos}</div><div class="stat-label">Cancelamentos</div></div>
+        <div class="stat-item"><div class="stat-value" style="font-size:1rem">${totalVendas}</div><div class="stat-label">Novas Vendas</div></div>
+      </div>
+    </div>
+
+    <!-- Diagnóstico Individual -->
+    <div style="margin-bottom:16px">
+      <h3 style="font-size:1rem;margin-bottom:12px;color:var(--primary)">👤 Diagnóstico Individual — Consultoras</h3>
+      <div class="stats-row">
+        <div class="stat-item" style="border-left:4px solid ${khComb.color};min-width:280px">
+          <div class="stat-label">Kézia Heloisa</div>
+          <div class="stat-value" style="font-size:1.1rem;color:${khComb.color}">${vendasKH} planos · ${qualidadeKH.toFixed(0)}% anuais</div>
+          <div style="font-size:0.8rem;color:${khComb.color};margin-top:6px;font-weight:600">${khComb.msg}</div>
+          <div style="font-size:0.75rem;color:var(--text-light);margin-top:4px">Volume: ${classVendas(vendasKH).label} | Qualidade: ${classQualidade(qualidadeKH).label}</div>
+        </div>
+        <div class="stat-item" style="border-left:4px solid ${liComb.color};min-width:280px">
+          <div class="stat-label">Liriane</div>
+          <div class="stat-value" style="font-size:1.1rem;color:${liComb.color}">${vendasLI} planos · ${qualidadeLI.toFixed(0)}% anuais</div>
+          <div style="font-size:0.8rem;color:${liComb.color};margin-top:6px;font-weight:600">${liComb.msg}</div>
+          <div style="font-size:0.75rem;color:var(--text-light);margin-top:4px">Volume: ${classVendas(vendasLI).label} | Qualidade: ${classQualidade(qualidadeLI).label}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alertas de Tendência -->
+    ${alertas.length ? '<div style="margin-bottom:16px"><h3 style="font-size:1rem;margin-bottom:12px;color:var(--primary)">🚨 Alertas de Tendência (3 meses consecutivos)</h3>' +
+      alertas.map(a => `<div style="background:${a.color}15;border-left:4px solid ${a.color};padding:12px 16px;margin-bottom:8px;border-radius:4px">
+        <div style="font-size:0.82rem;font-weight:700;color:${a.color};margin-bottom:4px">${a.tipo}</div>
+        <div style="font-size:0.82rem;color:var(--text-dark)">${a.msg}</div>
+      </div>`).join('') + '</div>' : ''}
+
+    <!-- Linha do Tempo -->
+    <div style="margin-bottom:16px">
+      <h3 style="font-size:1rem;margin-bottom:12px;color:var(--primary)">📅 Linha do Tempo — Evolução Mensal</h3>
+      <div style="overflow-x:auto">
+        <table style="width:100%;font-size:0.82rem;border-collapse:collapse">
+          <thead>
+            <tr style="background:var(--primary);color:white">
+              <th style="padding:8px;text-align:left">Mês</th>
+              <th style="padding:8px;text-align:right">Vendas (R$)</th>
+              <th style="padding:8px;text-align:right">Meta</th>
+              <th style="padding:8px;text-align:right">Planos</th>
+              <th style="padding:8px;text-align:right">Qualidade</th>
+              <th style="padding:8px;text-align:right">Variação Base</th>
+            </tr>
+          </thead>
+          <tbody>${timelineHtml}</tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Insight Final -->
+    <div class="alert alert-info" style="font-size:0.85rem;line-height:1.6">
+      <strong>💡 Como usar este painel:</strong> Se algum indicador ficar em alerta por 3 meses consecutivos, é hora de agir. Nenhum dado pode piorar continuamente. Use os diagnósticos individuais para direcionar acompanhamento: simulação de atendimento para quem tem baixa qualidade, e foco em volume para quem tem boa qualidade mas vende pouco. A renovação é uma oportunidade de migrar mensalista para anual — sempre treinar a equipe nisso.
+    </div>
   `;
 }
 
@@ -1387,13 +1835,31 @@ function renderLideranca() {
     </div>
 
     <div class="card">
-      <h2>📋 Regras de Bônus</h2>
-      <div class="tip-box">
-        <strong>Financeiro:</strong> Meta atingida pela unidade = bônus integral para líder<br>
-        <strong>Vendas:</strong> 60 vendas = R$100 | 80 = R$200 | 100 = R$300 | a cada 20 vendas +R$100 | abaixo de 60 = 0<br>
-        <strong>Cancelamento:</strong> ≤3% = R$200 | ≤4% = R$100 | acima de 4% = 0<br>
-        <strong>Renovação:</strong> ≥85% = R$200 | ≥70% = R$100 | abaixo de 70% = 0<br>
-        <strong>Crédito interno:</strong> 1% sobre vendas totais da equipe
+      <h2>📋 Política de Bonificação — Liderança</h2>
+      <div class="tip-box" style="font-size:0.88rem;line-height:1.8">
+        <strong>Bônus Financeiro (Meta da Unidade):</strong><br>
+        Meta 1 (100% atingida) → R$ 400 | Meta 2 (110% atingida) → R$ 700 | Meta 3 (120% atingida) → R$ 1.000<br>
+        <span style="color:#666;font-size:0.78rem">Bônus integral para a líder quando a unidade atinge a meta.</span>
+      </div>
+      <div class="tip-box" style="font-size:0.88rem;line-height:1.8;margin-top:8px">
+        <strong>Bônus Vendas (Volume da Unidade):</strong><br>
+        60 vendas = R$ 100 | 80 = R$ 200 | 100 = R$ 300 | a cada 20 vendas +R$ 100 | abaixo de 60 = 0<br>
+        <span style="color:#666;font-size:0.78rem">Soma de todos os planos vendidos pela equipe (novos + rematrículas).</span>
+      </div>
+      <div class="tip-box" style="font-size:0.88rem;line-height:1.8;margin-top:8px">
+        <strong>Bônus Cancelamento (Taxa da Unidade):</strong><br>
+        ≤3% de cancelamentos = R$ 200 | ≤4% = R$ 100 | acima de 4% = 0<br>
+        <span style="color:#666;font-size:0.78rem">Calculado: (cancelamentos / ativos início do mês) × 100</span>
+      </div>
+      <div class="tip-box" style="font-size:0.88rem;line-height:1.8;margin-top:8px">
+        <strong>Bônus Renovação (Taxa da Unidade):</strong><br>
+        ≥85% de renovação = R$ 200 | ≥70% = R$ 100 | abaixo de 70% = 0<br>
+        <span style="color:#666;font-size:0.78rem">Calculado: (rematrículas / novos + rematrículas) × 100</span>
+      </div>
+      <div class="tip-box" style="font-size:0.88rem;line-height:1.8;margin-top:8px">
+        <strong>Crédito Interno (1%):</strong><br>
+        1% sobre o total de vendas da unidade (meta financeira)<br>
+        <span style="color:#666;font-size:0.78rem">Sempre calculado, independente de meta atingida.</span>
       </div>
     </div>
   `;
@@ -1448,31 +1914,43 @@ function renderPreencher() {
   const accLabel = (field, isReal = true) => {
     const val = acc[field];
     const display = isReal ? `R$ ${fmt(val)}` : fmt(val);
-    return val > 0 ? `<span style="font-size:0.72rem;color:#666;margin-left:6px;font-weight:400">(atual: ${display})</span>` : '';
+    return val > 0 ? `<span style="font-size:0.72rem;color:#666;margin-left:6px;font-weight:400">(último: ${display})</span>` : '';
   };
 
   document.getElementById('preencherContent').innerHTML = `
     <div id="preencherMsg"></div>
 
-    <div class="alert alert-info">
+    <div class="alert alert-info" style="background:linear-gradient(135deg,#e8eaf6 0%,#c5cae9 100%);border-left:4px solid #3f51b5">
+      <strong>📖 Como preencher este formulário (passo a passo)</strong>
+      <div style="margin-top:10px;font-size:0.85rem;line-height:1.6">
+        <strong>1.</strong> Os valores que aparecem ao lado de cada campo <strong>(último: R$ X)</strong> são o total acumulado até a última apuração. Use esses valores como referência.<br>
+        <strong>2.</strong> Some o que foi apurado no dia aos valores anteriores. Exemplo: se o último registro mostra R$ 30.000 e hoje venderam mais R$ 3.500, preencha <strong>R$ 33.500</strong>.<br>
+        <strong>3.</strong> Os campos de <strong>Renovações Efetivadas</strong> e <strong>Cancelamentos</strong> também acumulam durante o mês — sempre some o que já tinha com o que aconteceu hoje.<br>
+        <strong>4.</strong> Os campos de <strong>Ativos Início do Mês</strong> e <strong>Renovações Previstas</strong> não mudam durante o mês — mantenha o mesmo valor ou preencha apenas na primeira apuração.<br>
+        <strong>5.</strong> A <strong>Data e Hora</strong> são registradas automaticamente no momento em que você salva — não precisam ser editadas.<br>
+        <strong>6.</strong> Após salvar, os dados aparecem na aba <strong>Histórico</strong> e o painel atualiza automaticamente.
+      </div>
+      <div style="margin-top:10px;font-size:0.78rem;color:#555">
+        <strong>Dica para líderes novas:</strong> Se é sua primeira apuração do mês, preencha todos os campos com o valor total que a equipe acumulou até hoje. Nas próximas vezes, basta olhar o valor do "último" ao lado de cada campo e somar apenas as vendas/dados do dia atual.
+      </div>
+    </div>
+
+    <div class="alert alert-info" style="margin-top:12px">
       <strong>📋 Últimos registros deste mês (para referência):</strong>
       <table style="margin-top:8px">
         <tr><th>Nome</th><th>Data</th><th>Kézia Heloisa</th><th>Liriane</th><th>Amabile</th><th>Outros</th></tr>
         ${historioHtml}
       </table>
-      <div style="font-size:0.8rem;margin-top:8px;color:var(--text-light)">
-        Preencha os dados de hoje. Os registros anteriores permanecem salvos e visíveis no Histórico.
-      </div>
     </div>
 
     <div class="section-title">Identificação</div>
-    <div class="form-group"><label>Nome de quem está registrando</label><input type="text" id="fill_nome" placeholder="Seu nome" value="${records.length ? records[0].nome || '' : ''}"></div>
+    <div class="form-group"><label>Nome e data de quem está registrando</label><input type="text" id="fill_nome" placeholder="Seu nome + data (ex: Maria - 03/08/2026)" value="${records.length ? (records[0].nome || '') : ''}"></div>
     <div class="card-grid">
-      <div class="form-group"><label>Data de Apuração</label><input type="text" id="fill_data" value="${dataStr}"></div>
-      <div class="form-group"><label>Hora</label><input type="text" id="fill_hora" value="${horaStr}"></div>
+      <div class="form-group"><label style="color:#888">Data de Apuração (automático)</label><input type="text" id="fill_data" value="${dataStr}" readonly style="background:#f5f5f5;color:#888"></div>
+      <div class="form-group"><label style="color:#888">Hora (automático)</label><input type="text" id="fill_hora" value="${horaStr}" readonly style="background:#f5f5f5;color:#888"></div>
     </div>
 
-    <div class="section-title">Vendas — Meta Financeira (R$) — Vendas apenas recebidas</div>
+    <div class="section-title">Vendas — Meta Financeira (R$) — Vendas pagas, sem contar saldo devedor</div>
     <div class="card-grid">
       <div class="form-group"><label>Kézia Heloisa${accLabel('sv')}</label><input type="number" id="fill_sv" step="0.01" placeholder="0,00"></div>
       <div class="form-group"><label>Liriane${accLabel('rv')}</label><input type="number" id="fill_rv" step="0.01" placeholder="0,00"></div>
@@ -1515,14 +1993,14 @@ function renderPreencher() {
 
     <div class="section-title">Renovações</div>
     <div class="card-grid">
-      <div class="form-group"><label>Previstas para o mês${accLabel('renovTotal', false)}</label><input type="number" id="fill_renovTotal" placeholder="0"></div>
-      <div class="form-group"><label>Efetivadas${accLabel('renovFeitos', false)}</label><input type="number" id="fill_renovFeitos" placeholder="0"></div>
+      <div class="form-group"><label>Previstas para o mês${accLabel('renovTotal', false)}</label><input type="number" id="fill_renovTotal" placeholder="${acc.renovTotal || 0}"></div>
+      <div class="form-group"><label>Efetivadas (acumulam no mês)${accLabel('renovFeitos', false)}</label><input type="number" id="fill_renovFeitos" placeholder="0"></div>
     </div>
 
     <div class="section-title">Dados de Retenção</div>
     <div class="card-grid">
-      <div class="form-group"><label>Ativos Início do Mês${accLabel('ativos_inicio', false)}</label><input type="number" id="fill_ativos_inicio" placeholder="0"></div>
-      <div class="form-group"><label>Cancelamentos${accLabel('cancelamentos', false)}</label><input type="number" id="fill_cancelamentos" placeholder="0"></div>
+      <div class="form-group"><label>Ativos Início do Mês (fixo — não muda durante o mês)${accLabel('ativos_inicio', false)}</label><input type="number" id="fill_ativos_inicio" placeholder="${acc.ativos_inicio || 0}"></div>
+      <div class="form-group"><label>Cancelamentos (acumulam no mês)${accLabel('cancelamentos', false)}</label><input type="number" id="fill_cancelamentos" placeholder="0"></div>
     </div>
 
     <div style="margin-top:20px;display:flex;gap:12px;flex-wrap:wrap">
