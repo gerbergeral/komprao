@@ -629,6 +629,21 @@ async function loadMonth() {
 
 // ==================== HELPERS ====================
 function num(v) { return parseFloat(v) || 0; }
+function formatDate(val) {
+  if (!val) return '—';
+  const s = String(val);
+  // Se já está no formato DD/MM/AAAA
+  if (s.includes('/')) return s;
+  // Se é ISO ou timestamp (tem T ou é número)
+  try {
+    const d = new Date(val);
+    if (isNaN(d.getTime())) return s;
+    const dd = String(d.getDate()).padStart(2,'0');
+    const mm = String(d.getMonth()+1).padStart(2,'0');
+    const yy = d.getFullYear();
+    return dd+'/'+mm+'/'+yy;
+  } catch(e) { return s; }
+}
 function fmt(val) {
   if (val === null || val === undefined) return '0';
   return Number(val).toLocaleString('pt-BR');
@@ -823,7 +838,7 @@ function renderUltimaApuracao() {
     const ultimoNome = records[0].nome || '—';
     const ultimaData = records[0].data || '—';
     const ultimaHora = records[0].hora || '';
-    el.textContent = 'Última apuração: ' + ultimoNome + ' em ' + ultimaData + (ultimaHora ? ' às ' + ultimaHora : '');
+    el.textContent = 'Última apuração: ' + ultimoNome + ' em ' + formatDate(ultimaData) + (ultimaHora ? ' às ' + ultimaHora : '');
   } else {
     el.textContent = 'Nenhuma apuração registrada este mês';
   }
@@ -1203,7 +1218,7 @@ function renderHistorico() {
   }
   const rows = records.map(r => `<tr>
     <td>${r.nome || '—'}</td>
-    <td>${r.data || '—'}</td>
+    <td>${formatDate(r.data)}</td>
     <td>${r.hora || '—'}</td>
     <td>R$ ${fmt(num(r.sv))}</td>
     <td>R$ ${fmt(num(r.rv))}</td>
@@ -1338,7 +1353,7 @@ function renderPreencher() {
   const historioHtml = ultimosRegistros.length ? ultimosRegistros.map(r => `
     <tr>
       <td style="font-size:0.8rem">${r.nome || '—'}</td>
-      <td style="font-size:0.8rem">${r.data || '—'}</td>
+      <td style="font-size:0.8rem">${formatDate(r.data)}</td>
       <td style="font-size:0.8rem">R$ ${fmt(num(r.sv))}</td>
       <td style="font-size:0.8rem">R$ ${fmt(num(r.rv))}</td>
       <td style="font-size:0.8rem">${r.ab_prod || '—'}</td>
