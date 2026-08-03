@@ -923,10 +923,25 @@ function renderMeta(t) {
       <div class="stat-item"><div class="stat-value">${perc}%</div><div class="stat-label">Progresso</div></div>
     </div>
     <div class="progress-bar"><div class="fill ${fillClass}" style="width:${perc}%"></div></div>
-    <div style="display:flex;gap:16px;margin-top:10px;flex-wrap:wrap;font-size:0.78rem;color:var(--text-light)">
-      <span>Meta 1: R$ ${fmt(metaAtual)}</span>
-      <span>Meta 2: R$ ${fmt(meta2)}</span>
-      <span>Meta 3: R$ ${fmt(meta3)}</span>
+    <div class="metas-row" style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap">
+      <div class="meta-badge meta-badge-1">
+        <div class="meta-badge-title">Meta 1</div>
+        <div class="meta-badge-value">R$ ${fmt(metaAtual)}</div>
+        <div class="meta-badge-pct">${totalAtual > 0 ? Math.min(parseFloat((totalAtual/metaAtual*100).toFixed(1)), 100) : 0}%</div>
+        <div class="meta-badge-progress"><div class="meta-badge-fill" style="width:${totalAtual > 0 ? Math.min((totalAtual/metaAtual*100), 100) : 0}%"></div></div>
+      </div>
+      <div class="meta-badge meta-badge-2">
+        <div class="meta-badge-title">Meta 2 (+10%)</div>
+        <div class="meta-badge-value">R$ ${fmt(meta2)}</div>
+        <div class="meta-badge-pct">${totalAtual > 0 ? Math.min(parseFloat((totalAtual/meta2*100).toFixed(1)), 100) : 0}%</div>
+        <div class="meta-badge-progress"><div class="meta-badge-fill" style="width:${totalAtual > 0 ? Math.min((totalAtual/meta2*100), 100) : 0}%"></div></div>
+      </div>
+      <div class="meta-badge meta-badge-3">
+        <div class="meta-badge-title">Meta 3 (+20%)</div>
+        <div class="meta-badge-value">R$ ${fmt(meta3)}</div>
+        <div class="meta-badge-pct">${totalAtual > 0 ? Math.min(parseFloat((totalAtual/meta3*100).toFixed(1)), 100) : 0}%</div>
+        <div class="meta-badge-progress"><div class="meta-badge-fill" style="width:${totalAtual > 0 ? Math.min((totalAtual/meta3*100), 100) : 0}%"></div></div>
+      </div>
     </div>
     ${totalAtual === 0 ? '<div style="margin-top:8px;font-size:0.82rem;color:var(--text-light)">Nenhum dado registrado neste mês ainda.</div>' : ''}
   `;
