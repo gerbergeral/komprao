@@ -230,12 +230,13 @@ tr:hover { background: #f0f0f0; }
 
 <div class="main">
 
-  <!-- Seletor de mês global -->
+  <!-- Seletor de mês global (protegido) -->
   <div class="month-bar" id="globalMonthBar">
     <label>📅 Mês/Ano:</label>
     <select id="monthSelect"></select>
     <button class="btn btn-primary" onclick="loadMonth()" style="padding:8px 16px;font-size:0.8rem">Carregar</button>
     <span class="status" id="monthStatus"></span>
+    <span id="monthLockNotice" style="display:none;font-size:0.75rem;color:#666;margin-left:8px">🔒 Insira a senha para ver todos os meses</span>
   </div>
 
   <!-- ==================== ABA 1: META FINANCEIRA ==================== -->
@@ -445,6 +446,7 @@ let isPreencherUnlocked = false;
 let isLiderancaUnlocked = false;
 let isHistoricoUnlocked = false;
 let isInsightsUnlocked = false;
+let isMonthUnlocked = false; // controle do seletor de mês global
 
 // ==================== GREETING ====================
 function setGreeting() {
@@ -536,6 +538,7 @@ function closeLogin() {
 function checkLogin() {
   if (document.getElementById('loginPass').value === PASSWORD) {
     closeLogin();
+    isMonthUnlocked = true;
     if (pendingLogin === 'preencher') {
       isPreencherUnlocked = true;
       switchTab('preencher');
@@ -557,6 +560,8 @@ function checkLogin() {
       renderInsights();
     }
     pendingLogin = '';
+    // Desbloqueia o seletor de mês
+    updateMonthSelector();
   } else {
     document.getElementById('loginMsg').textContent = 'Senha incorreta!';
   }
@@ -571,7 +576,8 @@ async function apiGet(action, params) {
 }
 
 async function apiSave(data) {
-  const url = SHEET_URL + '?action=salvar&dados=' + encodeURIComponent(JSON.stringify(data));
+  const mes = data.mes || currentMonth || '';
+  const url = SHEET_URL + '?action=salvar&mes=' + encodeURIComponent(mes) + '&dados=' + encodeURIComponent(JSON.stringify(data));
   const res = await fetch(url, { method: 'POST' });
   return res.json();
 }
@@ -623,6 +629,8 @@ async function init() {
       select.appendChild(opt);
     }
     await loadMonth();
+    // Protege o seletor de mês (sem senha = limitado)
+    updateMonthSelector();
   } catch (e) {
     console.error('Erro init:', e);
     document.getElementById('monthStatus').textContent = 'Erro ao conectar';
@@ -2014,12 +2022,65 @@ function renderLideranca() {
   `;
 }
 
+// Protege o seletor de mês: sem senha = só vigente + 10 dias atrás
+function updateMonthSelector() {
+  const select = document.getElementById('monthSelect');
+  const notice = document.getElementById('monthLockNotice');
+  const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const now = new Date();
+  const currentMes = months[now.getMonth()] + '/' + now.getFullYear();
+  
+  if (isMonthUnlocked) {
+    notice.style.display = 'none';
+    select.disabled = false;
+    return; // mantém todos os meses
+  }
+  
+  // Sem senha: mostra só o vigente + anterior se dentro de 10 dias
+  notice.style.display = 'inline';
+  const prevMes = months[(now.getMonth() - 1 + 12) % 12];
+  const prevYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+  const prevMesStr = prevMes + '/' + prevYear;
+  const prevStillOpen = !isMesFechado(prevMesStr);
+  
+  // Limpa e adiciona apenas os meses permitidos
+  const allowed = [currentMes];
+  if (prevStillOpen) allowed.unshift(prevMesStr);
+  
+  const allOpts = Array.from(select.options);
+  select.innerHTML = '';
+  allowed.forEach(m => {
+    const opt = document.createElement('option');
+    opt.value = m;
+    opt.textContent = m;
+    select.appendChild(opt);
+  });
+  select.selectedIndex = 0;
+  select.disabled = false; // permite escolher entre os poucos disponíveis
+}
+
+// Retorna todos os meses disponíveis no select
+function getAllMonths() {
+  const select = document.getElementById('monthSelect');
+  return Array.from(select.options).map(o => o.value);
+}
+
 // ==================== PREENCHER ====================
 function renderPreencher() {
   if (!isPreencherUnlocked) return;
   const now = new Date();
   const dataStr = now.toLocaleDateString('pt-BR');
   const horaStr = now.toTimeString().slice(0,5);
+
+  // Calcula meses disponíveis (vigente + retroativos até 10 dias)
+  const monthOpts = getAllMonths();
+  const currentMes = monthOpts[monthOpts.length - 1]; // último = mais recente
+  const prevMes = monthOpts.length >= 2 ? monthOpts[monthOpts.length - 2] : null;
+  const isPrevStillOpen = isMesFechado(prevMes || '');
+  let availableMonths = [currentMes];
+  if (prevMes && !isPrevStillOpen) availableMonths.unshift(prevMes);
+  // Sempre incluir o mês atual selecionado na barra global
+  if (!availableMonths.includes(currentMonth)) availableMonths.unshift(currentMonth);
 
   // Último registro salvo (valores acumulados atuais) — records[0] pois Apps Script já inverte
   const ult = records.length ? records[0] : {};
@@ -2092,12 +2153,15 @@ function renderPreencher() {
       </table>
     </div>
 
-    <div class="section-title">Identificação</div>
-    <div class="form-group"><label>Nome e data de quem está registrando</label><input type="text" id="fill_nome" placeholder="Seu nome + data (ex: Maria - 03/08/2026)" value="${records.length ? (records[0].nome || '') : ''}"></div>
+    <div class="section-title">Mês de Apuração</div>
     <div class="card-grid">
-      <div class="form-group"><label style="color:#888">Data de Apuração (automático)</label><input type="text" id="fill_data" value="${dataStr}" readonly style="background:#f5f5f5;color:#888"></div>
-      <div class="form-group"><label style="color:#888">Hora (automático)</label><input type="text" id="fill_hora" value="${horaStr}" readonly style="background:#f5f5f5;color:#888"></div>
+      <div class="form-group"><label>Mês que está preenchendo</label><select id="fill_mes">${availableMonths.map(m => '<option value="' + m + '"' + (m === currentMonth ? ' selected' : '') + '>' + m + '</option>').join('')}</select></div>
+      <div class="form-group"><label>Data do lançamento (automático)</label><input type="text" id="fill_data_real" value="${dataStr} às ${horaStr}" readonly style="background:#f5f5f5;color:#888"></div>
     </div>
+    <div style="font-size:0.78rem;color:#666;margin-top:4px">⚠️ Meses anteriores ficam bloqueados 10 dias após o fechamento. Hoje você pode preencher: ${availableMonths.join(', ')}.</div>
+
+    <div class="section-title">Identificação</div>
+    <div class="form-group"><label>Nome de quem está registrando</label><input type="text" id="fill_nome" placeholder="Seu nome (ex: Maria)" value="${records.length ? (records[0].nome || '') : ''}"></div>
 
     <div class="section-title">Vendas — Meta Financeira (R$) — Vendas pagas, sem contar saldo devedor</div>
     <div class="card-grid">
@@ -2160,10 +2224,14 @@ function renderPreencher() {
 }
 
 async function saveData() {
+  const now = new Date();
+  const dataReal = now.toLocaleDateString('pt-BR');
+  const horaReal = now.toTimeString().slice(0,5);
+
   const payload = {
     nome: document.getElementById('fill_nome').value || 'Líder',
-    data: document.getElementById('fill_data').value || '',
-    hora: document.getElementById('fill_hora').value || '',
+    data: dataReal,
+    hora: horaReal,
     total: num(document.getElementById('fill_sv').value) + num(document.getElementById('fill_rv').value) + num(document.getElementById('fill_ov').value),
     sv: num(document.getElementById('fill_sv').value),
     sp: document.getElementById('fill_sp').value || 0,
@@ -2196,11 +2264,17 @@ async function saveData() {
   const msgEl = document.getElementById('preencherMsg');
   msgEl.innerHTML = '<div class="loading"><div class="spinner"></div><p style="margin-top:8px">Salvando...</p></div>';
 
+  // Determina o mês do registro
+  const mesSalvo = document.getElementById('fill_mes') ? document.getElementById('fill_mes').value : currentMonth;
+  payload.mes = mesSalvo;
+
   try {
     const result = await apiSave(payload);
     if (result && result.ok) {
-      msgEl.innerHTML = '<div class="alert alert-success">✅ Registro salvo com sucesso!</div>';
-      clearForm();
+      msgEl.innerHTML = '<div class="alert alert-success">✅ Registro salvo no mês ' + mesSalvo + ' com sucesso!</div>';
+      // Muda o seletor global para o mês que foi salvo e recarrega
+      document.getElementById('monthSelect').value = mesSalvo;
+      currentMonth = mesSalvo;
       await loadMonth();
     } else {
       msgEl.innerHTML = '<div class="alert alert-error">Erro ao salvar. Tente novamente.</div>';
@@ -2212,7 +2286,7 @@ async function saveData() {
 
 function clearForm() {
   document.querySelectorAll('#preencherContent input').forEach(i => {
-    if (i.id === 'fill_data' || i.id === 'fill_hora') return;
+    if (i.id === 'fill_data_real' || i.id === 'fill_nome') return;
     i.value = '';
   });
   const msgEl = document.getElementById('preencherMsg');
