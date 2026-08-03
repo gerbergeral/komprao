@@ -649,6 +649,9 @@ function getTotals() {
   const o_novas = sumField('o_novas');
   const o_remat = sumField('o_remat');
   const o_aval = sumField('o_aval');
+  const s_anuais = sumField('s_anuais');
+  const r_anuais = sumField('r_anuais');
+  const o_anuais = sumField('o_anuais');
   const renovTotal = sumField('renovTotal');
   const renovFeitos = sumField('renovFeitos');
   const cancelamentos = sumField('cancelamentos');
@@ -672,7 +675,15 @@ function getTotals() {
   const creditoLI = Math.round(produtosLI * 0.01);
   const creditoAM = Math.round(produtosAM * 0.01);
 
-  return { sv, rv, ov, s_novas, s_remat, s_aval, r_novas, r_remat, r_aval, o_novas, o_remat, o_aval, renovTotal, renovFeitos, ativosInicio, cancelamentos, totalVendas, vendasKH, vendasLI, vendasOutros, produtosKH, produtosLI, produtosAM, produtosOutros, totalProdutos, creditoKH, creditoLI, creditoAM };
+  // Qualidade de venda (% de anuais sobre total de planos)
+  const totalPlanos = totalVendas || 1;
+  const totalAnuais = s_anuais + r_anuais + o_anuais;
+  const percAnuais = totalPlanos > 0 ? ((totalAnuais / totalPlanos) * 100).toFixed(1) : '0.0';
+  const percAnuaisKH = vendasKH > 0 ? ((s_anuais / vendasKH) * 100).toFixed(1) : '0.0';
+  const percAnuaisLI = vendasLI > 0 ? ((r_anuais / vendasLI) * 100).toFixed(1) : '0.0';
+  const percAnuaisOutros = vendasOutros > 0 ? ((o_anuais / vendasOutros) * 100).toFixed(1) : '0.0';
+
+  return { sv, rv, ov, s_novas, s_remat, s_aval, r_novas, r_remat, r_aval, o_novas, o_remat, o_aval, s_anuais, r_anuais, o_anuais, renovTotal, renovFeitos, ativosInicio, cancelamentos, totalVendas, vendasKH, vendasLI, vendasOutros, totalAnuais, percAnuais, percAnuaisKH, percAnuaisLI, percAnuaisOutros, produtosKH, produtosLI, produtosAM, produtosOutros, totalProdutos, creditoKH, creditoLI, creditoAM };
 }
 
 // ==================== META DIARIA DINÂMICA ====================
@@ -887,8 +898,8 @@ function renderMeta(t) {
   // Insight box
   renderInsight(t, totalAtual, metaAtual, perc);
 
-  // Plano anual box
-  renderPlanoAnual(t);
+  // Qualidade de venda
+  renderQualidadeVenda(t);
 
   // Cards
   document.getElementById('cardsEquipe').innerHTML = `
@@ -897,14 +908,14 @@ function renderMeta(t) {
       <div class="role">Consultora</div>
       <div class="label">Vendas</div>
       <div class="value">R$ ${fmt(t.sv)}</div>
-      <div class="sub">Vendas: ${t.vendasKH} | Planos anuais: ~${Math.round(t.sv / CONFIG.planoAnualValor)}</div>
+      <div class="sub">Planos: ${t.vendasKH} | Anuais: ${t.s_anuais} (${t.percAnuaisKH}%)</div>
     </div>
     <div class="person-card" style="border-left-color:var(--accent2)">
       <div class="name">Liriane</div>
       <div class="role">Consultora</div>
       <div class="label">Vendas</div>
       <div class="value">R$ ${fmt(t.rv)}</div>
-      <div class="sub">Vendas: ${t.vendasLI} | Planos anuais: ~${Math.round(t.rv / CONFIG.planoAnualValor)}</div>
+      <div class="sub">Planos: ${t.vendasLI} | Anuais: ${t.r_anuais} (${t.percAnuaisLI}%)</div>
     </div>
     <div class="person-card" style="border-left-color:var(--gold)">
       <div class="name">Outros</div>
@@ -1028,15 +1039,25 @@ function renderInsight(t, totalAtual, metaAtual, perc) {
   document.getElementById('insightBox').innerHTML = html;
 }
 
-function renderPlanoAnual(t) {
-  const totalAnuais = Math.round((t.sv + t.rv + t.ov) / CONFIG.planoAnualValor);
-  const khAnuais = Math.round(t.sv / CONFIG.planoAnualValor);
-  const liAnuais = Math.round(t.rv / CONFIG.planoAnualValor);
+function renderQualidadeVenda(t) {
+  const totalPlanos = t.totalVendas || 0;
+  if (totalPlanos === 0) {
+    document.getElementById('planoAnualBox').innerHTML = '';
+    return;
+  }
+  const percUnit = parseFloat(t.percAnuais) || 0;
+  const cor = percUnit >= 70 ? 'var(--green)' : percUnit >= 50 ? 'var(--gold)' : 'var(--accent)';
   document.getElementById('planoAnualBox').innerHTML = `
     <div class="plano-anual">
-      <strong>📋 Planos Anuais (12x R$ 119 = R$ 1.428)</strong><br>
-      <span style="font-size:0.9rem">Kézia Heloisa: ~${khAnuais} | Liriane: ~${liAnuais} | Total unidade: ~${totalAnuais}</span><br>
-      <span style="font-size:0.82rem;opacity:0.9">Cada plano anual vendido é o caminho mais rápido para bater meta. Foquem!</span>
+      <strong>🎯 Qualidade de Venda — Planos Anuais</strong>
+      <div style="display:flex;gap:20px;flex-wrap:wrap;margin-top:8px;font-size:0.88rem">
+        <div><strong>Unidade:</strong> ${t.totalAnuais} anuais de ${totalPlanos} planos (${t.percAnuais}%)</div>
+        <div><strong>Kézia Heloisa:</strong> ${t.s_anuais} de ${t.vendasKH} (${t.percAnuaisKH}%)</div>
+        <div><strong>Liriane:</strong> ${t.r_anuais} de ${t.vendasLI} (${t.percAnuaisLI}%)</div>
+        <div><strong>Outros:</strong> ${t.o_anuais} de ${t.vendasOutros} (${t.percAnuaisOutros}%)</div>
+      </div>
+      <div style="margin-top:8px"><div class="progress-bar" style="background:var(--bg)"><div style="width:${Math.min(percUnit,100)}%;background:${cor}"></div></div></div>
+      <span style="font-size:0.8rem;opacity:0.85">Meta de qualidade: 70% das vendas sendo planos anuais</span>
     </div>
   `;
 }
@@ -1365,20 +1386,23 @@ function renderPreencher() {
     <div style="overflow-x:auto">
     <table class="fill-table">
       <thead>
-        <tr><th></th><th>Novos</th><th>Rematrículas</th></tr>
+        <tr><th></th><th>Novos</th><th>Rematrículas</th><th>Anuais</th></tr>
       </thead>
       <tbody>
         <tr><td><strong>Kézia Heloisa</strong></td>
             <td><input type="number" id="fill_s_novas" placeholder="0" style="width:70px"></td>
             <td><input type="number" id="fill_s_remat" placeholder="0" style="width:70px"></td>
+            <td><input type="number" id="fill_s_anuais" placeholder="0" style="width:70px"></td>
         </tr>
         <tr><td><strong>Liriane</strong></td>
             <td><input type="number" id="fill_r_novas" placeholder="0" style="width:70px"></td>
             <td><input type="number" id="fill_r_remat" placeholder="0" style="width:70px"></td>
+            <td><input type="number" id="fill_r_anuais" placeholder="0" style="width:70px"></td>
         </tr>
         <tr><td><strong>Outros</strong></td>
             <td><input type="number" id="fill_o_novas" placeholder="0" style="width:70px"></td>
             <td><input type="number" id="fill_o_remat" placeholder="0" style="width:70px"></td>
+            <td><input type="number" id="fill_o_anuais" placeholder="0" style="width:70px"></td>
         </tr>
       </tbody>
     </table>
@@ -1426,6 +1450,9 @@ async function saveData() {
     o_novas: num(document.getElementById('fill_o_novas').value),
     o_remat: num(document.getElementById('fill_o_remat').value),
     o_aval: num(document.getElementById('fill_o_aval').value),
+    s_anuais: num(document.getElementById('fill_s_anuais').value),
+    r_anuais: num(document.getElementById('fill_r_anuais').value),
+    o_anuais: num(document.getElementById('fill_o_anuais').value),
     sa_prod: document.getElementById('fill_sp').value || 0,
     ra_prod: document.getElementById('fill_rp').value || 0,
     ab_prod: document.getElementById('fill_ab_prod').value || 0,
