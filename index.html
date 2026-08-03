@@ -1319,8 +1319,9 @@ function renderFolha(t) {
   const bonusAvalKH = t.s_aval * CONFIG.bonusAvaliacao;
   const bonusAvalLI = t.r_aval * CONFIG.bonusAvaliacao;
 
-  const totalKH = t.sv + bonusMetaKH + bonusVendasKH + bonusRenov + bonusAvalKH + t.creditoKH;
-  const totalLI = t.rv + bonusMetaLI + bonusVendasLI + bonusRenov + bonusAvalLI + t.creditoLI;
+  // Crédito 1% é INFORMATIVO — não entra na folha
+  const totalKH = t.sv + bonusMetaKH + bonusVendasKH + bonusRenov + bonusAvalKH;
+  const totalLI = t.rv + bonusMetaLI + bonusVendasLI + bonusRenov + bonusAvalLI;
 
   document.getElementById('folhaKH').innerHTML = `
     <div class="stats-row">
@@ -1357,9 +1358,9 @@ function renderFolha(t) {
 
   document.getElementById('resumoFolha').innerHTML = `
     <table>
-      <tr><th>Consultora</th><th>Vendas</th><th>Bônus Meta</th><th>Bônus Vendas</th><th>Bônus Renovação</th><th>Bônus Avaliação</th><th>Crédito Produtos (1%)</th><th>Total Folha</th></tr>
-      <tr><td><strong>Kézia Heloisa</strong></td><td>R$ ${fmt(t.sv)}</td><td>R$ ${fmt(bonusMetaKH)}</td><td>R$ ${fmt(bonusVendasKH)}</td><td>R$ ${fmt(bonusRenov)}</td><td>R$ ${fmt(bonusAvalKH)}</td><td>R$ ${fmt(t.creditoKH)}</td><td><strong>R$ ${fmt(totalKH)}</strong></td></tr>
-      <tr><td><strong>Liriane</strong></td><td>R$ ${fmt(t.rv)}</td><td>R$ ${fmt(bonusMetaLI)}</td><td>R$ ${fmt(bonusVendasLI)}</td><td>R$ ${fmt(bonusRenov)}</td><td>R$ ${fmt(bonusAvalLI)}</td><td>R$ ${fmt(t.creditoLI)}</td><td><strong>R$ ${fmt(totalLI)}</strong></td></tr>
+      <tr><th>Consultora</th><th>Vendas</th><th>Bônus Meta</th><th>Bônus Vendas</th><th>Bônus Renovação</th><th>Bônus Avaliação</th><th>Total Folha</th></tr>
+      <tr><td><strong>Kézia Heloisa</strong></td><td>R$ ${fmt(t.sv)}</td><td>R$ ${fmt(bonusMetaKH)}</td><td>R$ ${fmt(bonusVendasKH)}</td><td>R$ ${fmt(bonusRenov)}</td><td>R$ ${fmt(bonusAvalKH)}</td><td><strong>R$ ${fmt(totalKH)}</strong></td></tr>
+      <tr><td><strong>Liriane</strong></td><td>R$ ${fmt(t.rv)}</td><td>R$ ${fmt(bonusMetaLI)}</td><td>R$ ${fmt(bonusVendasLI)}</td><td>R$ ${fmt(bonusRenov)}</td><td>R$ ${fmt(bonusAvalLI)}</td><td><strong>R$ ${fmt(totalLI)}</strong></td></tr>
     </table>
 
     <div style="margin-top:20px">
@@ -1391,8 +1392,9 @@ function renderFolha(t) {
         </div>
         <hr style="margin:10px 0;border:none;border-top:1px solid #e0e0e0">
         <div style="font-size:0.88rem;line-height:1.8">
-          <strong>Crédito Produtos (1%):</strong><br>
-          1% do valor de produtos vendidos (KH, LI e Amabile). Outros não geram crédito individual.
+          <strong>Crédito Produtos (1%) — Informativo:</strong><br>
+          1% do valor de produtos vendidos (KH, LI e Amabile). Outros não geram crédito individual.<br>
+          <span style="color:#e94560">⚠️ Não entra na folha/contracheque. É apenas para consumo no sistema.</span>
         </div>
       </div>
     </div>
@@ -1854,6 +1856,7 @@ function renderProdutos(t) {
     </div>
     <div class="card" style="margin-top:16px">
       <h2 style="font-size:1rem">💳 Crédito 1% por Pessoa</h2>
+      <p style="font-size:0.78rem;color:#666;margin-bottom:8px">⚠️ Crédito apenas informativo — não entra na folha/contracheque. Usar para consumo no sistema.</p>
       <table>
         <tr><th>Pessoa</th><th>Produtos Vendidos</th><th>Crédito (1%)</th></tr>
         <tr><td>Kézia Heloisa</td><td>R$ ${fmt(t.produtosKH)}</td><td><strong>R$ ${fmt(t.creditoKH)}</strong></td></tr>
@@ -1963,32 +1966,33 @@ function renderLideranca() {
       </div>
     </div>
 
-    <div class="card">
-      <h2>💳 Crédito Produtos — Liderança (1%)</h2>
-      <div class="stats-row">
-        <div class="stat-item"><div class="stat-value">R$ ${fmt(bonusLider1pct)}</div><div class="stat-label">Crédito (1% de R$ ${fmt(t.totalProdutos)} — total produtos da unidade)</div></div>
-      </div>
-    </div>
-
     <div class="card" style="background:linear-gradient(135deg,#0d1b2a,#1b2838);color:#fff;text-align:center;border:2px solid #e94560">
-      <h2 style="color:#fff;margin-bottom:8px">💰 Total Final de Bônus — Liderança</h2>
-      <div style="font-size:2.2rem;font-weight:900;color:#e94560;margin:8px 0">R$ ${fmt(totalBonusLider + bonusLider1pct)}</div>
+      <h2 style="color:#fff;margin-bottom:8px">💰 Total Final — Folha Liderança (pago em contracheque)</h2>
+      <div style="font-size:2.2rem;font-weight:900;color:#e94560;margin:8px 0">R$ ${fmt(totalBonusLider)}</div>
       <div style="font-size:0.82rem;color:rgba(255,255,255,0.7)">
-        Financeiro R$ ${fmt(bonusFinanceiroLider)} + Vendas R$ ${fmt(bonusVendasLider)} + Cancelamento R$ ${fmt(bonusCancLider)} + Renovação R$ ${fmt(bonusRenovLider)} + Crédito Produtos R$ ${fmt(bonusLider1pct)}
+        Financeiro R$ ${fmt(bonusFinanceiroLider)} + Vendas R$ ${fmt(bonusVendasLider)} + Cancelamento R$ ${fmt(bonusCancLider)} + Renovação R$ ${fmt(bonusRenovLider)}
       </div>
     </div>
 
+    <div class="card" style="background:#f5f5f5;border-left:4px solid #1b5e20">
+      <h2 style="font-size:1rem">📦 Crédito Produtos — Liderança (1%) — Informativo (não entra na folha)</h2>
+      <div class="stats-row">
+        <div class="stat-item"><div class="stat-value">R$ ${fmt(bonusLider1pct)}</div><div class="stat-label">1% de R$ ${fmt(t.totalProdutos)} — total produtos da unidade</div></div>
+      </div>
+      <p style="font-size:0.78rem;color:#666;margin-top:8px">💡 Este crédito é para consumo interno no sistema. Não é pago em contracheque.</p>
+    </div>
+
     <div class="card">
-      <h2>📊 Detalhamento por Bônus</h2>
+      <h2>📊 Detalhamento por Bônus (Folha)</h2>
       <table>
         <tr><th>Descrição</th><th>Valor</th><th>Condição</th></tr>
         <tr><td>Bônus Financeiro (meta unidade)</td><td><strong>R$ ${fmt(bonusFinanceiroLider)}</strong></td><td>${totalMes > 0 ? 'Faixa ' + (totalMes >= metaAtual ? 3 : (totalMes >= metaAtual * 0.7 ? 2 : 1)) : 'Sem dados'}</td></tr>
         <tr><td>Bônus Vendas (${totalVendasUnidade} vendas)</td><td><strong>R$ ${fmt(bonusVendasLider)}</strong></td><td>≥60 vendas</td></tr>
         <tr><td>Bônus Cancelamento (${t.ativosInicio > 0 ? cancPerc.toFixed(1) : 0}%)</td><td><strong>R$ ${fmt(bonusCancLider)}</strong></td><td>${t.ativosInicio > 0 ? '≤3% ou ≤4%' : 'Sem dados'}</td></tr>
         <tr><td>Bônus Renovação (${totalInscRenov > 0 ? taxaRenov.toFixed(1) : 0}%)</td><td><strong>R$ ${fmt(bonusRenovLider)}</strong></td><td>${totalInscRenov > 0 ? '≥85% ou ≥70%' : 'Sem dados'}</td></tr>
-        <tr><td>Crédito Produtos (1%) — Liderança</td><td><strong>R$ ${fmt(bonusLider1pct)}</strong></td><td>1% sobre total de produtos da unidade</td></tr>
-        <tr style="background:#f0f0f0"><td><strong>TOTAL LIDERANÇA</strong></td><td><strong>R$ ${fmt(totalBonusLider + bonusLider1pct)}</strong></td><td>—</td></tr>
+        <tr style="background:#f0f0f0"><td><strong>TOTAL FOLHA LIDERANÇA</strong></td><td><strong>R$ ${fmt(totalBonusLider)}</strong></td><td>—</td></tr>
       </table>
+      <p style="font-size:0.78rem;color:#666;margin-top:8px">📦 Crédito Produtos (1%): R$ ${fmt(bonusLider1pct)} — informativo, não entra no total acima.</p>
     </div>
 
     <div class="card">
@@ -2014,9 +2018,9 @@ function renderLideranca() {
         <span style="color:#666;font-size:0.78rem">Calculado: (rematrículas / novos + rematrículas) × 100</span>
       </div>
       <div class="tip-box" style="font-size:0.88rem;line-height:1.8;margin-top:8px">
-        <strong>Crédito Produtos (1%):</strong><br>
+        <strong>Crédito Produtos (1%) — Informativo:</strong><br>
         1% sobre o total de produtos vendidos por cada consultora (KH, LI e Amabile). O crédito de "Outros" vai para a liderança.<br>
-        <span style="color:#666;font-size:0.78rem">Sempre calculado, independente de meta atingida. Base: valor em R$ de produtos vendidos (aba Produtos).</span>
+        <span style="color:#e94560;font-size:0.78rem">⚠️ Este crédito NÃO entra na folha/contracheque. É apenas para consumo no sistema.</span>
       </div>
     </div>
   `;
