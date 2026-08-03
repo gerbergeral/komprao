@@ -644,6 +644,42 @@ function formatDate(val) {
     return dd+'/'+mm+'/'+yy;
   } catch(e) { return s; }
 }
+function formatHour(val) {
+  if (!val) return '';
+  const s = String(val);
+  // Se já está em HH:MM ou HH:MM:SS
+  if (/^\d{1,2}:\d{2}/.test(s) && !s.includes('T') && !s.includes('-1899')) return s;
+  // Se é ISO datetime (tem T)
+  if (s.includes('T')) {
+    try {
+      const d = new Date(s);
+      if (!isNaN(d.getTime())) {
+        const hh = String(d.getHours()).padStart(2,'0');
+        const mm = String(d.getMinutes()).padStart(2,'0');
+        return hh+':'+mm;
+      }
+    } catch(e) {}
+  }
+  // Se é timestamp do Google Sheets (1899-12-30T...) — é uma hora serial
+  if (s.includes('1899') || s.includes('-1899')) {
+    try {
+      const d = new Date(s);
+      if (!isNaN(d.getTime())) {
+        const hh = String(d.getHours()).padStart(2,'0');
+        const mm = String(d.getMinutes()).padStart(2,'0');
+        return hh+':'+mm;
+      }
+    } catch(e) {}
+  }
+  // Se é número (serial do Google Sheets para hora)
+  if (!isNaN(Number(s))) {
+    const totalMinutes = Math.round(Number(s) * 24 * 60);
+    const hh = String(Math.floor(totalMinutes / 60)).padStart(2,'0');
+    const mm = String(totalMinutes % 60).padStart(2,'0');
+    return hh+':'+mm;
+  }
+  return s;
+}
 function fmt(val) {
   if (val === null || val === undefined) return '0';
   return Number(val).toLocaleString('pt-BR');
@@ -837,7 +873,7 @@ function renderUltimaApuracao() {
     const ultimoNome = records[0].nome || '—';
     const ultimaData = records[0].data || '—';
     const ultimaHora = records[0].hora || '';
-    el.textContent = 'Última apuração: ' + ultimoNome + ' em ' + formatDate(ultimaData) + (ultimaHora ? ' às ' + ultimaHora : '');
+    el.textContent = 'Última apuração: ' + ultimoNome + ' em ' + formatDate(ultimaData) + (ultimaHora ? ' às ' + formatHour(ultimaHora) : '');
   } else {
     el.textContent = 'Nenhuma apuração registrada este mês';
   }
@@ -880,31 +916,17 @@ function renderMeta(t) {
   const meta2 = Math.round(metaAtual * 1.1);
   const meta3 = Math.round(metaAtual * 1.2);
 
+  // Progresso geral
   document.getElementById('metaProgresso').innerHTML = `
     <div class="stats-row">
       <div class="stat-item"><div class="stat-value">R$ ${fmt(totalAtual)}</div><div class="stat-label">Arrecadado</div></div>
       <div class="stat-item"><div class="stat-value">${perc}%</div><div class="stat-label">Progresso</div></div>
     </div>
     <div class="progress-bar"><div class="fill ${fillClass}" style="width:${perc}%"></div></div>
-    <div class="metas-row" style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap">
-      <div class="meta-badge meta-badge-1">
-        <div class="meta-badge-title">Meta 1</div>
-        <div class="meta-badge-value">R$ ${fmt(metaAtual)}</div>
-        <div class="meta-badge-pct">${totalAtual > 0 ? Math.min(parseFloat((totalAtual/metaAtual*100).toFixed(1)), 100) : 0}%</div>
-        <div class="meta-badge-progress"><div class="meta-badge-fill" style="width:${totalAtual > 0 ? Math.min((totalAtual/metaAtual*100), 100) : 0}%"></div></div>
-      </div>
-      <div class="meta-badge meta-badge-2">
-        <div class="meta-badge-title">Meta 2 (+10%)</div>
-        <div class="meta-badge-value">R$ ${fmt(meta2)}</div>
-        <div class="meta-badge-pct">${totalAtual > 0 ? Math.min(parseFloat((totalAtual/meta2*100).toFixed(1)), 100) : 0}%</div>
-        <div class="meta-badge-progress"><div class="meta-badge-fill" style="width:${totalAtual > 0 ? Math.min((totalAtual/meta2*100), 100) : 0}%"></div></div>
-      </div>
-      <div class="meta-badge meta-badge-3">
-        <div class="meta-badge-title">Meta 3 (+20%)</div>
-        <div class="meta-badge-value">R$ ${fmt(meta3)}</div>
-        <div class="meta-badge-pct">${totalAtual > 0 ? Math.min(parseFloat((totalAtual/meta3*100).toFixed(1)), 100) : 0}%</div>
-        <div class="meta-badge-progress"><div class="meta-badge-fill" style="width:${totalAtual > 0 ? Math.min((totalAtual/meta3*100), 100) : 0}%"></div></div>
-      </div>
+    <div style="display:flex;gap:16px;margin-top:10px;flex-wrap:wrap;font-size:0.78rem;color:var(--text-light)">
+      <span>Meta 1: R$ ${fmt(metaAtual)}</span>
+      <span>Meta 2: R$ ${fmt(meta2)}</span>
+      <span>Meta 3: R$ ${fmt(meta3)}</span>
     </div>
     ${totalAtual === 0 ? '<div style="margin-top:8px;font-size:0.82rem;color:var(--text-light)">Nenhum dado registrado neste mês ainda.</div>' : ''}
   `;
@@ -970,17 +992,30 @@ function renderMeta(t) {
     `).join('') + '</div>';
   }
 
-  // Meta diária dinâmica (Meta 1 e Meta 2 separadas)
+  // Meta diária dinâmica (Meta 1, 2 e 3)
   const dd = calcMetaDiariaDinamica(t);
+  const metaDiariaM3 = dd.diasUteisRestantes > 0 ? Math.round((dd.meta3 - (t.sv+t.rv+t.ov)) / dd.diasUteisRestantes) : 0;
   document.getElementById('metaDiaria').innerHTML = `
     <div class="stats-row">
-      <div class="stat-item"><div class="stat-value">R$ ${fmt(dd.saldoM1)}</div><div class="stat-label">Saldo Restante (Meta 1)</div></div>
-      <div class="stat-item"><div class="stat-value">R$ ${fmt(dd.metaDiariaM1)}</div><div class="stat-label">Meta Diária — Meta 1</div></div>
-      <div class="stat-item"><div class="stat-value">R$ ${fmt(dd.metaDiariaM2)}</div><div class="stat-label">Meta Diária — Meta 2</div></div>
-      <div class="stat-item"><div class="stat-value">${dd.diasUteisRestantes}</div><div class="stat-label">Dias Úteis Restantes</div></div>
-    </div>
-    <div style="font-size:0.82rem;color:var(--text-light);margin-top:8px">
-      Meta 1: R$ ${fmt(dd.meta1)}/mês | Meta 2: R$ ${fmt(dd.meta2)}/mês (${dd.diasUteisTotais} dias úteis no mês)
+      <div class="stat-item" style="border-left:3px solid #4caf50">
+        <div class="stat-label">Meta Diária — Meta 1</div>
+        <div class="stat-value" style="color:#2e7d32">R$ ${fmt(Math.max(dd.metaDiariaM1,0))}</div>
+        <div style="font-size:0.72rem;color:var(--text-light)">Saldo: R$ ${fmt(Math.max(dd.saldoM1,0))}</div>
+      </div>
+      <div class="stat-item" style="border-left:3px solid #ffa726">
+        <div class="stat-label">Meta Diária — Meta 2</div>
+        <div class="stat-value" style="color:#e65100">R$ ${fmt(Math.max(dd.metaDiariaM2,0))}</div>
+        <div style="font-size:0.72rem;color:var(--text-light)">Saldo: R$ ${fmt(Math.max(dd.saldoM2,0))}</div>
+      </div>
+      <div class="stat-item" style="border-left:3px solid #e53935">
+        <div class="stat-label">Meta Diária — Meta 3</div>
+        <div class="stat-value" style="color:#c62828">R$ ${fmt(Math.max(metaDiariaM3,0))}</div>
+        <div style="font-size:0.72rem;color:var(--text-light)">Saldo: R$ ${fmt(Math.max(dd.meta3-(t.sv+t.rv+t.ov),0))}</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value">${dd.diasUteisRestantes}</div>
+        <div class="stat-label">Dias Úteis Restantes</div>
+      </div>
     </div>
   `;
 
@@ -1219,7 +1254,7 @@ function renderHistorico() {
   const rows = records.map(r => `<tr>
     <td>${r.nome || '—'}</td>
     <td>${formatDate(r.data)}</td>
-    <td>${r.hora || '—'}</td>
+    <td>${r.hora ? formatHour(r.hora) : '—'}</td>
     <td>R$ ${fmt(num(r.sv))}</td>
     <td>R$ ${fmt(num(r.rv))}</td>
     <td>${r.ab_prod ? String(r.ab_prod) : '—'}</td>
