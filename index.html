@@ -703,22 +703,21 @@ function getTotals() {
 
 // ==================== META DIARIA DINÂMICA ====================
 function calcMetaDiariaDinamica(t) {
-  const metaAtual = getMetaAtual();
+  const meta1 = getMetaAtual();
+  const meta2 = Math.round(meta1 * 1.1);
   const totalAtual = t.sv + t.rv + t.ov;
-  const saldoRestante = Math.max(metaAtual - totalAtual, 0);
+  const diasUteisRestantes = countWorkingDaysUntilEndOfMonth(new Date());
+  const diasUteisTotais = countWorkingDaysInMonth(new Date().getFullYear(), new Date().getMonth());
 
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const diasUteisRestantes = countWorkingDaysUntilEndOfMonth(now);
-  const diasUteisTotais = countWorkingDaysInMonth(year, month);
+  // Meta Diária — Meta 1
+  const saldoM1 = Math.max(meta1 - totalAtual, 0);
+  const metaDiariaM1 = diasUteisRestantes > 0 ? Math.round(saldoM1 / diasUteisRestantes) : 0;
 
-  const metaDiaria = diasUteisRestantes > 0 ? Math.round(saldoRestante / diasUteisRestantes) : 0;
-  const metaDiariaGeral = diasUteisTotais > 0 ? Math.round(metaAtual / diasUteisTotais) : 0;
-  const diasRestantes = diasUteisRestantes;
-  const diasUteisPassados = diasUteisTotais - diasUteisRestantes - (now.getDay() === 0 || now.getDay() === 6 ? 0 : 1);
+  // Meta Diária — Meta 2
+  const saldoM2 = Math.max(meta2 - totalAtual, 0);
+  const metaDiariaM2 = diasUteisRestantes > 0 ? Math.round(saldoM2 / diasUteisRestantes) : 0;
 
-  return { saldoRestante, metaDiaria, metaDiariaGeral, diasUteisRestantes: diasRestantes, diasUteisTotais };
+  return { saldoM1, saldoM2, metaDiariaM1, metaDiariaM2, meta1, meta2, diasUteisRestantes, diasUteisTotais };
 }
 
 // ==================== META SEMANAL ====================
@@ -971,16 +970,17 @@ function renderMeta(t) {
     `).join('') + '</div>';
   }
 
-  // Meta diária dinâmica
+  // Meta diária dinâmica (Meta 1 e Meta 2 separadas)
   const dd = calcMetaDiariaDinamica(t);
   document.getElementById('metaDiaria').innerHTML = `
     <div class="stats-row">
-      <div class="stat-item"><div class="stat-value">R$ ${fmt(dd.saldoRestante)}</div><div class="stat-label">Saldo Restante</div></div>
-      <div class="stat-item"><div class="stat-value">R$ ${fmt(dd.metaDiaria)}</div><div class="stat-label">Meta Diária (ajustada)</div></div>
+      <div class="stat-item"><div class="stat-value">R$ ${fmt(dd.saldoM1)}</div><div class="stat-label">Saldo Restante (Meta 1)</div></div>
+      <div class="stat-item"><div class="stat-value">R$ ${fmt(dd.metaDiariaM1)}</div><div class="stat-label">Meta Diária — Meta 1</div></div>
+      <div class="stat-item"><div class="stat-value">R$ ${fmt(dd.metaDiariaM2)}</div><div class="stat-label">Meta Diária — Meta 2</div></div>
       <div class="stat-item"><div class="stat-value">${dd.diasUteisRestantes}</div><div class="stat-label">Dias Úteis Restantes</div></div>
     </div>
     <div style="font-size:0.82rem;color:var(--text-light);margin-top:8px">
-      Meta geral do mês: R$ ${fmt(dd.metaDiariaGeral)}/dia útil (${dd.diasUteisTotais} dias úteis no mês)
+      Meta 1: R$ ${fmt(dd.meta1)}/mês | Meta 2: R$ ${fmt(dd.meta2)}/mês (${dd.diasUteisTotais} dias úteis no mês)
     </div>
   `;
 
