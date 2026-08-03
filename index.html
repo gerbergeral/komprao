@@ -689,8 +689,8 @@ function sumField(field) { return records.reduce((s, r) => s + num(r[field]), 0)
 // ==================== GET TOTALS ====================
 // Modelo: pega APENAS o último registro salvo no mês (valor acumulado)
 function getTotals() {
-  // Último registro do mês (mais recente)
-  const last = records.length ? records[records.length - 1] : {};
+  // Último registro do mês (mais recente) — records[0] pois Apps Script já inverte
+  const last = records.length ? records[0] : {};
 
   const sv = num(last.sv);
   const rv = num(last.rv);
@@ -1406,8 +1406,8 @@ function renderPreencher() {
   const dataStr = now.toLocaleDateString('pt-BR');
   const horaStr = now.toTimeString().slice(0,5);
 
-  // Último registro salvo (valores acumulados atuais)
-  const ult = records.length ? records[records.length - 1] : {};
+  // Último registro salvo (valores acumulados atuais) — records[0] pois Apps Script já inverte
+  const ult = records.length ? records[0] : {};
   const acc = {
     sv: num(ult.sv),
     rv: num(ult.rv),
