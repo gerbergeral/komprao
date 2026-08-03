@@ -1978,8 +1978,16 @@ function renderLideranca() {
       </div>
     </div>
 
+    <div class="card" style="background:linear-gradient(135deg,#0d1b2a,#1b2838);color:#fff;text-align:center;border:2px solid #e94560">
+      <h2 style="color:#fff;margin-bottom:8px">💰 Total Final de Bônus — Liderança</h2>
+      <div style="font-size:2.2rem;font-weight:900;color:#e94560;margin:8px 0">R$ ${fmt(totalBonusLider + bonusLider1pct)}</div>
+      <div style="font-size:0.82rem;color:rgba(255,255,255,0.7)">
+        Financeiro R$ ${fmt(bonusFinanceiroLider)} + Vendas R$ ${fmt(bonusVendasLider)} + Cancelamento R$ ${fmt(bonusCancLider)} + Renovação R$ ${fmt(bonusRenovLider)} + Crédito Produtos R$ ${fmt(bonusLider1pct)}
+      </div>
+    </div>
+
     <div class="card">
-      <h2>📊 Resumo de Bônus</h2>
+      <h2>📊 Detalhamento por Bônus</h2>
       <table>
         <tr><th>Descrição</th><th>Valor</th><th>Condição</th></tr>
         <tr><td>Bônus Financeiro (meta unidade)</td><td><strong>R$ ${fmt(bonusFinanceiroLider)}</strong></td><td>${totalMes > 0 ? 'Faixa ' + (totalMes >= metaAtual ? 3 : (totalMes >= metaAtual * 0.7 ? 2 : 1)) : 'Sem dados'}</td></tr>
