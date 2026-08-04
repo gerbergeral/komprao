@@ -423,6 +423,8 @@ const SHEET_URL = 'https://script.google.com/macros/s/AKfycbzCkuDLjLeBuY0hQTOWcS
 const PASSWORD = 'liderkomprao';
 
 const CONFIG = {
+  meta2Pct: 1.1,
+  meta3Pct: 1.2,
   metas: {
     // Períodos com metas diferentes (meta1, meta2=+10%, meta3=+20%)
     // Meta padrão: R$60.000
@@ -1935,11 +1937,17 @@ function renderLideranca() {
   const totalMes = t.sv + t.rv + t.ov;
   const metaAtual = getMetaAtual();
 
-  // Bônus financeiro integral (só com dados reais)
+  // Bônus financeiro integral (só com dados reais) — usa Meta 1/2/3 com percentuais
   let bonusFinanceiroLider = 0;
+  let faixaFinanc = 'Sem dados';
   if (totalMes > 0) {
-    const faixa = totalMes >= metaAtual ? 2 : (totalMes >= metaAtual * 0.7 ? 1 : 0);
-    bonusFinanceiroLider = CONFIG.bonusMeta[faixa] || 0;
+    const meta1 = metaAtual;
+    const meta2 = Math.round(meta1 * CONFIG.meta2Pct);
+    const meta3 = Math.round(meta1 * CONFIG.meta3Pct);
+    if (totalMes >= meta3) { bonusFinanceiroLider = CONFIG.bonusMeta[2]; faixaFinanc = 'Meta 3'; }
+    else if (totalMes >= meta2) { bonusFinanceiroLider = CONFIG.bonusMeta[1]; faixaFinanc = 'Meta 2'; }
+    else if (totalMes >= meta1) { bonusFinanceiroLider = CONFIG.bonusMeta[0]; faixaFinanc = 'Meta 1'; }
+    else faixaFinanc = 'Nenhuma meta atingida';
   }
 
   // Bônus vendas liderança (60=R$100, 80=R$200, 100=R$300...)
@@ -1977,20 +1985,6 @@ function renderLideranca() {
   const bonusLider1pct = Math.round(t.totalProdutos * 0.01);
 
   const totalBonusLider = bonusFinanceiroLider + bonusVendasLider + bonusCancLider + bonusRenovLider;
-
-  // Bônus financeiro integral (só com dados reais)
-  let bonusFinanceiroLider = 0;
-  let faixaFinanc = 'Sem dados';
-  if (totalMes > 0) {
-    const meta1 = metaAtual;
-    const meta2 = Math.round(meta1 * CONFIG.meta2Pct);
-    const meta3 = Math.round(meta1 * CONFIG.meta3Pct);
-    if (totalMes >= meta3) { bonusFinanceiroLider = CONFIG.bonusMeta[2]; faixaFinanc = 'Meta 3'; }
-    else if (totalMes >= meta2) { bonusFinanceiroLider = CONFIG.bonusMeta[1]; faixaFinanc = 'Meta 2'; }
-    else if (totalMes >= meta1) { bonusFinanceiroLider = CONFIG.bonusMeta[0]; faixaFinanc = 'Meta 1'; }
-    else faixaFinanc = 'Nenhuma meta atingida';
-  }
-
   const percMeta = totalMes > 0 ? (totalMes / metaAtual * 100).toFixed(1) : '0.0';
 
   document.getElementById('liderancaContent').innerHTML = `
