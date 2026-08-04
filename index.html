@@ -912,9 +912,11 @@ function calcBonusVendasVolume(vendas) {
 function calcBonusProporcional(valAtual, totalEquipe, totalMes, metaAtual) {
   if (totalEquipe === 0) return 0;
   if (totalMes === 0) return 0;
+  // Só concede bônus se a meta for atingida (>=100%)
+  if (totalMes < metaAtual) return 0;
   const perc = valAtual / totalEquipe;
-  const faixa = totalMes >= metaAtual ? 2 : (totalMes >= metaAtual * 0.7 ? 1 : 0);
-  const bonusTotal = CONFIG.bonusMeta[faixa] || 0;
+  const faixa = totalMes >= metaAtual * 1.2 ? 2 : (totalMes >= metaAtual * 1.1 ? 1 : 0);
+  const bonusTotal = CONFIG.bonusMeta[faixa];
   return Math.round(perc * bonusTotal * 100) / 100;
 }
 
