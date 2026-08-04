@@ -1086,24 +1086,28 @@ function renderMeta(t) {
 
 
   // Ranking — Medalhas + Participação
-  const totalKH_LI = t.sv + t.rv;
-  const totalAtual2 = t.sv + t.rv + t.ov;
+  const totalEquipeRank = t.sv + t.rv + t.ov;
   const metaAtual2 = getMetaAtual();
-  const metaBater = totalAtual2 >= metaAtual2;
-  if (totalKH_LI === 0) {
+  const metaBater = totalEquipeRank >= metaAtual2;
+  if (totalEquipeRank === 0) {
     document.getElementById('ranking').innerHTML = '<div class="ranking-empty"><div class="big-emoji">🤝</div><p>Consultoras estão empatadas! Os dados aparecerão aqui assim que a apuração for feita.</p></div>';
   } else if (!metaBater) {
     // Meta ainda não batida — mostra participação mas sem definir vencedor
-    const khPerc = ((t.sv / totalKH_LI) * 100).toFixed(1);
-    const liPerc = ((t.rv / totalKH_LI) * 100).toFixed(1);
+    const khPerc = totalEquipeRank > 0 ? ((t.sv / totalEquipeRank) * 100).toFixed(1) : '0.0';
+    const liPerc = totalEquipeRank > 0 ? ((t.rv / totalEquipeRank) * 100).toFixed(1) : '0.0';
+    const oPerc = totalEquipeRank > 0 ? ((t.ov / totalEquipeRank) * 100).toFixed(1) : '0.0';
     const bonusVendasKH = calcBonusVendasVolume(t.vendasKH);
     const bonusVendasLI = calcBonusVendasVolume(t.vendasLI);
-    const sorted = [
+    const bonusVendasOutros = calcBonusVendasVolume(t.vendasOutros);
+    const entries = [
       {name:'Kézia Heloisa', val:t.sv, perc:khPerc, vendas:t.vendasKH, bonusV:bonusVendasKH},
       {name:'Liriane', val:t.rv, perc:liPerc, vendas:t.vendasLI, bonusV:bonusVendasLI}
-    ].sort((a,b) => b.val - a.val);
+    ];
+    if (t.ov > 0) entries.push({name:'Outros', val:t.ov, perc:oPerc, vendas:t.vendasOutros, bonusV:bonusVendasOutros, isOutros:true});
+    const sorted = entries.sort((a,b) => b.val - a.val);
+    const cardClasses = ['gold', 'silver', 'bronze'];
     document.getElementById('ranking').innerHTML = '<div class="ranking-container">' + sorted.map((item, i) => `
-      <div class="ranking-card ${i===0?'gold':'silver'}" style="opacity:0.85">
+      <div class="ranking-card ${cardClasses[i] || 'silver'}" style="${item.isOutros ? 'border:2px solid #999;' : ''}opacity:0.85">
         <div class="medal" style="filter:grayscale(100%)">🏅</div>
         <div class="rank-name">${item.name}</div>
         <div class="rank-pct">${item.perc}% da participação</div>
@@ -1115,25 +1119,30 @@ function renderMeta(t) {
     `).join('') + '</div>';
   } else {
     // Meta batida! Define campeã
-    const khPerc = ((t.sv / totalKH_LI) * 100).toFixed(1);
-    const liPerc = ((t.rv / totalKH_LI) * 100).toFixed(1);
+    const khPerc = totalEquipeRank > 0 ? ((t.sv / totalEquipeRank) * 100).toFixed(1) : '0.0';
+    const liPerc = totalEquipeRank > 0 ? ((t.rv / totalEquipeRank) * 100).toFixed(1) : '0.0';
+    const oPerc = totalEquipeRank > 0 ? ((t.ov / totalEquipeRank) * 100).toFixed(1) : '0.0';
     const bonusVendasKH = calcBonusVendasVolume(t.vendasKH);
     const bonusVendasLI = calcBonusVendasVolume(t.vendasLI);
-    const sorted = [
+    const bonusVendasOutros = calcBonusVendasVolume(t.vendasOutros);
+    const entries = [
       {name:'Kézia Heloisa', val:t.sv, perc:khPerc, vendas:t.vendasKH, bonusV:bonusVendasKH},
       {name:'Liriane', val:t.rv, perc:liPerc, vendas:t.vendasLI, bonusV:bonusVendasLI}
-    ].sort((a,b) => b.val - a.val);
-    const medalIcons = ['🥇', '🥈'];
-    const rankLabels = ['Campeã do mês!', 'Seguindo firme!'];
+    ];
+    if (t.ov > 0) entries.push({name:'Outros', val:t.ov, perc:oPerc, vendas:t.vendasOutros, bonusV:bonusVendasOutros, isOutros:true});
+    const sorted = entries.sort((a,b) => b.val - a.val);
+    const medalIcons = ['🥇', '🥈', '🥉'];
+    const rankLabels = ['Campeã do mês!', 'Seguindo firme!', 'Registro adicional'];
+    const cardClasses = ['gold', 'silver', 'bronze'];
     document.getElementById('ranking').innerHTML = '<div class="ranking-container">' + sorted.map((item, i) => `
-      <div class="ranking-card ${i===0?'gold':'silver'}">
+      <div class="ranking-card ${cardClasses[i] || 'silver'}" style="${item.isOutros ? 'border:2px solid #999;' : ''}">
         <div class="medal">${medalIcons[i]}</div>
         <div class="rank-name">${item.name}</div>
         <div class="rank-pct">${item.perc}% da participação</div>
         <div class="rank-value">R$ ${fmt(item.val)}</div>
         <div class="rank-bar"><div class="fill" style="width:${item.perc}%"></div></div>
         <div class="rank-detail">${item.vendas} vendas · Bônus vendas: R$ ${fmt(item.bonusV)}</div>
-        <div class="rank-detail" style="font-weight:700;color:${i===0?'var(--gold)':'var(--text-light)'}">${rankLabels[i]}</div>
+        <div class="rank-detail" style="font-weight:700;color:${item.isOutros ? '#666' : i===0 ? 'var(--gold)' : 'var(--text-light)'}">${rankLabels[i]}</div>
       </div>
     `).join('') + '</div>';
   }
@@ -1935,19 +1944,20 @@ function renderLideranca() {
   const t = getTotals();
   const totalMes = t.sv + t.rv + t.ov;
   const metaAtual = getMetaAtual();
+  const meta2 = Math.round(metaAtual * CONFIG.meta2Pct);
+  const meta3 = Math.round(metaAtual * CONFIG.meta3Pct);
 
   // Bônus financeiro integral (só com dados reais) — usa Meta 1/2/3 com percentuais
   let bonusFinanceiroLider = 0;
   let faixaFinanc = 'Sem dados';
   if (totalMes > 0) {
     const meta1 = metaAtual;
-    const meta2 = Math.round(meta1 * CONFIG.meta2Pct);
-    const meta3 = Math.round(meta1 * CONFIG.meta3Pct);
     if (totalMes >= meta3) { bonusFinanceiroLider = CONFIG.bonusMeta[2]; faixaFinanc = 'Meta 3'; }
     else if (totalMes >= meta2) { bonusFinanceiroLider = CONFIG.bonusMeta[1]; faixaFinanc = 'Meta 2'; }
     else if (totalMes >= meta1) { bonusFinanceiroLider = CONFIG.bonusMeta[0]; faixaFinanc = 'Meta 1'; }
     else faixaFinanc = 'Nenhuma meta atingida';
   }
+
 
   // Bônus vendas liderança (60=R$100, 80=R$200, 100=R$300...)
   const totalVendasUnidade = t.totalVendas;
@@ -2209,23 +2219,26 @@ function renderPreencher() {
     <div style="overflow-x:auto">
     <table class="fill-table">
       <thead>
-        <tr><th></th><th>Novos</th><th>Rematrículas</th><th>Anuais</th></tr>
+        <tr><th></th><th>Novos</th><th>Rematrículas</th><th>Anuais</th><th>Avaliações</th></tr>
       </thead>
       <tbody>
         <tr><td><strong>Kézia Heloisa</strong></td>
             <td><input type="number" id="fill_s_novas" placeholder="${acc.s_novas || 0}" style="width:70px"></td>
             <td><input type="number" id="fill_s_remat" placeholder="${acc.s_remat || 0}" style="width:70px"></td>
             <td><input type="number" id="fill_s_anuais" placeholder="${acc.s_anuais || 0}" style="width:70px"></td>
+            <td><input type="number" id="fill_s_aval" placeholder="${acc.s_aval || 0}" style="width:70px"></td>
         </tr>
         <tr><td><strong>Liriane</strong></td>
             <td><input type="number" id="fill_r_novas" placeholder="${acc.r_novas || 0}" style="width:70px"></td>
             <td><input type="number" id="fill_r_remat" placeholder="${acc.r_remat || 0}" style="width:70px"></td>
             <td><input type="number" id="fill_r_anuais" placeholder="${acc.r_anuais || 0}" style="width:70px"></td>
+            <td><input type="number" id="fill_r_aval" placeholder="${acc.r_aval || 0}" style="width:70px"></td>
         </tr>
         <tr><td><strong>Outros</strong></td>
             <td><input type="number" id="fill_o_novas" placeholder="${acc.o_novas || 0}" style="width:70px"></td>
             <td><input type="number" id="fill_o_remat" placeholder="${acc.o_remat || 0}" style="width:70px"></td>
             <td><input type="number" id="fill_o_anuais" placeholder="${acc.o_anuais || 0}" style="width:70px"></td>
+            <td><input type="number" id="fill_o_aval" placeholder="${acc.o_aval || 0}" style="width:70px"></td>
         </tr>
       </tbody>
     </table>
