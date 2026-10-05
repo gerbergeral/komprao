@@ -230,7 +230,7 @@ const POL = {
   planoAnualValor: 1428                 // usado só nas dicas
 };
 const METAS_PADRAO = [60000, 66000, 72000];
-const NOMES_PADRAO = ['Kézia Heloisa', 'Liriane', 'Amabile'];
+const NOMES_PADRAO = ['Kézia Heloisa', 'Liriane'];
 const CORES = ['#1f4e79', '#b45309', '#047857', '#7c3aed', '#be185d', '#0e7490'];
 const FERIADOS = {
   2025: ['2025-01-01','2025-03-03','2025-03-04','2025-04-18','2025-04-21','2025-05-01','2025-06-19','2025-09-07','2025-10-12','2025-11-02','2025-11-15','2025-11-20','2025-12-25'],
@@ -241,7 +241,7 @@ const ABREV = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov'
 const MESES = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
 
 // ==================== ESTADO ====================
-let currentMonth = null, records = [], cfg = null, SLOTS = [];
+let currentMonth = null, records = [], cfg = null, SLOTS = [], RECEP = [];
 let senhaLider = null, isUnlocked = false, pendingTab = '';
 const confettiShown = {};
 
@@ -343,6 +343,11 @@ async function init() {
     await loadMonth();
   } catch (e) { console.error(e); $('monthStatus').textContent = 'Erro ao conectar'; $('metaContent').innerHTML = '<div class="alert red">Não foi possível conectar com a planilha.</div>'; }
 }
+function recepDe(c, ult) {
+  if (c && Array.isArray(c.recepcao)) return c.recepcao.filter(x => x && x.nome).map(x => ({ k: x.k, nome: x.nome }));
+  const out = []; if (ult) for (let k = 1; k <= 2; k++) if (ult['rc' + k + '_nome']) out.push({ k, nome: String(ult['rc' + k + '_nome']) });
+  return out;
+}
 function slotsDe(c, ult) {
   let out = [];
   if (c && Array.isArray(c.consultoras)) out = c.consultoras.filter(x => x && x.nome).map(x => ({ k: x.k, nome: x.nome }));
@@ -357,7 +362,7 @@ async function loadMonth() {
   try {
     const [c, regs] = await Promise.all([apiGet({ action: 'config', mes: currentMonth }), apiGet({ action: 'carregar', mes: currentMonth })]);
     if (!Array.isArray(regs)) throw new Error((regs && regs.msg) || 'mês indisponível');
-    cfg = c && c.ok ? c : null; records = regs; SLOTS = slotsDe(cfg, records[0]);
+    cfg = c && c.ok ? c : null; records = regs; SLOTS = slotsDe(cfg, records[0]); RECEP = recepDe(cfg, records[0]);
     const r0 = records[0];
     $('monthStatus').innerHTML = (cfg && cfg.consulta ? `<span class="chip amber">🔒 Mês fechado · consulta até ${esc(cfg.consultaAte)}</span> ` : '') + esc(r0 ? `Dados até ${r0.data || '—'} · lançado por ${r0.nome || '—'}${lancTxt(r0) ? ' em ' + lancTxt(r0) : ''}` : 'Nenhuma apuração neste mês ainda');
     document.querySelectorAll('#nav .lock').forEach(l => { if (cfg && cfg.consulta) l.textContent = '🔒'; });
@@ -385,8 +390,9 @@ function getTotals() {
   });
   const o = { v: num(L.ov), novas: num(L.o_novas), remat: num(L.o_remat), anuais: num(L.op), aval: num(L.o_aval), prod: num(L.ou_prod) };
   o.vendas = o.novas + o.remat;
+  const recep = RECEP.map(r => ({ k: r.k, nome: r.nome, prod: num(L['rc' + r.k + '_prod']) }));
   const t = {
-    pessoas, outros: o,
+    pessoas, outros: o, recep,
     totalEquipe: pessoas.reduce((s, p) => s + p.v, 0),
     vendasEquipe: pessoas.reduce((s, p) => s + p.vendas, 0),
     anuaisEquipe: pessoas.reduce((s, p) => s + p.anuais, 0),
@@ -400,7 +406,7 @@ function getTotals() {
   t.qualBase = t.totalVendas + t.renovFeitos;
   t.qualAnuais = t.totalAnuais + Math.min(t.renovAnuais, t.renovFeitos);
   t.qualPct = t.qualBase ? t.qualAnuais / t.qualBase * 100 : null;
-  t.totalProdutos = pessoas.reduce((s, p) => s + p.prod, 0) + o.prod;
+  t.totalProdutos = pessoas.reduce((s, p) => s + p.prod, 0) + o.prod + recep.reduce((s, r) => s + r.prod, 0);
   t.naoRenovados = Math.max(t.renovTotal - t.renovFeitos, 0);
   t.saidas = t.naoRenovados + t.canc;
   t.atual = t.ini - t.saidas + t.totalVendas;
@@ -659,12 +665,13 @@ function renderProdutos(t) {
   $('produtosContent').innerHTML = `
     <div class="card">
       <h2>🛒 Produtos vendidos</h2>
-      <div class="sub">1% do que cada consultora vende em produtos vira crédito de consumo no sistema. "Outros" só registra — o crédito vai para a líder.</div>
-      <div class="grid">${kpi('Total da unidade', 'R$ ' + fmt2(t.totalProdutos))}${kpi('Créditos das consultoras', 'R$ ' + fmt2(t.pessoas.reduce((s, p) => s + p.prod, 0) * POL.credito), '1% de cada uma', 'ok')}</div>
+      <div class="sub">1% do que cada consultora${t.recep.length ? ' e recepcionista' : ''} vende em produtos vira crédito de consumo no sistema. "Outros" só registra — o crédito vai para a líder.</div>
+      <div class="grid">${kpi('Total da unidade', 'R$ ' + fmt2(t.totalProdutos))}${kpi(t.recep.length ? 'Créditos individuais' : 'Créditos das consultoras', 'R$ ' + fmt2((t.pessoas.reduce((s, p) => s + p.prod, 0) + t.recep.reduce((s, r) => s + r.prod, 0)) * POL.credito), '1% de cada uma', 'ok')}</div>
     </div>
     <div class="card"><div class="table-wrap"><table>
       <tr><th>Pessoa</th><th>Produtos vendidos</th><th>Crédito (1%)</th></tr>
       ${t.pessoas.map(p => `<tr><td><strong>${esc(p.nome)}</strong></td><td>R$ ${fmt2(p.prod)}</td><td class="ok"><strong>R$ ${fmt2(p.prod * POL.credito)}</strong></td></tr>`).join('')}
+      ${t.recep.map(r => `<tr><td><strong>${esc(r.nome)}</strong> <span class="chip gray">recepção</span></td><td>R$ ${fmt2(r.prod)}</td><td class="ok"><strong>R$ ${fmt2(r.prod * POL.credito)}</strong></td></tr>`).join('')}
       <tr style="background:var(--soft)"><td><strong>Outros</strong></td><td>R$ ${fmt2(t.outros.prod)}</td><td style="color:var(--muted)">registro · vai para a líder</td></tr>
     </table></div></div>`;
 }
@@ -767,6 +774,7 @@ function renderPreencher() {
         <tr><th></th><th>Vendas pagas (R$)</th><th>Novas</th><th>Rematrículas</th><th>Anuais</th><th>Avaliações</th><th>Produtos (R$)</th></tr>
         ${SLOTS.map(c => linha(esc(c.nome), ['c' + c.k + '_v', 'c' + c.k + '_novas', 'c' + c.k + '_remat', 'c' + c.k + '_p', 'c' + c.k + '_aval', 'c' + c.k + '_prod'])).join('')}
         ${linha('Outros', ['ov', 'o_novas', 'o_remat', 'op', 'o_aval', 'ou_prod'])}
+        ${RECEP.map(r => `<tr><td>${esc(r.nome)} <span class="chip gray">recepção</span></td><td colspan="5" style="color:var(--muted);font-size:.8rem;text-align:center">só produtos — planos dela entram em Outros</td><td>${moneyIn('rc' + r.k + '_prod', num(L['rc' + r.k + '_prod']))}</td></tr>`).join('')}
       </table></div>
       <div style="font-size:.76rem;color:var(--muted);margin-top:6px">Vendas pagas, sem saldo devedor. "Anuais" = quantos dos planos vendidos são anuais. No celular, deslize a tabela para o lado.</div>
       <div class="section-title">Retenção</div>
@@ -803,6 +811,7 @@ async function saveData() {
   const dados = { nome, data: d + '/' + m + '/' + y, hora: new Date().toTimeString().slice(0, 5) };
   ['ov', 'o_novas', 'o_remat', 'op', 'o_aval', 'ou_prod', 'renovTotal', 'renovFeitos', 'renovAnuais', 'ativos_inicio', 'cancelamentos'].forEach(f => dados[f] = val(f));
   SLOTS.forEach(c => { ['v', 'novas', 'remat', 'p', 'aval', 'prod'].forEach(f => dados['c' + c.k + '_' + f] = val('c' + c.k + '_' + f)); dados['c' + c.k + '_nome'] = c.nome; });
+  RECEP.forEach(r => { dados['rc' + r.k + '_prod'] = val('rc' + r.k + '_prod'); dados['rc' + r.k + '_nome'] = r.nome; });
   const b = $('btnSalvar'); b.disabled = true; b.textContent = 'Salvando...';
   try {
     const r = await apiPost({ action: 'salvar', senha: senhaLider, dados });
